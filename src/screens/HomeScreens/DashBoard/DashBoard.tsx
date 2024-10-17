@@ -46,7 +46,7 @@ const DashBoard: React.FC = () => {
                   source={require("../../../assets/png/HeaderIcon.png")}
                   style={styles.image}
                 >
-                  <Text style={styles.text}>Ralph Hertelendy</Text>
+                  <Text style={styles.text}>Raplh Hertelendy</Text>
                   <Text style={styles.subtext}>~New Legend is Born~</Text>
                   <TouchableOpacity
                     style={styles.saveButton}
