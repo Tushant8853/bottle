@@ -34,13 +34,7 @@ const TabNavigation: React.FC = () => {
                     name="StoriesList"
                     component={StoriesList}
                     options={{
-                        title: 'Stories',
-                        headerTitleAlign: 'center',
-                        headerStyle: {
-                            height: 110,
-                            shadowColor: 'transparent',
-                            elevation: 0,
-                        },
+                        headerShown: false
                     }}
                 />
                 <Stack.Screen
@@ -96,7 +90,7 @@ const TabNavigation: React.FC = () => {
             initialRouteName="Home"
             screenOptions={{
                 tabBarShowLabel: false,
-                tabBarActiveTintColor: 'purple',
+                tabBarActiveTintColor: '#522F60',
                 tabBarInactiveTintColor: '#E8E8E8',
                 tabBarStyle: {
                     backgroundColor: '#E8E8E8',
@@ -117,7 +111,7 @@ const TabNavigation: React.FC = () => {
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? 'purple' : 'gray',
+                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }}
                             />
@@ -138,7 +132,7 @@ const TabNavigation: React.FC = () => {
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? 'purple' : 'gray',
+                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }}
                             />
@@ -159,7 +153,7 @@ const TabNavigation: React.FC = () => {
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? 'purple' : 'gray',
+                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }}
                             />
