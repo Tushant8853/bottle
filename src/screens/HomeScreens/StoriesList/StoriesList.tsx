@@ -69,8 +69,8 @@ const StoriesList: React.FC = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="angle-left" size={25} color="black" />
+        <TouchableOpacity style={styles.Backbotton} onPress={() => navigation.goBack()}>
+          <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
       <Text style={styles.headerTitle}>Stories</Text>
       </View>
@@ -119,17 +119,14 @@ const StoriesList: React.FC = () => {
 
                       <Icon
                         name="heart-o"
-                       // type="ionicon"
                         size={16}
                         color="#808080"
                         marginRight={5}
                       />
                       <Icons
                         name="share-outline"
-                       // type="ionicon"
                         size={17}
                         color="#808080"
-                        containerStyle={{ transform: [{ rotate: "90deg" }] }}
                       />
                     </View>
                   </View>
@@ -196,13 +193,14 @@ const styles = StyleSheet.create({
     paddingBottom: 1,
     paddingTop: 47,
     backgroundColor: 'white',
+    width: '100%',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     textAlignVertical: 'center',
     width: '100%',
-    //marginLeft: 10,
+    paddingRight: 40,
     color: '#333',
     textAlign: 'center',
     alignItems: 'center',
@@ -229,12 +227,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 108,
   },
-
+  Backbotton: {
+    width: 25,
+    height: 19,
+  },
   StoriesListMain: {
   
     marginTop: 8,
-   // borderTopWidth: 1,
-    //borderColor:'lightgrey'
   },
   StoriesImgContainer: {
     justifyContent: "center",
