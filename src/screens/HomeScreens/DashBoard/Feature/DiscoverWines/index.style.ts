@@ -95,19 +95,19 @@ const styles = StyleSheet.create<Styles>({
     StoriesTitleText: {
         fontSize: 14,
         color: '#66605E',
-        //fontFamily: 'SF Pro',
+        fontFamily: 'SF Pro',
         fontWeight: '700',
     },
     StoriesSubtitle: {
         fontSize: 12,
         color: 'black',
-        // fontFamily: 'SF Pro',
+        fontFamily: 'SF Pro',
         fontWeight: '400',
     },
     StoriesDescription: {
         fontSize: 12,
         color: 'black',
-        //fontFamily: 'SF Pro',
+        fontFamily: 'SF Pro',
         fontWeight: '400',
     },
     StoriesTitleIMG: {

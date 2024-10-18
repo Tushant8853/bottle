@@ -4,10 +4,15 @@ import { StyleSheet, Dimensions } from "react-native";
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  container: {
+    //borderWidth: 1,
+  },
   containerf: {
+    //borderWidth: 1,
     paddingVertical: 16,
   },
   bannerContainer: {
+    //borderWidth: 1,
     marginBottom: 5,
     padding: 10,
     flexDirection: "row",
@@ -29,22 +34,23 @@ const styles = StyleSheet.create({
     textAlign: "left",
     marginTop: 7,
   },
+  ///////////////////////////////////////Storeies ////////////////////////////////////////
   row: {
     flexDirection: "row",
     marginHorizontal: 16,
-    height: 170,
   },
   ComponentContainer: {
     justifyContent: "space-between",
     marginRight: 8,
+    marginBottom: 4,
+    marginTop: 4,
   },
   imageWrapper: {
     width: width / 2 - 22,
-    height: 165,
   },
-  component: {
+  componentIMGStyle: {
     width: "100%",
-    height: "100%",
+    height:170
   },
   saveButton: {
     position: "absolute",

@@ -82,13 +82,17 @@ const OtherMemories: React.FC = () => {
     <View>
       {/* Banner Section */}
       <View style={styles.bannerContainer}>
-        <TouchableOpacity onPress={handleNavigation}>
-          {/* Local image source */}
-          <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.bannerImage} />
-        </TouchableOpacity>
-        <View style={styles.bannerTextContainer}>
-          <Text style={styles.bannerTitle}>Memories from Others</Text>
-        </View>
+        <Pressable onPress={handleNavigation}>
+          <View style={styles.headingContainer}>
+            <Image
+              source={require("../../../../../assets/png/MymemoriesIcon.png")}
+              style={styles.bannerImage}
+            />
+            <View style={styles.bannerTextContainer}>
+              <Text style={styles.bannerTitle}>Memories from Others</Text>
+            </View>
+          </View>
+        </Pressable>
       </View>
 
       {/* Cards Section */}

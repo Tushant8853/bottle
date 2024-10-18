@@ -1,22 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   Pressable,
-  Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/AntDesign";
-import MymemoriesImg from "../../../../../assets/png/MymemoriesIcon.png";
-import StoriesComponentImg1 from "../../../../../assets/png/HeaderIcon.png";
-import StoriesComponentImg2 from "../../../../../assets/png/Stories2.png";
-import StoriesComponentImg3 from "../../../../../assets/png/Stories3.png";
-import StoriesComponentImg4 from "../../../../../assets/png/Storie4.png";
+import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from './index.style'; // Importing styles from index.style.js
+import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+
+// Install TwicPics configuration
+installTwicPics({
+  domain: "https://bottleshock.twic.pics/",
+  debug: true,
+  maxDPR: 3,
+});
 
 const Stories: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]); // Track if the item is saved or not
+  const [memories, setMemories] = useState<any[]>([]);
+  const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   const handleSavePress = (index: number) => {
     const newStatus = [...likedStatus];
@@ -24,8 +29,31 @@ const Stories: React.FC = () => {
     setLikedStatus(newStatus); // Toggle the state on button press
   };
 
+  useEffect(() => {
+    const fetchStoriesListForDashBoard = async () => {
+      try {
+        const { data: heroMemoriesData, error } = await supabase
+          .from("bottleshock_stories")
+          .select("thumbnail_image"); // Selecting only the thumbnail_image field
+
+        if (error) {
+          console.error("Error fetching memories:", error.message);
+          return;
+        }
+
+        // Only keep the first 4 memories
+        setMemories(heroMemoriesData?.slice(0, 4) || []);
+        console.log("Number of memories:", (heroMemoriesData || []).length);
+      } catch (err) {
+        console.error("Error fetching memories:", err);
+      }
+    };
+
+    fetchStoriesListForDashBoard();
+  }, []);
+
   return (
-    <View style={styles.containerf}>
+    <View style={styles.container}>
       <View style={styles.bannerContainer}>
         <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.bannerImage} />
         <View style={styles.bannerTextContainer}>
@@ -36,62 +64,33 @@ const Stories: React.FC = () => {
         </View>
       </View>
       <View style={styles.containerf}>
-        <View style={styles.row}>
-          <View style={styles.ComponentContainer}>
-            <View style={styles.imageWrapper}>
-              <Image source={require('../../../../../assets/png/HeaderIcon.png')} style={styles.component} />
-              <Pressable onPress={() => handleSavePress(0)} style={styles.saveButton}>
-                <Icon
-                  name={likedStatus[0] ? "bookmark" : "bookmark-o"}
-                  size={20}
-                  color="#30425F"
+        {memories.reduce((rows, memory, index) => {
+          if (index % 2 === 0) {
+            rows.push([]);
+          }
+          rows[rows.length - 1].push(
+            <View key={index} style={styles.ComponentContainer}>
+              <View style={styles.imageWrapper}>
+                <TwicImg 
+                  src={`${imagePrefix}${memory.thumbnail_image}`} // Correctly using a string for the src prop
+                  style={styles.componentIMGStyle}
                 />
-              </Pressable>
+                <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
+                  <Icon
+                    name={likedStatus[index] ? "bookmark" : "bookmark-o"}
+                    size={20}
+                    color="#30425F"
+                  />
+                </Pressable>
+              </View>
             </View>
+          );
+          return rows;
+        }, []).map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.row}>
+            {row}
           </View>
-
-          <View style={styles.ComponentContainer}>
-            <View style={styles.imageWrapper}>
-              <Image source={require('../../../../../assets/png/Stories2.png')} style={styles.component} />
-              <Pressable onPress={() => handleSavePress(1)} style={styles.saveButton}>
-                <Icon
-                  name={likedStatus[1] ? "bookmark" : "bookmark-o"}
-                  size={20}
-                  color="#30425F"
-                />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-
-        {/* Row for additional stories */}
-        <View style={styles.row}>
-          <View style={styles.ComponentContainer}>
-            <View style={styles.imageWrapper}>
-              <Image source={require('../../../../../assets/png/Stories3.png')} style={styles.component} />
-              <Pressable onPress={() => handleSavePress(2)} style={styles.saveButton}>
-                <Icon
-                  name={likedStatus[2] ? "bookmark" : "bookmark-o"}
-                  size={20}
-                  color="#30425F"
-                />
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={styles.ComponentContainer}>
-            <View style={styles.imageWrapper}>
-              <Image source={require('../../../../../assets/png/Storie4.png')} style={styles.component} />
-              <Pressable onPress={() => handleSavePress(3)} style={styles.saveButton}>
-                <Icon
-                  name={likedStatus[3] ? "bookmark" : "bookmark-o"}
-                  size={20}
-                  color="#30425F"
-                />
-              </Pressable>
-            </View>
-          </View>
-        </View>
+        ))}
       </View>
     </View>
   );
