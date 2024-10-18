@@ -77,7 +77,7 @@ const MyMemories: React.FC = () => {
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate("StoriesList" as never);
+    navigation.navigate("MemoriesList" as never);
   };
 
   return (

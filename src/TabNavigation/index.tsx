@@ -45,15 +45,7 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="MemoriesList"
                     component={MemoriesList}
-                    options={{
-                        title: 'Memories',
-                        headerTitleAlign: 'center',
-                        headerStyle: {
-                            height: 110,
-                            shadowColor: 'transparent',
-                            elevation: 0,
-                        },
-                    }}
+                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
         );
