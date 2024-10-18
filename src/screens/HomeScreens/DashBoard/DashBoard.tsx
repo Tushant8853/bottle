@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Dimensions, Pressable, ImageBackground } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import styles from "./index.style";
 import MyMemories from "./Feature/MyMemories/MyMemories";
@@ -18,17 +10,45 @@ import Stories from "./Feature/Stories/Stories";
 import DiscoverWines from "./Feature/DiscoverWines/DiscoverWines";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import Icons from "react-native-vector-icons/MaterialIcons";
-import { RootStackParamList } from "../../../TabNavigation/navigationTypes"; // Adjust the path according to your structure
+import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 
 const { width } = Dimensions.get("window");
 
-const DashBoard: React.FC = () => {
-  const [search, setSearch] = useState<string>("");
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // Use defined navigation types
+// Install TwicPics with custom settings
+installTwicPics({
+  domain: "https://bottleshock.twic.pics/",
+  debug: true,
+  maxDPR: 3,
+});
 
-  const updateSearch = (searchValue: string) => {
-    setSearch(searchValue);
-  };
+const DashBoard: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [memories, setMemories] = useState<any[]>([]);
+  const imagePrefix = "https://bottleshock.twic.pics/file/";
+
+  useEffect(() => {
+    const fetchStoriesListForDashBoard = async () => {
+      try {
+        const { data: heroMemoriesData, error } = await supabase
+          .from("bottleshock_stories")
+          .select("*")
+          .eq("is_hero", true);
+
+        if (error) {
+          console.error("Error fetching memories:", error.message);
+          return;
+        }
+        setMemories(heroMemoriesData || []);
+        console.log("Number of memories:", (heroMemoriesData || []).length);
+      } catch (err) {
+        console.error("Error fetching memories:", err);
+      }
+    };
+
+    fetchStoriesListForDashBoard();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -40,40 +60,45 @@ const DashBoard: React.FC = () => {
           style={styles.HeaderScrollContainer}
         >
           <View style={styles.HeaderContainer}>
-            <Pressable onPress={() => navigation.navigate("StoriesDetail")}>
-              <View style={[styles.HeaderImgContainer, { width }]}>
-                <ImageBackground
-                  source={require("../../../assets/png/HeaderIcon.png")}
-                  style={styles.image}
-                >
-                  <Text style={styles.text}>Raplh Hertelendy</Text>
-                  <Text style={styles.subtext}>~New Legend is Born~</Text>
-                  <TouchableOpacity
-                    style={styles.saveButton}
-                    onPress={() => navigation.navigate("StoriesList")}
+            {memories.length > 0 ? (
+              memories.map((memory) => {
+                const imageUrl = `${imagePrefix}${memory.thumbnail_image}`;
+                console.log("Final Image Url is --", imageUrl);
+                return (
+                  <Pressable
+                    key={memory.id}
+                    onPress={() =>
+                      navigation.navigate("StoriesDetail", { id: memory.id })
+                    }
                   >
-                    <Icons name="library-books" size={27} color="#000" />
-                  </TouchableOpacity>
-                </ImageBackground>
-              </View>
-            </Pressable>
-            <View style={[styles.HeaderImgContainer, { width }]}>
-              <ImageBackground
-                source={require("../../../assets/png/Headerimage.png")}
-                style={styles.image}
-              >
-                <Text style={styles.text}>Xander Soren</Text>
-                <Text style={styles.subtext}>~Tech Exec to Winemaker~</Text>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={() => navigation.navigate("StoriesList")}
-                >
-                  <Icons name="library-books" size={27} color="#000" />
-                </TouchableOpacity>
-              </ImageBackground>
-            </View>
+                    <View style={[styles.HeaderImgContainer, { width }]}>
+                      <TwicImg
+                        src={imageUrl}
+                        style={styles.image}
+                        alt={memory.heading || "Default Heading"} // Add alt text for accessibility
+                      />
+                      <Text style={styles.text}>
+                        {memory.heading || "Default Heading"}
+                      </Text>
+                      <Text style={styles.subtext}>
+                        {memory.sub_heading || "Default Sub-heading"}
+                      </Text>
+                      <Pressable
+                        style={styles.saveButton}
+                        onPress={() => navigation.navigate("StoriesList")}
+                      >
+                        <Icons name="library-books" size={27} color="#000" />
+                      </Pressable>
+                    </View>
+                  </Pressable>
+                );
+              })
+            ) : (
+              <Text style={styles.noMemoriesText}>No memories available.</Text>
+            )}
           </View>
         </ScrollView>
+
         <View style={styles.searchContainer}>
           <Icon
             name="magnifying-glass"
@@ -81,7 +106,9 @@ const DashBoard: React.FC = () => {
             color="#522F60"
             style={styles.searchIcon}
           />
+          {/* Add TextInput here if needed */}
         </View>
+
         <View style={styles.MyMemoriesDashboardContainer}>
           <MyMemories />
         </View>
