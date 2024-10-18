@@ -1,142 +1,172 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, TextInput, Pressable } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icons from 'react-native-vector-icons/Ionicons';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Pressable,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Icons from "react-native-vector-icons/Ionicons";
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 
-interface Memory {
+installTwicPics({
+  domain: "https://bottleshock.twic.pics/",
+  debug: true,
+  maxDPR: 3,
+});
+
+interface Story {
   id: number;
   name: string;
   short_description: string;
   image?: string | null;
+  description: string;
 }
 
 const StoriesList: React.FC = () => {
-  
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const imagePrefix = "https://intlnpublic.s3.amazonaws.com/";
+  const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   const [search, setSearch] = useState<string>("");
-  const [memories, setMemories] = useState<Memory[]>([]);
-
-  // Example of dynamic styling based on search input
-  const [highlightSearchBar, setHighlightSearchBar] = useState<boolean>(false);
+  const [storiesList, setStoriesList] = useState<Story[]>([]);
 
   const updateSearch = (searchValue: string) => {
     setSearch(searchValue);
-    // Example: Highlight the search bar if search text is more than 3 characters
-    setHighlightSearchBar(searchValue.length > 3);
   };
 
   useEffect(() => {
-    const fetchMemories = async () => {
-      const { data: memoriesData, error } = await supabase
-        .from("bottleshock_memories")
-        .select("id,name, short_description");
+    const fetchStories = async () => {
+      const { data: storiesData, error } = await supabase
+        .from("bottleshock_stories")
+        .select("id, heading, sub_heading, content, thumbnail_image");
+
       if (error) {
-        console.error("Error fetching memories:", error.message);
+        console.error("Error fetching stories:", error.message);
         return;
       }
 
-      const updatedMemories = await Promise.all(
-        memoriesData.map(async (memory: Memory) => {
-          const { data: gallery, error: galleryError } = await supabase
-            .from("bottleshock_memory_gallery")
-            .select("file")
-            .eq("memory_id", memory.id)
-            .eq("is_thumbnail", true);
+      const updatedStories = storiesData.map((story: any) => {
+        // Use the existing thumbnail_image field for the story image
+        const image = story.thumbnail_image ? imagePrefix + story.thumbnail_image : null;
 
-          if (galleryError) {
-            console.error("Error fetching gallery:", galleryError);
-            return { ...memory, image: null };
-          }
+        // Extract text after the heading
+        const content = story.content;
+        const textAfterHeading = extractTextAfterHeading(content);
 
-          const image = gallery.length > 0 ? imagePrefix + gallery[0].file : null;
+        return {
+          id: story.id,
+          name: story.heading,
+          short_description: story.sub_heading,
+          image, // This is the thumbnail_image
+          description: textAfterHeading,
+        };
+      });
 
-          return { ...memory, image };
-        })
-      );
-
-      setMemories(updatedMemories);
+      setStoriesList(updatedStories);
     };
 
-    fetchMemories();
+    fetchStories();
   }, []);
+
+  // Function to extract text after the heading
+  const extractTextAfterHeading = (content: string) => {
+    // Regular expression to match the heading (assuming it's marked with a leading #)
+    const headingPattern = /# (.*)/;
+    const imagePattern = /!\[.*?\]\(.*?\)/g; // Matches markdown image syntax
+
+    // Remove all images from content
+    const contentWithoutImages = content.replace(imagePattern, "");
+
+    // Find the heading in the content
+    const headingMatch = contentWithoutImages.match(headingPattern);
+
+    if (headingMatch) {
+      // Get the index of the end of the heading match
+      const indexAfterHeading = contentWithoutImages.indexOf(headingMatch[0]) + headingMatch[0].length;
+
+      // Extract the text after the heading
+      return contentWithoutImages.substring(indexAfterHeading).trim();
+    }
+
+    // If no heading is found, return the original content
+    return contentWithoutImages.trim();
+  };
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.Backbotton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.Backbotton}
+          onPress={() => navigation.goBack()}
+        >
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-      <Text style={styles.headerTitle}>Stories</Text>
+        <Text style={styles.headerTitle}>Stories</Text>
       </View>
+
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Icon name="search" size={16} color="#989999" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="search"
-          placeholderTextColor={'#e5e8e8'}
-         // value={searchQuery}
-          //onChangeText={handleSearch}
+          placeholderTextColor={"#e5e8e8"}
+          value={search}
+          onChangeText={updateSearch}
         />
         <Icon name="microphone" size={16} color="#989999" />
       </View>
+
+      {/* Stories List */}
       <View style={styles.StoriesListMain}>
         <ScrollView style={styles.ListOfStoriesContainer}>
-          {memories.map((memory, index) => (
+          {storiesList.map((story, index) => (
             <Pressable
               key={index}
               onPress={() =>
-                navigation.navigate("StoriesDetail", { memoryId: memory.id })
+                navigation.navigate("StoriesDetail", { memoryId: story.id })
               }
             >
               <View style={styles.Stories}>
                 <View style={styles.StoriesImgContainer}>
-                  {memory.image ? (
-                    <Image
-                      source={{ uri: memory.image }}
-                      style={styles.StoriesImage}
-                    />
-                  ) : (
-                    <Image
-                      source={require("../../../assets/png/HeaderIcon.png")}
-                      style={styles.StoriesImage}
-                    />
-                  )}
+                  <TwicImg
+                    src={story.image} // This will now refer to the thumbnail_image
+                    style={styles.StoriesImage}
+                  />
                 </View>
                 <View style={styles.StoriesText}>
                   <View style={styles.StoriesTitle}>
                     <View style={styles.StoriesTitleTextContainer}>
                       <Text style={styles.StoriesTitleText} numberOfLines={1}>
-                        {memory.name}
+                        {story.name}
                       </Text>
                     </View>
                     <View style={styles.StoriesTitleIMG}>
-
                       <Icon
                         name="heart-o"
                         size={16}
                         color="#808080"
                         marginRight={5}
                       />
-                      <Icons
-                        name="share-outline"
-                        size={17}
-                        color="#808080"
-                      />
+                      <Icons name="share-outline" size={17} color="#808080" />
                     </View>
                   </View>
                   <View>
-                  <Text style={styles.StoriesSubtitle} numberOfLines={3}>
-                  ~New Legend is Born~
-                  </Text>
+                    <Text style={styles.StoriesSubtitle}>
+                      {story.short_description}
+                    </Text>
                   </View>
+                  {/* Display the new description without the heading or image */}
                   <Text style={styles.StoriesDescription} numberOfLines={3}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...
+                    {story.description}
                   </Text>
                 </View>
               </View>
@@ -158,10 +188,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderColor: '#522F60',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderColor: "#522F60",
     borderWidth: 1,
     paddingHorizontal: 18,
     paddingVertical: 1,
@@ -169,70 +199,56 @@ const styles = StyleSheet.create({
     marginBottom: 13,
     marginVertical: 4,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
     elevation: 3,
     height: 40,
   },
-  // Dynamic styling for search bar highlight
-  highlightSearch: {
-    borderColor: "green", // Highlight border
-    borderWidth: 2, // Add a thicker border
-  },
-  
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     paddingBottom: 1,
     paddingTop: 47,
-    backgroundColor: 'white',
-    width: '100%',
+    backgroundColor: "white",
+    width: "100%",
   },
   headerTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    textAlignVertical: 'center',
-    width: '100%',
+    fontWeight: "600",
+    textAlignVertical: "center",
+    width: "100%",
     paddingRight: 40,
-    color: '#333',
-    textAlign: 'center',
-    alignItems: 'center',
+    color: "#333",
+    textAlign: "center",
+    alignItems: "center",
   },
   searchIcon: {
     marginRight: 7,
-
   },
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color:'black',
+    color: "black",
   },
   ListOfStoriesContainer: {
-    //borderWidth: 1,
-    borderTopWidth:1.1,
-    borderColor: '#808080',
+    borderTopWidth: 1.1,
+    borderColor: "#808080",
     paddingHorizontal: 16,
   },
   Stories: {
-  
     flexDirection: "row",
     marginBottom: 4,
     marginTop: 4,
     height: 108,
   },
-  Backbotton: {
-    width: 25,
-    height: 19,
-  },
   StoriesListMain: {
-  
     marginTop: 8,
   },
   StoriesImgContainer: {
@@ -259,7 +275,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "black",
-    paddingTop: 5
+    paddingTop: 5,
   },
   StoriesSubtitle: {
     fontSize: 11,
@@ -269,15 +285,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#522F60",
     lineHeight: 16.5,
-    paddingTop: 5
+    paddingTop: 5,
   },
   StoriesTitleIMG: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 5
+    paddingTop: 5,
   },
-  SearchStories: {},
   StoriesTitleTextContainer: {
-    width:'75%',
+    width: "75%",
   },
 });
+

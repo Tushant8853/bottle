@@ -1,89 +1,161 @@
-import React from 'react';
-import { View, Text, ImageBackground, ScrollView, StyleSheet, Image } from 'react-native';
-import HeaderImg from '../../../assets/png/HeaderIcon.png';
-import Gallery from '../../../assets/png/galleryImg.png';
-import Love from '../../../assets/png/LoveImg.png';
-import Export from '../../../assets/png/Exportmg.png';
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { useRoute } from "@react-navigation/native";
+import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import Markdown from 'react-native-markdown-display';
+import { Ionicons } from '@expo/vector-icons'; // Import icon library
 
-const StoriesDetail = () => {
-    return (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <View style={styles.DashBoardContainer}>
-                <View style={styles.HeaderImgContainer}>
-                    <ImageBackground source={HeaderImg} resizeMode="cover" style={styles.image}>
-                        <View style={styles.TopRightCorner}>
-                            <Image source={Gallery} style={styles.StoriesImage} />
-                            <Image source={Love} style={styles.StoriesImage} />
-                            <Image source={Export} style={styles.StoriesImage} />
-                        </View>
-                    </ImageBackground>
-                </View>
-                <View style={styles.StoriesTitleContainer}>
-                    <Text style={styles.historyTitle}>History</Text>
-                </View>
-                <View style={styles.StoriesContainer}>
-                    <Text style={styles.storiesDescription}>
-                        History Hertelendy wines represent our Old World family tradition over many centuries, from 18th-century Veltlínske zelené (Grüner Veltliner) and Rizling vlašský (Welschriesling) vineyards near Budatin Castle in Slovakia to Hungarian wines produced by our ancestral Great Uncle Gábor Hertelendy (below). He created two varietals in his basalt-mountain vineyards overlooking Lake Balaton: Szürkebarát (better known as Pinot Gris) and Kéknyelű (a rare Hungarian white wine grape only found in the Badacsony wine region). Unlike the majority of common grape varieties used in viticulture, Kéknyelű cannot self-pollinate. Kéknyelű is rare today because it requires both male and female specimens for pollination, so it occupies double the space to reap half the yield.
-                    </Text>
-                </View>
-                <View style={styles.bottoms}></View>
-            </View>
-        </ScrollView>
-    );
+installTwicPics({
+  domain: "https://bottleshock.twic.pics/",
+  debug: true,
+  maxDPR: 3,
+});
+
+interface RouteParams {
+  memoryId: number;
+}
+
+const StoriesDetail: React.FC = () => {
+  const route = useRoute();
+  const { memoryId } = route.params as RouteParams;
+
+  const [story, setStory] = useState<any>(null);
+  const [loading, setLoading] = useState(true); // State to manage loading
+
+  useEffect(() => {
+    const fetchStoryDetails = async () => {
+      setLoading(true); // Start loading
+      const { data, error } = await supabase
+        .from("bottleshock_stories")
+        .select("id, heading, sub_heading, content, thumbnail_image")
+        .eq("id", memoryId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching story details:", error.message);
+      } else {
+        setStory(data);
+      }
+      setLoading(false); // Stop loading
+    };
+
+    fetchStoryDetails();
+  }, [memoryId]);
+
+  // Function to extract content after the first image in Markdown
+  const extractContentAfterFirstImage = (content: string) => {
+    const imagePattern = /!\[.*?\]\(.*?\)/;
+    const modifiedContent = content.replace(imagePattern, "").trim();
+    return modifiedContent;
+  };
+
+  // Show a loading spinner while data is being fetched
+  if (loading) {
+    return <ActivityIndicator size="large" color="#522F60" style={styles.loader} />;
+  }
+
+  if (!story) {
+    return <Text>Story not found.</Text>; // Handle the case where no story is found
+  }
+
+  // Extract content without the first image
+  const contentWithoutFirstImage = extractContentAfterFirstImage(story.content);
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <TwicImg
+          src={`https://bottleshock.twic.pics/file/${story.thumbnail_image}`} // Display thumbnail image
+          style={styles.image}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="attach" size={24} style={styles.rotatedIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="heart-outline" size={24}  />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="share-outline" size={24}  />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.content}>
+        <Markdown style={markdownStyles}>{contentWithoutFirstImage}</Markdown>
+      </View>
+    </ScrollView>
+  );
 };
 
 export default StoriesDetail;
 
 const styles = StyleSheet.create({
-    scrollViewContent: {
-        flexGrow: 1,
-        alignItems: 'center',
-    },
-    DashBoardContainer: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'white',
-    },
-    HeaderImgContainer: {
-        width: '100%',
-        height: 200,
-        marginBottom: 10,
-    },
-    image: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-    },
-    TopRightCorner: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        flexDirection: 'row',
-    },
-    StoriesImage: {
-        width: 35,
-        height: 35, // Set a fixed size for each image
-        marginLeft: 5, // Space between the images
-    },
-    StoriesTitleContainer: {
-        paddingHorizontal: 20,
-        marginTop: 0,
-    },
-    historyTitle: {
-        fontSize: 24,
-        fontWeight: 'bold', // Make "History" text bold
-        color: 'black',
-    },
-    StoriesContainer: {
-        paddingHorizontal: 20,
-        marginTop: 5,
-    },
-    storiesDescription: {
-        fontSize: 16,
-        color: 'black',
-        lineHeight: 24, // Adds some spacing between lines for readability
-    },
-    bottoms: {
-        // Additional content can be added here
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+  image: {
+    width: "100%",
+    height: 330,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 25,
+    right: 15,
+    flexDirection: 'row',
+    gap: 10, // Space between buttons
+  },
+  button: {
+    backgroundColor: 'white', // Semi-transparent background
+    borderRadius: 5,
+    alignContent: 'center',
+    alignItems:'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40
+  },
+  rotatedIcon: {
+    transform: [{ rotate: '45deg' }], // Rotate the icon 45 degrees
+  },
+  content: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "gray",
+    marginBottom: 16,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
+
+// Custom styles for Markdown rendering
+const markdownStyles = {
+  text: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  heading1: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  heading2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 8,
+  },
+};
