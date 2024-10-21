@@ -1,127 +1,250 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   TouchableOpacity,
-  Linking,
+  ScrollView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Img from "../../../../../assets/png/HeaderIcon.png";
+import Feather from "react-native-vector-icons/Feather";
+import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+interface Memory {
+  id: string;
+  name: string;
+  thumbnail?: string;
+  user_id: string;
+  description: string;
+  handle?: string;
+}
 
-const PublicMemories = () => {
+installTwicPics({
+  domain: "https://bottleshock.twic.pics/",
+  debug: true,
+  maxDPR: 3,
+});
+
+const PublicMemories: React.FC = () => {
+  const imagePrefix = "https://bottleshock.twic.pics/file/";
+  const [memories, setMemories] = useState<Memory[]>([]);
+
+  useEffect(() => {
+    const fetchMemories = async () => {
+      try {
+        const { data: memories, error } = await supabase
+          .from("bottleshock_memories")
+          .select("id, user_id, name, description");
+
+        if (error) {
+          console.error("Error fetching memories:", error.message);
+          return;
+        }
+        const updatedMemories = await Promise.all(
+          memories.map(async (memory: Memory) => {
+            const { data: gallery, error: galleryError } = await supabase
+              .from("bottleshock_memory_gallery")
+              .select("file")
+              .eq("memory_id", memory.id);
+
+            if (galleryError) {
+              return memory;
+            } 
+            if (gallery && gallery.length > 0) {
+              memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
+            }
+            const { data: user, error: userError } = await supabase
+              .from("bottleshock_users")
+              .select("handle")
+              .eq("id", memory.user_id)
+              .single();
+
+            if (userError) {
+              console.error("Error fetching user handle:", userError.message);
+              return memory;
+            }
+            if (user) {
+              memory.handle = user.handle;
+            }
+            return memory;
+          })
+        );
+        setMemories(updatedMemories);
+      } catch (err) {
+        console.error("Error fetching memories:", err);
+      }
+    };
+    fetchMemories();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.leftContent}>
-        <Text style={styles.title}>Fall Harvest Party 2024</Text>
-        <View style={styles.actionIcons}>
-          <TouchableOpacity>
-            <Ionicons name="pencil-outline" size={18} color="grey" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="heart-outline" size={18} color="grey" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="share-outline" size={18} color="grey" />
-          </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View>
+        {memories.map((memory) => (
+          <View key={memory.id} style={styles.container}>
+            <View style={styles.leftContent}>
+              <View style={styles.titleMainContainer}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title} numberOfLines={1}>
+                    {memory.name}
+                  </Text>
+                </View>
+                <View style={styles.actionIcons}>
+                  <TouchableOpacity>
+                    <Feather
+                      style={styles.Icons}
+                      name="paperclip"
+                      size={16}
+                      color="grey"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Ionicons
+                      style={styles.Icons}
+                      name="heart-outline"
+                      size={16}
+                      color="grey"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Ionicons
+                      style={styles.Icons}
+                      name="share-outline"
+                      size={16}
+                      color="grey"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.titleSecondMainContainer}>
+                <View style={styles.usernameContainer}>
+                  <Text style={styles.username} numberOfLines={1}>
+                    @{memory.handle}
+                  </Text>
+                  <Ionicons
+                    style={styles.usernameIcon}
+                    name="checkmark-circle"
+                    size={11}
+                    color="grey"
+                  />
+                </View>
+                <View style={styles.starRating}>
+                  {Array(4)
+                    .fill(null)
+                    .map((_, index) => (
+                      <FontAwesome
+                        key={index}
+                        name="star"
+                        size={11}
+                        color="grey"
+                      />
+                    ))}
+                  <FontAwesome name="star-half-full" size={11} color="grey" />
+                </View>
+              </View>
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.StoriesDescription} numberOfLines={2}>
+                  {memory.description}
+                </Text>
+              </View>
+            </View>
 
-          {/* Star rating */}
-          <View style={styles.starRating}>
-            {Array(4)
-              .fill(null)
-              .map((_, index) => (
-                <FontAwesome key={index} name="star" size={16} color="grey" />
-              ))}
-            <FontAwesome name="star-half-full" size={16} color="grey" />
+            <View style={styles.rightContent}>
+              {memory.thumbnail ? (
+                <TwicImg
+                  src={memory.thumbnail}
+                  style={styles.image}
+                  resize="60x60"
+                  mode="cover"
+                />
+              ) : null}
+            </View>
           </View>
-        </View>
-        <Text style={styles.username}>
-          @mingmei <Ionicons name="checkmark-circle" size={14} color="grey" />
-        </Text>
-
-        <Text style={styles.description}>
-          <Text>
-            Our fall trip to Sonoma County’s Healdsburg we have visited
-            Lancaster Estate
-          </Text>
-        </Text>
-
-        {/* Action icons */}
-        <View style={styles.actionIcons}>
-          <TouchableOpacity>
-            <Ionicons name="pencil-outline" size={18} color="grey" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="heart-outline" size={18} color="grey" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="share-outline" size={18} color="grey" />
-          </TouchableOpacity>
-
-          {/* Star rating */}
-          <View style={styles.starRating}>
-            {Array(4)
-              .fill(null)
-              .map((_, index) => (
-                <FontAwesome key={index} name="star" size={16} color="grey" />
-              ))}
-            <FontAwesome name="star-half-full" size={16} color="grey" />
-          </View>
-        </View>
+        ))}
       </View>
-
-      {/* Right side image */}
-      <View style={styles.rightContent}>
-        <Image src={Img} style={styles.image} />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    paddingBottom: 350,
+  },
   container: {
-    borderWidth: 1,
-    marginVertical: 16,
+    marginHorizontal: 16,
     marginTop: 4,
+    marginBottom: 4,
+    backgroundColor: "white",
     flexDirection: "row",
-    // padding: 10,
   },
   leftContent: {
-    flex: 3,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  username: {
-    fontSize: 14,
-    color: "grey",
-    marginVertical: 2,
-  },
-  description: {
-    fontSize: 14,
-    color: "#333",
-  },
-  actionIcons: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 6,
-  },
-  starRating: {
-    flexDirection: "row",
-    marginLeft: 10,
+    flex: 8,
   },
   rightContent: {
-    flex: 1,
+    flex: 2,
+    alignItems: "flex-end",
+  },
+  titleMainContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  titleContainer: {
     justifyContent: "center",
+    flex: 7.5,
+    height: 22,
+  },
+  title: {
+    fontWeight: "600",
+    fontSize: 13,
+    fontFamily: "Hiragino Sans",
+  },
+  actionIcons: {
+    flex: 2.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  Icons: {},
+  titleSecondMainContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
+  usernameContainer: {
+    flex: 7.5,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  starRating: {
+    flex: 2.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  username: {
+    fontSize: 11,
+    fontWeight: "400",
+    fontFamily: "SF Pro",
+    color: "#808080",
+    width: "30%",
+  },
+  usernameIcon: {
+    marginLeft: 4,
+  },
+  descriptionContainer: {
+    height: 35,
+  },
+  StoriesDescription: {
+    fontSize: 11,
+    fontFamily: "Hiragino Sans",
+    color: "#522F60",
+    lineHeight: 16.5,
+  },
   image: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
+    resizeMode: "cover",
     borderRadius: 8,
   },
 });
