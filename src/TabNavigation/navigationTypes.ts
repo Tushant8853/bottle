@@ -4,6 +4,7 @@ export type RootStackParamList = {
     StoriesList: undefined;
     StoriesDetail: undefined; // Include this line
     MemoriesList: undefined;
+    WineriesList: undefined;
     UserDashboardScreen: undefined;
     WineDashboardScreen: undefined;
 };

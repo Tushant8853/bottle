@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Pressable, ImageSourcePropType } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import MymemoriesImg from '../../../../../assets/png/MymemoriesIcon.png';
 import WineriesComponentImg1 from '../../../../../assets/png/WineriesImg1.png';
 import WineriesComponentImg2 from '../../../../../assets/png/WineriesImg2.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 
-// Get device screen width
 const { width } = Dimensions.get('window');
 
-// Define TypeScript type for winery data (if needed)
 interface WineryData {
   id: number;
   name: string;
@@ -19,12 +18,14 @@ interface WineryData {
 }
 
 const Wineries: React.FC = () => {
-  const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]); // Track if the item is saved or not
+  const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]);
+
+  const navigation = useNavigation(); // Initialize navigation hook
 
   const handleSavePress = (index: number): void => {
     const newStatus = [...likedStatus];
-    newStatus[index] = !newStatus[index]; // Toggle the like status
-    setLikedStatus(newStatus); // Toggle the state on button press
+    newStatus[index] = !newStatus[index];
+    setLikedStatus(newStatus);
   };
 
   // Calculate dynamic gaps
@@ -38,8 +39,12 @@ const Wineries: React.FC = () => {
           <Image source={MymemoriesImg} style={styles.MemoriesImg} />
           <Text style={styles.text}>featured wineries</Text>
         </View>
-        <Icon name="chevron-right" size={16} color="#522F60" />
+        <TouchableOpacity onPress={() => navigation.navigate("WineriesList")}>
+          <Icon name="chevron-right" size={16} color="#522F60" />
+        </TouchableOpacity>
       </View>
+
+
 
       {/* Row for wineries */}
       <View style={[styles.row]}>
