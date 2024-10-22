@@ -124,13 +124,13 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                     <View style={styles.actionHeaderContainer}>
                         <View style={styles.twoContent}>
-                            <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
+                            <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
                         </View>
                         <View style={styles.threeContent}>
-                            <Ionicons name="heart-outline" size={24} />
+                            <Ionicons name="heart-outline" size={14} />
                         </View>
                         <View style={styles.fourContent}>
-                            <Ionicons name="share-outline" size={24} />
+                            <Ionicons name="share-outline" size={14} />
                         </View>
                     </View>
 

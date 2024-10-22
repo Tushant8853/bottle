@@ -34,7 +34,7 @@ const styles = StyleSheet.create<Styles>({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginHorizontal:16,
     },
     leftContainer: {
         flexDirection: 'row',
@@ -55,6 +55,7 @@ const styles = StyleSheet.create<Styles>({
         marginBottom: 2,
     },
     ListOfStoriesContainer: {
+        marginHorizontal:16,
         marginTop: 6,
         backgroundColor: '#522F600D',
         height: 88,
