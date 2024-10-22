@@ -14,6 +14,9 @@ import StoriesDetail from '../screens/HomeScreens/StoriesDetail/StoriesDetails';
 import MemoriesList from '../screens/HomeScreens/MemoriesList/Memories';
 import MeDashboard from '../screens/HomeMe/MeDashboard';
 import WineDashboard from '../screens/HomeWine/WineDashboard';
+import WineriesList from '../screens/HomeScreens/WineriesList/WineriesList';
+import MemoriesDetails from '../screens/HomeScreens/MemoriesList/MemoriesDetails/MemoriesDetails';
+import RestaurantsList from '../screens/HomeScreens/RestaurantsList/RestaurantsList';
 
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
@@ -45,6 +48,21 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="MemoriesList"
                     component={MemoriesList}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineriesList"
+                    component={WineriesList}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="MemoriesDetails"
+                    component={MemoriesDetails}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="RestaurantsList"
+                    component={RestaurantsList}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

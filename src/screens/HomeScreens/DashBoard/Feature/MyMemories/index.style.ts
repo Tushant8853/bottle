@@ -4,9 +4,11 @@ const styles = StyleSheet.create({
   bannerContainer: {
     marginBottom: 5,
     padding: 10,
-    flexDirection: "row",
     paddingBottom: 3,
-    alignItems: "center", // Ensure vertical alignment of content
+  },
+  headingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   bannerImage: {
     width: 13,
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
   },
   bannerTextContainer: {
     flex: 1,
-    justifyContent: "center", // Center the text vertically
+    justifyContent: "center",
   },
   bannerTitle: {
     fontSize: 13,
@@ -51,14 +53,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     lineHeight: 22,
-    width: 160, // Adjust to match card width for better alignment
+    width: 160,
     textAlign: "left",
     color: "#333",
     marginLeft: 10,
     marginBottom: 20,
     paddingBottom: 20,
   },
-  errorText:{
+  errorText: {
 
   },
 });

@@ -68,7 +68,7 @@ const DashBoard: React.FC = () => {
                   <Pressable
                     key={memory.id}
                     onPress={() =>
-                      navigation.navigate("StoriesDetail", { id: memory.id })
+                      navigation.navigate("StoriesDetail", { memoryId: memory.id })
                     }
                   >
                     <View style={[styles.HeaderImgContainer, { width }]}>
