@@ -7,4 +7,5 @@ export type RootStackParamList = {
     WineriesList: undefined;
     UserDashboardScreen: undefined;
     WineDashboardScreen: undefined;
+    MemoriesDetails: undefined;
 };

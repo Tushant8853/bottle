@@ -5,12 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 
 // Define Memory interface for TypeScript typing
 interface Memory {
@@ -29,6 +32,7 @@ installTwicPics({
 });
 
 const PublicMemories: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
 
@@ -174,16 +178,18 @@ const PublicMemories: React.FC = () => {
             </View>
 
             <View style={styles.rightContent}>
-              {memory.thumbnail ? (
-                <TwicImg
-                  src={memory.thumbnail}
-                  style={styles.image}
-                  resize="60x60"
-                  mode="cover"
-                />
-              ) : (
-                <View style={styles.placeholderImage} />
-              )}
+              <Pressable onPress={() => navigation.navigate("MemoriesDetails")}>
+                {memory.thumbnail ? (
+                  <TwicImg
+                    src={memory.thumbnail}
+                    style={styles.image}
+                    resize="60x60"
+                    mode="cover"
+                  />
+                ) : (
+                  <View style={styles.placeholderImage} />
+                )}
+              </Pressable>
             </View>
           </View>
         ))}
