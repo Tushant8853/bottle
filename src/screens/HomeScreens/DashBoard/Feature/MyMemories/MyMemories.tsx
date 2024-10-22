@@ -83,12 +83,17 @@ const MyMemories: React.FC = () => {
   return (
     <View>
       <View style={styles.bannerContainer}>
-        <TouchableOpacity onPress={handleNavigation}>
-          <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.bannerImage} />
-        </TouchableOpacity>
-        <View style={styles.bannerTextContainer}>
-          <Text style={styles.bannerTitle}>my memories</Text>
-        </View>
+        <Pressable onPress={handleNavigation}>
+          <View style={styles.headingContainer}>
+            <Image
+              source={require("../../../../../assets/png/MymemoriesIcon.png")}
+              style={styles.bannerImage}
+            />
+            <View style={styles.bannerTextContainer}>
+              <Text style={styles.bannerTitle}>my memories</Text>
+            </View>
+          </View>
+        </Pressable>
       </View>
 
       <View style={styles.card}>

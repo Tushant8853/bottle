@@ -5,6 +5,8 @@ import {
   Image,
   Pressable,
 } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/AntDesign";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
@@ -19,6 +21,7 @@ installTwicPics({
 });
 
 const Stories: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]); // Track if the item is saved or not
   const [memories, setMemories] = useState<any[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
@@ -34,7 +37,7 @@ const Stories: React.FC = () => {
       try {
         const { data: heroMemoriesData, error } = await supabase
           .from("bottleshock_stories")
-          .select("thumbnail_image"); // Selecting only the thumbnail_image field
+          .select("id,thumbnail_image"); // Selecting only the thumbnail_image field
 
         if (error) {
           console.error("Error fetching memories:", error.message);
@@ -60,7 +63,12 @@ const Stories: React.FC = () => {
           <Text style={styles.bannerTitle}>Featured Stories</Text>
         </View>
         <View>
+        <Pressable
+                        style={styles.saveButton}
+                        onPress={() => navigation.navigate("StoriesList")}
+                      >
           <Icons name="arrowright" size={22} color="#522F60" />
+        </Pressable>
         </View>
       </View>
       <View style={styles.containerf}>
@@ -71,10 +79,17 @@ const Stories: React.FC = () => {
           rows[rows.length - 1].push(
             <View key={index} style={styles.ComponentContainer}>
               <View style={styles.imageWrapper}>
+              <Pressable
+                    key={memory.id}
+                    onPress={() =>
+                      navigation.navigate("StoriesDetail", { memoryId: memory.id })
+                    }
+                  >
                 <TwicImg 
                   src={`${imagePrefix}${memory.thumbnail_image}`} // Correctly using a string for the src prop
                   style={styles.componentIMGStyle}
                 />
+                </Pressable>
                 <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
                   <Icon
                     name={likedStatus[index] ? "bookmark" : "bookmark-o"}
