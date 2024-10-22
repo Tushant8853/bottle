@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import DiscoverWines from "./Feature/WineEnjoyed";
 
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 
@@ -134,7 +135,14 @@ const MemoriesDetails: React.FC = () => {
                     </View>
 
                 </View>
+
+                <View style={styles.mapSDKContainer}>
+                    <Text>Map </Text>
+                </View>
             </View>
+
+            <DiscoverWines />
+            <View style={styles.bottom}></View>
         </ScrollView>
     );
 };
@@ -145,6 +153,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
+    },
+    bottom: {
+        marginBottom: 200,
     },
     imageContainer: {
         position: "relative",
@@ -344,5 +355,17 @@ const styles = StyleSheet.create({
         width: 30,
         borderWidth: 1,
     },
-    Mapicon:{},
+    Mapicon: {},
+    ////////////////////////////////
+    mapSDKContainer: {
+        marginHorizontal: 16,
+        height: 110,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#522F6080",
+        borderRadius: 4,
+    },
 });
