@@ -30,7 +30,7 @@ const WineriesList = () => {
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from("bottleshock_wineries")
-        .select("id, name, location, verified, banner");
+        .select("id, winery_name, address, verified, banner");
 
       if (error) {
         console.error("Error fetching wineries:", error.message);
@@ -39,8 +39,8 @@ const WineriesList = () => {
 
       const formattedWineries = data.map((winery: any) => ({
         id: winery.id,
-        name: winery.name,
-        location: winery.location,
+        name: winery.winery_name,
+        address: winery.address,
         logo: winery.banner ? `${imagePrefix}${winery.banner}` : null,
         verified: winery.verified,
       }));
@@ -96,7 +96,7 @@ const WineriesList = () => {
                   />
                 )}
               </Text>
-              <Text style={styles.wineryLocation}>{winery.location}</Text>
+              <Text style={styles.wineryLocation}>{winery.address}</Text>
             </View>
 
             {/* Action Icons */}

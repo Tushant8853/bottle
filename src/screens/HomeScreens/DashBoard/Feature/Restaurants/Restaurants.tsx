@@ -25,7 +25,7 @@ const { width } = Dimensions.get('window');
 
 interface RestaurantData {
   id: number;
-  name: string;
+  restro_name: string;
   location: string;
   banner: string;
   verified: boolean;
@@ -107,7 +107,7 @@ const Restaurants: React.FC = () => {
                   </Pressable>
                 </View>
                 <Text style={styles.componentText}>
-                  {restaurant.name}{' '}
+                  {restaurant.restro_name}{' '}
                   {restaurant.verified && <Icons name="verified" size={14} color="#522F60" />}
                 </Text>
                 <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>

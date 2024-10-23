@@ -9,4 +9,6 @@ export type RootStackParamList = {
     WineDashboardScreen: undefined;
     MemoriesDetails: undefined;
     RestaurantList: undefined;
+    RestaurantsDetails: undefined;
+    WineriesDetails: undefined;
 };

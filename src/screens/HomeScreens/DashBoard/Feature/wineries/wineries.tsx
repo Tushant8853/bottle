@@ -44,7 +44,7 @@ const Wineries: React.FC = () => {
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from('bottleshock_wineries')
-        .select('id, name, location, verified, banner');
+        .select('id, winery_name, address, verified, banner');
 
       if (error) {
         console.error('Error fetching wineries:', error.message);
@@ -106,10 +106,10 @@ const Wineries: React.FC = () => {
                   </Pressable>
                 </View>
                 <Text style={styles.componentText}>
-                  {winery.name}{' '}
+                  {winery.winery_name}{' '}
                   {winery.verified && <Icons name="verified" size={14} color="#522F60" />}
                 </Text>
-                <Text style={styles.subcomponentText}>{winery.location}</Text>
+                <Text style={styles.subcomponentText}>{winery.address}</Text>
               </View>
             </View>
           ))}

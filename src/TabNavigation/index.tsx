@@ -17,7 +17,8 @@ import WineDashboard from '../screens/HomeWine/WineDashboard';
 import WineriesList from '../screens/HomeScreens/WineriesList/WineriesList';
 import MemoriesDetails from '../screens/HomeScreens/MemoriesList/MemoriesDetails/MemoriesDetails';
 import RestaurantsList from '../screens/HomeScreens/RestaurantsList/RestaurantsList';
-
+import RestaurantsDetails from '../screens/HomeScreens/RestaurantsDetails/RestaurantsDetails';
+import WineriesDetails from '../screens/HomeScreens/WineriesDetails/WineriesDetails';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,6 +57,11 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
+                    name="WineriesDetails"
+                    component={WineriesDetails}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="MemoriesDetails"
                     component={MemoriesDetails}
                     options={{ headerShown: false }}
@@ -63,6 +69,11 @@ const TabNavigation: React.FC = () => {
                  <Stack.Screen
                     name="RestaurantsList"
                     component={RestaurantsList}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="RestaurantsDetails"
+                    component={RestaurantsDetails}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

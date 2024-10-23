@@ -39,7 +39,7 @@ const RestaurantsList = () => {
 
       const formattedRestaurants = data.map((restaurant: any) => ({
         id: restaurant.id,
-        name: restaurant.name,
+        name: restaurant.restro_name,
         location: restaurant.location,
         logo: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
         verified: restaurant.verified,
