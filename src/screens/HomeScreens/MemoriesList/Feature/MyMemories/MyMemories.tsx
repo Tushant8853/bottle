@@ -15,14 +15,13 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 
-// Define Memory interface for TypeScript typing
 interface Memory {
   id: string;
   name: string;
   thumbnail?: string;
   user_id: string;
   description: string;
-  handle?: string; // Added handle for user
+  handle?: string;
 }
 
 installTwicPics({
@@ -45,19 +44,15 @@ const PublicMemories: React.FC = () => {
           console.error("UID is missing from AsyncStorage");
           return;
         }
-
-        // Fetch memories with user_id
         const { data: memories, error } = await supabase
           .from("bottleshock_memories")
           .select("id, user_id, name, description")
-          .eq("user_id", UID); // Corrected the query syntax
+          .eq("user_id", UID);
 
         if (error) {
           console.error("Error fetching memories:", error.message);
           return;
         }
-
-        // Fetch gallery files for the memories
         const updatedMemories = await Promise.all(
           memories.map(async (memory: Memory) => {
             const { data: gallery, error: galleryError } = await supabase
@@ -69,25 +64,19 @@ const PublicMemories: React.FC = () => {
               console.error("Error fetching gallery:", galleryError.message);
               return memory;
             }
-
-            // Set thumbnail if available
             if (gallery && gallery.length > 0) {
               memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
             }
-
-            // Fetch user's handle
             const { data: user, error: userError } = await supabase
               .from("bottleshock_users")
               .select("handle")
-              .eq("id", memory.user_id) // Compare user_id to id in users table
-              .single(); // Fetch single user since user_id is unique
+              .eq("id", memory.user_id)
+              .single();
 
             if (userError) {
               console.error("Error fetching user handle:", userError.message);
               return memory;
             }
-
-            // Add user's handle to the memory
             if (user) {
               memory.handle = user.handle;
             }
@@ -147,7 +136,7 @@ const PublicMemories: React.FC = () => {
               <View style={styles.titleSecondMainContainer}>
                 <View style={styles.usernameContainer}>
                   <Text style={styles.username} numberOfLines={1}>
-                    @{memory.handle} {/* Display the user's handle */}
+                    @{memory.handle}
                   </Text>
                   <Ionicons
                     style={styles.usernameIcon}
@@ -178,7 +167,7 @@ const PublicMemories: React.FC = () => {
             </View>
 
             <View style={styles.rightContent}>
-              <Pressable onPress={() => navigation.navigate("MemoriesDetails")}>
+              <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
                 {memory.thumbnail ? (
                   <TwicImg
                     src={memory.thumbnail}

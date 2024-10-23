@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -12,134 +12,244 @@ import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverWines from "./Feature/WineEnjoyed";
+import { useRoute, RouteProp } from "@react-navigation/native";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
+interface Memory {
+    id: string;
+    name: string;
+    thumbnail?: string;
+    user_id: string;
+    description: string;
+    handle?: string;
+    short_description: string;
+    created_at: string;
+    thumbnails?: string[];
+    restaurant_id: string;
+    restro_name: string;
+    location_name:string;
+    winery_id:string;
+    restaurantORWinesORLocation:string;
+}
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+    });
+};
+
 
 const MemoriesDetails: React.FC = () => {
+    const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
+    const { id } = route.params;
+    const imagePrefix = "https://bottleshock.twic.pics/file/";
+    const [memories, setMemories] = useState<Memory[]>([]);
+
+    useEffect(() => {
+        const fetchMemories = async () => {
+            try {
+                const { data: memoriesData, error } = await supabase
+                    .from("bottleshock_memories")
+                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, winery_id, location_name")
+                    .eq("id", id);
+                
+                if (error) {
+                    console.error("Error fetching memories:", error.message);
+                    return;
+                }
+    
+                const updatedMemories = await Promise.all(
+                    memoriesData.map(async (memory: Memory) => {
+                        const { data: gallery, error: galleryError } = await supabase
+                            .from("bottleshock_memory_gallery")
+                            .select("file")
+                            .eq("memory_id", memory.id);
+    
+                        if (galleryError) {
+                            console.error("Error fetching gallery:", galleryError.message);
+                            return memory;
+                        }
+                        
+                        memory.thumbnails = gallery ? gallery.map(g => `${imagePrefix}${g.file}?twic=v1&resize=60x60`) : [];
+    
+                        // Initialize restaurantORWinesORLocation
+                        let restaurantORWinesORLocation = memory.location_name; // Default to location_name
+    
+                        // Check if restaurant_id is present
+                        if (memory.restaurant_id) {
+                            const { data: restaurant, error: restaurantError } = await supabase
+                                .from("bottleshock_restaurants")
+                                .select("restro_name")
+                                .eq("id", memory.restaurant_id)
+                                .single();
+                            
+                            if (restaurantError) {
+                                console.error("Error fetching restaurant name:", restaurantError.message);
+                            } else {
+                                restaurantORWinesORLocation = restaurant?.restro_name || memory.location_name; // Use restaurant name if available
+                            }
+                        }
+    
+                        // Check if winery_id is present
+                        if (memory.winery_id) {
+                            const { data: winery, error: wineryError } = await supabase
+                                .from("bottleshock_wineries")
+                                .select("winery_name")
+                                .eq("id", memory.winery_id)
+                                .single();
+                            
+                            if (wineryError) {
+                                console.error("Error fetching winery name:", wineryError.message);
+                            } else {
+                                restaurantORWinesORLocation = winery?.winery_name || restaurantORWinesORLocation;
+                            }
+                        }
+                        memory.restaurantORWinesORLocation = restaurantORWinesORLocation;
+    
+                        return memory;
+                    })
+                );
+    
+                setMemories(updatedMemories);
+                console.log(updatedMemories);
+            } catch (err) {
+                console.error("Error fetching memories:", err);
+            }
+        };
+    
+        fetchMemories();
+    }, [id]);
+
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.imageContainer}>
-                <Image source={HeaderImg} style={styles.image} />
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>Heading</Text>
-                    <Text style={styles.subtext}>Subheading</Text>
-                </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="heart-outline" size={24} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="share-outline" size={24} />
-                    </TouchableOpacity>
-                </View>
-            </View>
+            {memories.map((memory) => (
+                <View key={memory.id} style={styles.imageContainer}>
+                    {/* Only render Header Image if there are no thumbnails */}
+                    {!memory.thumbnails || memory.thumbnails.length === 0 ? (
+                        <Image source={HeaderImg} style={styles.image} />
+                    ) : (
+                        <Image source={{ uri: memory.thumbnails[0] }} style={styles.image} />
+                    )}
 
-            <View style={styles.descriptionContainer}>
-                <View style={styles.descriptionIconsContainer}>
-                    <Feather
-                        style={styles.descriptionIcons}
-                        name="file-text"
-                        size={16}
-                        color="#522F60"
-                    />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.text}>{memory.name}</Text>
+                        <Text style={styles.subtext} numberOfLines={1}>{memory.short_description}</Text>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button}>
+                            <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button}>
+                            <Ionicons name="heart-outline" size={24} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button}>
+                            <Ionicons name="share-outline" size={24} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={styles.descriptionTextContainer}>
-                    <Text style={styles.descriptionText} numberOfLines={5}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                        pulvinar lobortis dui, id iaculis est consectetur id. Donec viverra,
-                        arcu condimentum consectetur, libero nunc condimentum nunc, id
-                        pulvinar nisi purus in velit.
-                    </Text>
-                </View>
-            </View>
+            ))}
 
-            <View style={styles.datecontainer}>
-                <View style={styles.descriptionIconsContainer}>
-                    <Ionicons
-                        name="calendar-outline"
-                        size={16}
-                        color="#522F60"
-                        style={styles.icon}
-                    />
-                </View>
-                <View style={styles.DateTextContainer}>
-                    <Text style={styles.dateText}>07/04/2024</Text>
-                </View>
-            </View>
-
-            <View style={styles.picandvideoContainer}>
-                <View style={styles.picandvideoHeaderContainer}>
-                    <View style={styles.leftContent}>
-                        <FontAwesome
-                            style={styles.picandvideoIcons}
-                            name="image"
+            {memories.map((memory) => (
+                <View key={memory.id} style={styles.descriptionContainer}>
+                    <View style={styles.descriptionIconsContainer}>
+                        <Feather
+                            style={styles.descriptionIcons}
+                            name="file-text"
                             size={16}
                             color="#522F60"
                         />
-                        <Text style={styles.picandvideoHeadertext}> pic and videos</Text>
                     </View>
-                    <View style={styles.rightContent}>
-                        <AntDesign
-                            style={styles.picandvideoArrowIcons}
-                            name="arrowright"
-                            size={20}
+                    <View style={styles.descriptionTextContainer}>
+                        <Text style={styles.descriptionText} numberOfLines={5}>
+                            {memory.description}
+                        </Text>
+                    </View>
+                </View>
+            ))}
+
+            {memories.map((memory) => (
+                <View key={memory.id} style={styles.datecontainer}>
+                    <View style={styles.descriptionIconsContainer}>
+                        <Ionicons
+                            name="calendar-outline"
+                            size={16}
                             color="#522F60"
+                            style={styles.icon}
                         />
                     </View>
+                    <View style={styles.DateTextContainer}>
+                        <Text style={styles.dateText}>{formatDate(memory.created_at)}</Text>
+                    </View>
                 </View>
-                <View style={styles.picandvideoMainContainer}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false} // This hides the scrollbar
-                        contentContainerStyle={styles.picandvideo}
-                    >
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                    </ScrollView>
-                </View>
-            </View>
+            ))}
 
-            <View style={styles.MapContainer}>
-                <View style={styles.MapContainerHeader}>
-                    <View style={styles.locationHeaderContainer}>
-                        <View style={styles.oneContent}>
-                            <View style={styles.descriptionIconsContainer}>
-                                <Ionicons
-                                    name="pin"
-                                    size={16}
-                                    color="#522F60"
-                                    style={styles.Mapicon}
-                                />
+            {memories.map((memory) => (
+                <View style={styles.picandvideoContainer} key={memory.id}>
+                    <View style={styles.picandvideoHeaderContainer}>
+                        <View style={styles.leftContent}>
+                            <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
+                            <Text style={styles.picandvideoHeadertext}>Pics and Videos</Text>
+                        </View>
+                        <View style={styles.rightContent}>
+                            <AntDesign style={styles.picandvideoArrowIcons} name="arrowright" size={20} color="#522F60" />
+                        </View>
+                    </View>
+                    {/* Check if thumbnails exist before rendering */}
+                    {memory.thumbnails && memory.thumbnails.length > 0 && (
+                        <View style={styles.picandvideoMainContainer}>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.picandvideo}
+                            >
+                                {memory.thumbnails.map((thumbnail, index) => (
+                                    <Image key={index} source={{ uri: thumbnail }} style={styles.picandvideoImage} />
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+                </View>
+            ))}
+            {memories.map((memory) => (
+                <View style={styles.MapContainer}>
+                    <View style={styles.MapContainerHeader}>
+                        <View style={styles.locationHeaderContainer}>
+                            <View style={styles.oneContent}>
+                                <View style={styles.descriptionIconsContainer}>
+                                    <Ionicons
+                                        name="pin"
+                                        size={16}
+                                        color="#522F60"
+                                        style={styles.Mapicon}
+                                    />
+                                </View>
+                                <View style={styles.locationTextContainer}>
+                                    <Text style={styles.locationHeadertext}>{memory.restaurantORWinesORLocation}</Text>
+                                </View>
                             </View>
-                            <View style={styles.locationTextContainer}>
-                                <Text style={styles.locationHeadertext}>Lucknow</Text>
+                        </View>
+                        <View style={styles.actionHeaderContainer}>
+                            <View style={styles.twoContent}>
+                                <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
+                            </View>
+                            <View style={styles.threeContent}>
+                                <Ionicons name="heart-outline" size={14} />
+                            </View>
+                            <View style={styles.fourContent}>
+                                <Ionicons name="share-outline" size={14} />
                             </View>
                         </View>
                     </View>
-                    <View style={styles.actionHeaderContainer}>
-                        <View style={styles.twoContent}>
-                            <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
-                        </View>
-                        <View style={styles.threeContent}>
-                            <Ionicons name="heart-outline" size={14} />
-                        </View>
-                        <View style={styles.fourContent}>
-                            <Ionicons name="share-outline" size={14} />
-                        </View>
+
+                    <View style={styles.mapSDKContainer}>
+                        <Text>Map </Text>
                     </View>
-
                 </View>
+            ))}
 
-                <View style={styles.mapSDKContainer}>
-                    <Text>Map </Text>
-                </View>
-            </View>
 
             <DiscoverWines />
             <View style={styles.bottom}></View>
@@ -194,6 +304,7 @@ const styles = StyleSheet.create({
         left: 16,
     },
     subtext: {
+        width: "40%",
         color: "white",
         fontSize: 16,
         fontWeight: "400",
@@ -201,7 +312,8 @@ const styles = StyleSheet.create({
         bottom: 10,
         left: 16,
     },
-    textContainer: {},
+    textContainer: {
+    },
     //////////////////////////////////////////descriptionContainer//////////////////////
     descriptionContainer: {
         borderWidth: 1,
