@@ -103,7 +103,7 @@ const OtherMemories: React.FC = () => {
           style={styles.cardsContainer}
         >
           {memories.map((memory) => (
-            <Pressable key={memory.id}>
+            <Pressable key={memory.id}onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
               <TwicImg
                 src={memory.thumbnail || ""}
                 style={styles.cardIcon}

@@ -14,7 +14,13 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
+import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 
+installTwicPics({
+    domain: 'https://bottleshock.twic.pics/',
+    debug: true,
+    maxDPR: 3,
+  });
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 interface Memory {
     id: string;
@@ -131,7 +137,7 @@ const MemoriesDetails: React.FC = () => {
                     {!memory.thumbnails || memory.thumbnails.length === 0 ? (
                         <Image source={HeaderImg} style={styles.image} />
                     ) : (
-                        <Image source={{ uri: memory.thumbnails[0] }} style={styles.image} />
+                        <TwicImg src={memory.thumbnails[0] } style={styles.image} />
                     )}
 
                     <View style={styles.textContainer}>
@@ -206,7 +212,7 @@ const MemoriesDetails: React.FC = () => {
                                 contentContainerStyle={styles.picandvideo}
                             >
                                 {memory.thumbnails.map((thumbnail, index) => (
-                                    <Image key={index} source={{ uri: thumbnail }} style={styles.picandvideoImage} />
+                                    <TwicImg key={index} src={thumbnail } style={styles.picandvideoImage} />
                                 ))}
                             </ScrollView>
                         </View>
