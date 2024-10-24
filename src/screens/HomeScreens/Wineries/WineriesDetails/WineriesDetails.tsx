@@ -13,9 +13,9 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverWines from "./Feature/WineEnjoyed";
 
-const HeaderImg = require("../../../assets/png/HeaderIcon.png");
+const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 
-const RestaurantsDetails: React.FC = () => {
+const WineriesDetails: React.FC = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imageContainer}>
@@ -147,7 +147,7 @@ const RestaurantsDetails: React.FC = () => {
     );
 };
 
-export default RestaurantsDetails;
+export default WineriesDetails;
 
 const styles = StyleSheet.create({
     container: {

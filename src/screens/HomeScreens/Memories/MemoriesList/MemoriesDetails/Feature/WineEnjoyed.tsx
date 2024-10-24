@@ -15,7 +15,7 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
             <View style={styles.container}>
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
-                        <Image source={require('../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
+                        <Image source={require('../../../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
                         <Text style={styles.text}>wines enjoyed</Text>
                     </View>
                     <AntDesign
@@ -30,7 +30,7 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
                     <View key={index} style={styles.ListOfStoriesContainer}>
                         <View style={styles.Stories}>
                             <View style={styles.StoriesImgContainer}>
-                                <Image source={require('../../../../assets/png/Wine.png')} style={styles.StoriesImage} />
+                                <Image source={require('../../../../../../assets/png/Wine.png')} style={styles.StoriesImage} />
                             </View>
                             <View style={styles.StoriesText}>
                                 <View style={styles.StoriesTitle}>

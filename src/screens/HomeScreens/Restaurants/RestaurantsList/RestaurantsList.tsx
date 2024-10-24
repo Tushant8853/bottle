@@ -8,9 +8,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 
 // Configure TwicPics
@@ -20,40 +20,41 @@ installTwicPics({
   maxDPR: 3,
 });
 
-const WineriesList = () => {
+const RestaurantsList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
-  const [wineries, setWineries] = useState<any[]>([]);
+  const [restaurants, setRestaurants] = useState<any[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   useEffect(() => {
-    const fetchWineries = async () => {
+    const fetchRestaurants = async () => {
       const { data, error } = await supabase
-        .from("bottleshock_wineries")
-        .select("id, winery_name, address, verified, banner");
+        .from("bottleshock_restaurants")
+        .select("*");
 
       if (error) {
-        console.error("Error fetching wineries:", error.message);
+        console.error("Error fetching restaurants:", error.message);
         return;
       }
 
-      const formattedWineries = data.map((winery: any) => ({
-        id: winery.id,
-        name: winery.winery_name,
-        address: winery.address,
-        logo: winery.banner ? `${imagePrefix}${winery.banner}` : null,
-        verified: winery.verified,
+      const formattedRestaurants = data.map((restaurant: any) => ({
+        id: restaurant.id,
+        name: restaurant.restro_name,
+        location: restaurant.location,
+        logo: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
+        verified: restaurant.verified,
+        hashtags: restaurant.hashtags,
       }));
 
-      setWineries(formattedWineries);
+      setRestaurants(formattedRestaurants);
     };
 
-    fetchWineries();
+    fetchRestaurants();
   }, []);
 
   // Handle search filtering
-  const filteredWineries = wineries.filter((winery) =>
-    winery.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -65,7 +66,7 @@ const WineriesList = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Winery</Text>
+        <Text style={styles.headerTitle}>Restaurants</Text>
       </View>
       
       {/* Search Bar */}
@@ -81,14 +82,14 @@ const WineriesList = () => {
         <FontAwesome name="microphone" size={16} color="#989999" />
       </View>
 
-      {/* List of Wineries */}
+      {/* List of Restaurants */}
       <ScrollView>
-        {filteredWineries.map((winery) => (
-          <View key={winery.id} style={styles.wineryContainer}>
-            {/* Winery Info */}
-            <View style={styles.wineryInfo}>
-              <Text style={styles.wineryName}>
-                {winery.name}  {winery.verified && (
+        {filteredRestaurants.map((restaurant) => (
+          <View key={restaurant.id} style={styles.restaurantContainer}>
+            {/* Restaurant Info */}
+            <View style={styles.restaurantInfo}>
+              <Text style={styles.restaurantName}>
+                {restaurant.name}  {restaurant.verified && (
                   <MaterialIcons
                     name="verified"
                     size={13}
@@ -96,35 +97,35 @@ const WineriesList = () => {
                   />
                 )}
               </Text>
-              <Text style={styles.wineryLocation}>{winery.address}</Text>
+              <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
             </View>
 
             {/* Action Icons */}
             <View style={styles.iconsContainer}>
               <TouchableOpacity 
-                accessibilityLabel={`Link to ${winery.name}`} 
+                accessibilityLabel={`Link to ${restaurant.name}`} 
                 accessibilityRole="button"
               >
                 <Feather name="paperclip" size={16} color="gray" style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity 
-                accessibilityLabel={`Favorite ${winery.name}`} 
+                accessibilityLabel={`Favorite ${restaurant.name}`} 
                 accessibilityRole="button"
               >
                 <FontAwesome name="heart-o" size={16} color="gray" style={styles.icon} />
               </TouchableOpacity>
               <TouchableOpacity 
-                accessibilityLabel={`Share ${winery.name}`} 
+                accessibilityLabel={`Share ${restaurant.name}`} 
                 accessibilityRole="button"
               >
                 <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
               </TouchableOpacity>
             </View>
 
-            {/* Winery Logo */}
-            {winery.logo && (
+            {/* Restaurant Logo */}
+            {restaurant.logo && (
               <TwicImg 
-                src={winery.logo} 
+                src={restaurant.logo} 
                 style={styles.logo} 
                 resizeMode="contain" // Adjusted to fit the image correctly
               />
@@ -183,22 +184,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
   },
-  wineryContainer: {
+  restaurantContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start', // Align items to the top
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
-  wineryInfo: {
+  restaurantInfo: {
     flex: 1,
     paddingRight: 10,
   },
-  wineryName: {
+  restaurantName: {
     fontWeight: '600',
     fontSize: 13,
     color: '#3C3C3C',
   },
-  wineryLocation: {
+  restaurantLocation: {
     fontSize: 11,
     color: 'gray',
   },
@@ -222,4 +223,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WineriesList;
+export default RestaurantsList;

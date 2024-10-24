@@ -105,11 +105,13 @@ const Wineries: React.FC = () => {
                     />
                   </Pressable>
                 </View>
+                <View>
                 <Text style={styles.componentText}>
                   {winery.winery_name}{' '}
                   {winery.verified && <Icons name="verified" size={14} color="#522F60" />}
                 </Text>
                 <Text style={styles.subcomponentText}>{winery.address}</Text>
+                </View>
               </View>
             </View>
           ))}
@@ -157,12 +159,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageWrapper: {
-    height: 173,
+    height: 'auto',
     position: 'relative',
+   paddingBottom: 1,
   },
   ComponentContainer: {
     borderRadius: 10,
     width: '100%',
+    flexDirection: 'column'
   },
   component: {
     width: '100%',
@@ -171,7 +175,7 @@ const styles = StyleSheet.create({
   },
   componentText: {
     fontSize: 14,
-    marginTop: 10,
+    marginTop: 1,
     color: '#000',
     flexWrap: 'wrap',
     maxWidth: '100%',

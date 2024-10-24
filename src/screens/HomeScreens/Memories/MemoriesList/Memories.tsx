@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import MyMemories from "./Feature/MyMemories/MyMemories";
 import PublicMemories from "./Feature/PublicMemories/PublicMemories";
 

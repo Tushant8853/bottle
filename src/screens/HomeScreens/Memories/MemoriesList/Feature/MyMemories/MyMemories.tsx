@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 
 interface Memory {
   id: string;
