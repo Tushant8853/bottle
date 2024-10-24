@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/Ionicons";
-import { supabase } from "../../../../backend/supabase/supabaseClient";
-import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 

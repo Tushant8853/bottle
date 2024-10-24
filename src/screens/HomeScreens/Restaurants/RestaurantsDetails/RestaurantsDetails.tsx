@@ -15,7 +15,7 @@ import DiscoverWines from "./Feature/WineEnjoyed";
 
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 
-const MemoriesDetails: React.FC = () => {
+const RestaurantsDetails: React.FC = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imageContainer}>
@@ -147,7 +147,7 @@ const MemoriesDetails: React.FC = () => {
     );
 };
 
-export default MemoriesDetails;
+export default RestaurantsDetails;
 
 const styles = StyleSheet.create({
     container: {

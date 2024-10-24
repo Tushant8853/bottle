@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
-import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { useRoute } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Markdown from 'react-native-markdown-display';

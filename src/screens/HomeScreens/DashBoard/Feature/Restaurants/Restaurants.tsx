@@ -25,7 +25,7 @@ const { width } = Dimensions.get('window');
 
 interface RestaurantData {
   id: number;
-  name: string;
+  restro_name: string;
   location: string;
   banner: string;
   verified: boolean;
@@ -106,11 +106,13 @@ const Restaurants: React.FC = () => {
                     />
                   </Pressable>
                 </View>
+                <View>
                 <Text style={styles.componentText}>
-                  {restaurant.name}{' '}
+                  {restaurant.restro_name}{' '}
                   {restaurant.verified && <Icons name="verified" size={14} color="#522F60" />}
                 </Text>
                 <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
+                </View>
               </View>
             </View>
           ))}
@@ -158,12 +160,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageWrapper: {
-    height: 173,
+    height: 'auto',
     position: 'relative',
+   paddingBottom: 1,
   },
   ComponentContainer: {
     borderRadius: 10,
     width: '100%',
+    flexDirection: 'column'
   },
   component: {
     width: '100%',
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
   },
   componentText: {
     fontSize: 14,
-    marginTop: 10,
+    marginTop: 1,
     color: '#000',
     flexWrap: 'wrap',
     maxWidth: '100%',

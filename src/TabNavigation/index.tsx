@@ -9,15 +9,16 @@ import { RootStackParamList } from './navigationTypes'; // Adjust the path accor
 
 // Import your screens
 import Dashboard from '../screens/HomeScreens/DashBoard/DashBoard';
-import StoriesList from '../screens/HomeScreens/StoriesList/StoriesList';
-import StoriesDetail from '../screens/HomeScreens/StoriesDetail/StoriesDetails';
-import MemoriesList from '../screens/HomeScreens/MemoriesList/Memories';
+import StoriesList from '../screens/HomeScreens/Stories/StoriesList/StoriesList';
+import StoriesDetail from '../screens/HomeScreens/Stories/StoriesDetail/StoriesDetails';
+import MemoriesList from '../screens/HomeScreens/Memories/MemoriesList/Memories';
 import MeDashboard from '../screens/HomeMe/MeDashboard';
 import WineDashboard from '../screens/HomeWine/WineDashboard';
-import WineriesList from '../screens/HomeScreens/WineriesList/WineriesList';
-import MemoriesDetails from '../screens/HomeScreens/MemoriesList/MemoriesDetails/MemoriesDetails';
-import RestaurantsList from '../screens/HomeScreens/RestaurantsList/RestaurantsList';
-
+import WineriesList from '../screens/HomeScreens/Wineries/WineriesList/WineriesList';
+import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesDetails/MemoriesDetails';
+import RestaurantsList from '../screens/HomeScreens/Restaurants/RestaurantsList/RestaurantsList';
+import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDetails/RestaurantsDetails';
+import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,6 +57,11 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
+                    name="WineriesDetails"
+                    component={WineriesDetails}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
                     name="MemoriesDetails"
                     component={MemoriesDetails}
                     options={{ headerShown: false }}
@@ -63,6 +69,11 @@ const TabNavigation: React.FC = () => {
                  <Stack.Screen
                     name="RestaurantsList"
                     component={RestaurantsList}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="RestaurantsDetails"
+                    component={RestaurantsDetails}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

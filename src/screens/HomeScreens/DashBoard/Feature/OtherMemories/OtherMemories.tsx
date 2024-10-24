@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, Image, Pressable, FlatList } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from "./index.style";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 
 interface Memory {
   id: string;
@@ -26,11 +20,11 @@ installTwicPics({
 });
 
 const OtherMemories: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
 
-  // Fetch memories from supabase
+  // Fetch memories from Supabase
   useEffect(() => {
     const fetchMemories = async () => {
       try {
@@ -49,6 +43,7 @@ const OtherMemories: React.FC = () => {
           console.error("Error fetching memories:", error.message);
           return;
         }
+
         const updatedMemories = await Promise.all(
           memories.map(async (memory: Memory) => {
             const { data: gallery, error: galleryError } = await supabase
@@ -65,6 +60,7 @@ const OtherMemories: React.FC = () => {
             return memory;
           })
         );
+
         setMemories(updatedMemories);
       } catch (err) {
         console.error("Error fetching memories:", err);
@@ -77,6 +73,21 @@ const OtherMemories: React.FC = () => {
   const handleNavigation = () => {
     navigation.navigate("MemoriesList" as never);
   };
+
+  const renderItem = ({ item }: { item: Memory }) => (
+    <Pressable key={item.id} onPress={() => navigation.navigate("MemoriesDetails", { id: item.id })}>
+      <TwicImg
+        src={item.thumbnail || ""}
+        style={styles.cardIcon}
+        ratio="16/9"
+        mode="cover"
+      />
+      {item.thumbnail ? null : (
+        <Text style={styles.errorText}>Failed to load image</Text>
+      )}
+      <Text style={styles.cardTitle}>{item.name}</Text>
+    </Pressable>
+  );
 
   return (
     <View>
@@ -97,26 +108,14 @@ const OtherMemories: React.FC = () => {
 
       {/* Cards Section */}
       <View style={styles.card}>
-        <ScrollView
+        <FlatList
+          data={memories}
           horizontal
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
           showsHorizontalScrollIndicator={false}
           style={styles.cardsContainer}
-        >
-          {memories.map((memory) => (
-            <Pressable key={memory.id}>
-              <TwicImg
-                src={memory.thumbnail || ""}
-                style={styles.cardIcon}
-                ratio="16/9"
-                mode="cover"
-              />
-              {memory.thumbnail ? null : (
-                <Text style={styles.errorText}>Failed to load image</Text> // Display a fallback message if the thumbnail fails
-              )}
-              <Text style={styles.cardTitle}>{memory.name}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        />
       </View>
     </View>
   );

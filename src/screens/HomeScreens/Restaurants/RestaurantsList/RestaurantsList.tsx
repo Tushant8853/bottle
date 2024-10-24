@@ -8,9 +8,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 
 // Configure TwicPics
@@ -39,7 +39,7 @@ const RestaurantsList = () => {
 
       const formattedRestaurants = data.map((restaurant: any) => ({
         id: restaurant.id,
-        name: restaurant.name,
+        name: restaurant.restro_name,
         location: restaurant.location,
         logo: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
         verified: restaurant.verified,
