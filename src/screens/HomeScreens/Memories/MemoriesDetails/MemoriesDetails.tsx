@@ -203,7 +203,7 @@ const MemoriesDetails: React.FC = () => {
                     <View style={styles.picandvideoHeaderContainer}>
                         <View style={styles.leftContent}>
                             <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
-                            <Text style={styles.picandvideoHeadertext}>Pics and Videos</Text>
+                            <Text style={styles.picandvideoHeadertext}> pics and Videos</Text>
                         </View>
                         <View style={styles.rightContent}>
                             <AntDesign style={styles.picandvideoArrowIcons} name="arrowright" size={20} color="#522F60" />
