@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, Image, Pressable, FlatList } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from "./index.style";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
-
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 interface Memory {
   id: string;
   name: string;
@@ -27,7 +20,7 @@ installTwicPics({
 
 const MyMemories: React.FC = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [memories, setMemories] = useState<Memory[]>([]);
 
   useEffect(() => {
@@ -80,6 +73,21 @@ const MyMemories: React.FC = () => {
     navigation.navigate("MemoriesList" as never);
   };
 
+  const renderItem = ({ item }: { item: Memory }) => (
+    <Pressable key={item.id} onPress={() => navigation.navigate("MemoriesDetails", { id: item.id })}>
+      <TwicImg
+        src={item.thumbnail || ""}
+        style={styles.cardIcon}
+        ratio="16/9"
+        mode="cover"
+      />
+      {item.thumbnail ? null : (
+        <Text style={styles.errorText}>Failed to load image</Text>
+      )}
+      <Text style={styles.cardTitle}>{item.name}</Text>
+    </Pressable>
+  );
+
   return (
     <View>
       <View style={styles.bannerContainer}>
@@ -97,27 +105,14 @@ const MyMemories: React.FC = () => {
       </View>
 
       <View style={styles.card}>
-        <ScrollView
+        <FlatList
+          data={memories}
           horizontal
           showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
           style={styles.cardsContainer}
-        >
-          {memories.map((memory) => (
-            <Pressable key={memory.id} onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
-              <TwicImg
-                src={memory.thumbnail || ""}
-                style={styles.cardIcon}
-                ratio="16/9"
-                mode="cover"
-              />
-              {memory.thumbnail ? null : (
-                <Text style={styles.errorText}>Failed to load image</Text>
-              )}
-
-              <Text style={styles.cardTitle}>{memory.name}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        />
       </View>
     </View>
   );

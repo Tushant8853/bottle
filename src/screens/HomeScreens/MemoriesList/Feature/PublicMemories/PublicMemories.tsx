@@ -4,8 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  Pressable
+  Pressable,
+  FlatList,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -14,6 +14,7 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+
 interface Memory {
   id: string;
   name: string;
@@ -54,7 +55,7 @@ const PublicMemories: React.FC = () => {
 
             if (galleryError) {
               return memory;
-            } 
+            }
             if (gallery && gallery.length > 0) {
               memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
             }
@@ -82,96 +83,94 @@ const PublicMemories: React.FC = () => {
     fetchMemories();
   }, []);
 
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View>
-        {memories.map((memory) => (
-          <View key={memory.id} style={styles.container}>
-            <View style={styles.leftContent}>
-              <View style={styles.titleMainContainer}>
-                <View style={styles.titleContainer}>
-                  <Text style={styles.title} numberOfLines={1}>
-                    {memory.name}
-                  </Text>
-                </View>
-                <View style={styles.actionIcons}>
-                  <TouchableOpacity>
-                    <Feather
-                      style={styles.Icons}
-                      name="paperclip"
-                      size={16}
-                      color="grey"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons
-                      style={styles.Icons}
-                      name="heart-outline"
-                      size={16}
-                      color="grey"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons
-                      style={styles.Icons}
-                      name="share-outline"
-                      size={16}
-                      color="grey"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View style={styles.titleSecondMainContainer}>
-                <View style={styles.usernameContainer}>
-                  <Text style={styles.username} numberOfLines={1}>
-                    @{memory.handle}
-                  </Text>
-                  <Ionicons
-                    style={styles.usernameIcon}
-                    name="checkmark-circle"
-                    size={11}
-                    color="grey"
-                  />
-                </View>
-                <View style={styles.starRating}>
-                  {Array(4)
-                    .fill(null)
-                    .map((_, index) => (
-                      <FontAwesome
-                        key={index}
-                        name="star"
-                        size={11}
-                        color="grey"
-                      />
-                    ))}
-                  <FontAwesome name="star-half-full" size={11} color="grey" />
-                </View>
-              </View>
-              <View style={styles.descriptionContainer}>
-                <Text style={styles.StoriesDescription} numberOfLines={2}>
-                  {memory.description}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.rightContent}>
-              <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
-                {memory.thumbnail ? (
-                  <TwicImg
-                    src={memory.thumbnail}
-                    style={styles.image}
-                    resize="60x60"
-                    mode="cover"
-                  />
-                ) : (
-                  <View style={styles.placeholderImage} />
-                )}
-              </Pressable>
-            </View>
+  const renderItem = ({ item: memory }: { item: Memory }) => (
+    <View key={memory.id} style={styles.container}>
+      <View style={styles.leftContent}>
+        <View style={styles.titleMainContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title} numberOfLines={1}>
+              {memory.name}
+            </Text>
           </View>
-        ))}
+          <View style={styles.actionIcons}>
+            <TouchableOpacity>
+              <Feather
+                style={styles.Icons}
+                name="paperclip"
+                size={16}
+                color="grey"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons
+                style={styles.Icons}
+                name="heart-outline"
+                size={16}
+                color="grey"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons
+                style={styles.Icons}
+                name="share-outline"
+                size={16}
+                color="grey"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.titleSecondMainContainer}>
+          <View style={styles.usernameContainer}>
+            <Text style={styles.username} numberOfLines={1}>
+              @{memory.handle}
+            </Text>
+            <Ionicons
+              style={styles.usernameIcon}
+              name="checkmark-circle"
+              size={11}
+              color="grey"
+            />
+          </View>
+          <View style={styles.starRating}>
+            {Array(4)
+              .fill(null)
+              .map((_, index) => (
+                <FontAwesome key={index} name="star" size={11} color="grey" />
+              ))}
+            <FontAwesome name="star-half-full" size={11} color="grey" />
+          </View>
+        </View>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.StoriesDescription} numberOfLines={2}>
+            {memory.description}
+          </Text>
+        </View>
       </View>
-    </ScrollView>
+
+      <View style={styles.rightContent}>
+        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
+          {memory.thumbnail ? (
+            <TwicImg
+              src={memory.thumbnail}
+              style={styles.image}
+              ratio="1/1"
+              mode="cover"
+            />
+          ) : (
+            <View style={styles.placeholderImage} />
+          )}
+        </Pressable>
+      </View>
+    </View>
+  );
+
+  return (
+    <FlatList
+      contentContainerStyle={styles.scrollContainer}
+      data={memories}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+    />
   );
 };
 
@@ -258,7 +257,7 @@ const styles = StyleSheet.create({
   placeholderImage: {
     width: 60,
     height: 60,
-    backgroundColor: "#e0e0e0", // Light gray placeholder
+    backgroundColor: "#e0e0e0",
     borderRadius: 8,
   },
 });
