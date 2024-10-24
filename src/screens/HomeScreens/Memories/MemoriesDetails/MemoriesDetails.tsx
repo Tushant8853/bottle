@@ -15,12 +15,14 @@ import DiscoverWines from "./Feature/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
+import MapView, { Marker } from 'react-native-maps';
+
 
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
     debug: true,
     maxDPR: 3,
-  });
+});
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 interface Memory {
     id: string;
@@ -33,11 +35,15 @@ interface Memory {
     created_at: string;
     thumbnails?: string[];
     restaurant_id: string;
-    restro_name: string;
-    location_name:string;
-    winery_id:string;
-    restaurantORWinesORLocation:string;
+    restro_name?: string;
+    location_name: string;
+    winery_id?: string;
+    restaurantORWinesORLocation?: string;
+    location_lat: number;
+    location_long: number;
+    address: string;
 }
+
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB', {
@@ -59,31 +65,31 @@ const MemoriesDetails: React.FC = () => {
             try {
                 const { data: memoriesData, error } = await supabase
                     .from("bottleshock_memories")
-                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, winery_id, location_name")
+                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, winery_id, location_name ,location_lat,location_long,address")
                     .eq("id", id);
-                
+
                 if (error) {
                     console.error("Error fetching memories:", error.message);
                     return;
                 }
-    
+
                 const updatedMemories = await Promise.all(
-                    memoriesData.map(async (memory: Memory) => {
+                    memoriesData.map(async (memory: any) => { // Use 'any' to bypass typing issue
                         const { data: gallery, error: galleryError } = await supabase
                             .from("bottleshock_memory_gallery")
                             .select("file")
                             .eq("memory_id", memory.id);
-    
+
                         if (galleryError) {
                             console.error("Error fetching gallery:", galleryError.message);
-                            return memory;
+                            return memory; // Return memory even if there's an error
                         }
-                        
+
                         memory.thumbnails = gallery ? gallery.map(g => `${imagePrefix}${g.file}?twic=v1&resize=60x60`) : [];
-    
+
                         // Initialize restaurantORWinesORLocation
                         let restaurantORWinesORLocation = memory.location_name; // Default to location_name
-    
+
                         // Check if restaurant_id is present
                         if (memory.restaurant_id) {
                             const { data: restaurant, error: restaurantError } = await supabase
@@ -91,14 +97,14 @@ const MemoriesDetails: React.FC = () => {
                                 .select("restro_name")
                                 .eq("id", memory.restaurant_id)
                                 .single();
-                            
+
                             if (restaurantError) {
                                 console.error("Error fetching restaurant name:", restaurantError.message);
                             } else {
                                 restaurantORWinesORLocation = restaurant?.restro_name || memory.location_name; // Use restaurant name if available
                             }
                         }
-    
+
                         // Check if winery_id is present
                         if (memory.winery_id) {
                             const { data: winery, error: wineryError } = await supabase
@@ -106,7 +112,7 @@ const MemoriesDetails: React.FC = () => {
                                 .select("winery_name")
                                 .eq("id", memory.winery_id)
                                 .single();
-                            
+
                             if (wineryError) {
                                 console.error("Error fetching winery name:", wineryError.message);
                             } else {
@@ -114,18 +120,18 @@ const MemoriesDetails: React.FC = () => {
                             }
                         }
                         memory.restaurantORWinesORLocation = restaurantORWinesORLocation;
-    
-                        return memory;
+
+                        return memory as Memory; // Cast to Memory type before returning
                     })
                 );
-    
+
                 setMemories(updatedMemories);
                 console.log(updatedMemories);
             } catch (err) {
                 console.error("Error fetching memories:", err);
             }
         };
-    
+
         fetchMemories();
     }, [id]);
 
@@ -137,7 +143,7 @@ const MemoriesDetails: React.FC = () => {
                     {!memory.thumbnails || memory.thumbnails.length === 0 ? (
                         <Image source={HeaderImg} style={styles.image} />
                     ) : (
-                        <TwicImg src={memory.thumbnails[0] } style={styles.image} />
+                        <TwicImg src={memory.thumbnails[0]} style={styles.image} />
                     )}
 
                     <View style={styles.textContainer}>
@@ -212,7 +218,7 @@ const MemoriesDetails: React.FC = () => {
                                 contentContainerStyle={styles.picandvideo}
                             >
                                 {memory.thumbnails.map((thumbnail, index) => (
-                                    <TwicImg key={index} src={thumbnail } style={styles.picandvideoImage} />
+                                    <TwicImg key={index} src={thumbnail} style={styles.picandvideoImage} />
                                 ))}
                             </ScrollView>
                         </View>
@@ -250,8 +256,35 @@ const MemoriesDetails: React.FC = () => {
                         </View>
                     </View>
 
-                    <View style={styles.mapSDKContainer}>
-                        <Text>Map </Text>
+                    <MapView
+                        style={styles.mapSDKContainer}
+                        initialRegion={{
+                            latitude: memory.location_lat,
+                            longitude: memory.location_long,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }}
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: memory.location_lat,
+                                longitude: memory.location_long,
+                            }}
+                            title={memory.restaurantORWinesORLocation}
+                        />
+                    </MapView>
+                    <View style={styles.fulladdress}>
+                        <View style={styles.MapIconsContainer}>
+                            <Ionicons
+                                name="pin"
+                                size={16}
+                                color="#522F60"
+                                style={styles.Mapicon}
+                            />
+                        </View>
+                        <View style={styles.fulladdressTextContainer}>
+                            <Text style={styles.fulladdressText} numberOfLines={1}>{memory.address}</Text>
+                        </View>
                     </View>
                 </View>
             ))}
@@ -417,6 +450,14 @@ const styles = StyleSheet.create({
     icon: {},
     ///////////////////////////////////// Map ///////////////////////////////////////////
     MapContainer: {},
+    MapIconsContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        borderRightWidth: 1,
+        height: 30,
+        width: 32,
+        borderColor: "#522F6080",
+    },
     MapContainerHeader: {
         marginHorizontal: 16,
         height: 30,
@@ -474,16 +515,36 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     Mapicon: {},
+
     ////////////////////////////////
     mapSDKContainer: {
+        marginTop: 4,
         marginHorizontal: 16,
-        height: 110,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 16,
-        marginBottom: 16,
+        height: 81, // Increase height to make the map visible
         borderWidth: 1,
         borderColor: "#522F6080",
         borderRadius: 4,
+    },
+    fulladdress: {
+        //marginTop:1,
+        marginHorizontal: 16,
+        borderRadius: 4,
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        borderLeftWidth: 1,
+        borderColor: "#522F6080",
+        height: 30,
+        flexDirection: "row",
+    },
+    fulladdressTextContainer:{
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: "center",
+    },
+    fulladdressText:{
+        fontFamily: "SF Pro",
+        fontSize: 14,
+        fontWeight: "200",
+        color: "#522F60",
     },
 });
