@@ -13,7 +13,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
-import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 
 installTwicPics({
@@ -21,7 +21,7 @@ installTwicPics({
     debug: true,
     maxDPR: 3,
   });
-const HeaderImg = require("../../../../../assets/png/HeaderIcon.png");
+const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 interface Memory {
     id: string;
     name: string;

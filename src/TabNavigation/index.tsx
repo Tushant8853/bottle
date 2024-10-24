@@ -15,7 +15,7 @@ import MemoriesList from '../screens/HomeScreens/Memories/MemoriesList/Memories'
 import MeDashboard from '../screens/HomeMe/MeDashboard';
 import WineDashboard from '../screens/HomeWine/WineDashboard';
 import WineriesList from '../screens/HomeScreens/Wineries/WineriesList/WineriesList';
-import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesList/MemoriesDetails/MemoriesDetails';
+import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesDetails/MemoriesDetails';
 import RestaurantsList from '../screens/HomeScreens/Restaurants/RestaurantsList/RestaurantsList';
 import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDetails/RestaurantsDetails';
 import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
