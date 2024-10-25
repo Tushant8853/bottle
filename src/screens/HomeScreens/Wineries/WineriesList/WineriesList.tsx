@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingBottom: 1,
-    paddingTop: 47,
+    paddingTop: 55,
     backgroundColor: "white",
     width: "100%",
   },
@@ -199,8 +199,9 @@ const styles = StyleSheet.create({
     color: '#3C3C3C',
   },
   wineryLocation: {
+    fontWeight: '400',
     fontSize: 11,
-    color: 'gray',
+    color: '#808080',
   },
   iconsContainer: {
     flexDirection: 'row',

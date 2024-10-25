@@ -1,10 +1,8 @@
 import { View, Text, Image } from 'react-native';
 import React from 'react';
-import MymemoriesImg from '../../../../../assets/png/MymemoriesIcon.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import DicoverWineImg from '../../../../../assets/png/Wine.png';
 import styles from './index.style'; // Importing styles from index.style.ts
-
+import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
 // You can define props if needed. Currently, no props are defined for this component.
 interface DiscoverWinesProps {}
 
@@ -14,8 +12,8 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
             <View style={styles.container}>
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
-                        <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
-                        <Text style={styles.text}>discover wines</Text>
+                    <Bannericon width={13} height={32} color="#522F60"/>
+                    <Text style={styles.text}>discover wines</Text>
                     </View>
                     <Icon name="chevron-right" size={16} color="#522F60" />
                 </View>
@@ -36,7 +34,7 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
                                     </View>
                                 </View>
                                 <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                    Samantha’s Sauvignon Blanc, Alexander Valley
+                                    Samantha's Sauvignon Blanc, Alexander Valley
                                 </Text>
                                 <View style={styles.StoriesDescriptionConatiner}>
                                     <Text style={styles.StoriesDescription} numberOfLines={1}>

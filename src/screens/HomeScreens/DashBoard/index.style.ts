@@ -74,6 +74,7 @@ const styles = StyleSheet.create<Styles>({
   },
   scrollViewContent: {
     flexGrow: 1,
+    backgroundColor: "white",
   },
   bottoms: {
     marginBottom: 150,

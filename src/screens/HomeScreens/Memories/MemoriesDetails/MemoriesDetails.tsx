@@ -6,6 +6,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
+    Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
@@ -59,7 +60,11 @@ const MemoriesDetails: React.FC = () => {
     const { id } = route.params;
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const [memories, setMemories] = useState<Memory[]>([]);
+    const [expandedMemory, setExpandedMemory] = useState<string | null>(null); // State to track expanded description
 
+    const handleToggleDescription = (id: string) => {
+        setExpandedMemory(prev => (prev === id ? null : id));
+    };
     useEffect(() => {
         const fetchMemories = async () => {
             try {
@@ -174,10 +179,20 @@ const MemoriesDetails: React.FC = () => {
                             color="#522F60"
                         />
                     </View>
+                    
                     <View style={styles.descriptionTextContainer}>
-                        <Text style={styles.descriptionText} numberOfLines={5}>
-                            {memory.description}
-                        </Text>
+                        <Pressable
+                            style={[
+                                styles.descriptiontextContainer,
+                                expandedMemory === memory.id && { height: 'auto' }, // Auto height when expanded
+                            ]}
+                            onPress={() => handleToggleDescription(memory.id)}
+                        >
+                            <Text style={styles.descriptionText} numberOfLines={expandedMemory === memory.id ? undefined : 5}>
+                                {memory.description}
+                            </Text>
+                        </Pressable>
+
                     </View>
                 </View>
             ))}
@@ -203,7 +218,7 @@ const MemoriesDetails: React.FC = () => {
                     <View style={styles.picandvideoHeaderContainer}>
                         <View style={styles.leftContent}>
                             <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
-                            <Text style={styles.picandvideoHeadertext}> pics and Videos</Text>
+                            <Text style={styles.picandvideoHeadertext}>  pics and Videos</Text>
                         </View>
                         <View style={styles.rightContent}>
                             <AntDesign style={styles.picandvideoArrowIcons} name="arrowright" size={20} color="#522F60" />
@@ -317,8 +332,8 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         position: "absolute",
-        top: 25,
-        right: 15,
+        top: 60,
+        right: 30,
         flexDirection: "row",
         gap: 10,
     },
@@ -357,7 +372,6 @@ const styles = StyleSheet.create({
     descriptionContainer: {
         borderWidth: 1,
         marginHorizontal: 16,
-        height: 110,
         marginTop: 8,
         borderRadius: 4,
         borderColor: "#522F6080",
@@ -384,6 +398,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
     },
     descriptionIcons: {},
+    descriptiontextContainer:{},
     //////////////////////////////////////////Date and Time //////////////////////////////////////////
     datecontainer: {
         flexDirection: "row",
@@ -408,7 +423,7 @@ const styles = StyleSheet.create({
     },
     //////////////////////////////////////////Pic and Video //////////////////////////////////////////
     picandvideoContainer: {
-        marginTop: 8,
+        marginTop: 16,
         borderRadius: 4,
         borderColor: "#522F6080",
         height: 146,
@@ -536,12 +551,12 @@ const styles = StyleSheet.create({
         height: 30,
         flexDirection: "row",
     },
-    fulladdressTextContainer:{
+    fulladdressTextContainer: {
         flex: 1,
         marginLeft: 10,
         justifyContent: "center",
     },
-    fulladdressText:{
+    fulladdressText: {
         fontFamily: "SF Pro",
         fontSize: 14,
         fontWeight: "200",

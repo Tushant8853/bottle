@@ -6,6 +6,8 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from "./index.style";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface Memory {
   id: string;
@@ -71,7 +73,7 @@ const OtherMemories: React.FC = () => {
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate("MemoriesList" as never);
+    navigation.navigate("MemoriesList", { memoryType: "Public" } as never);
   };
 
   const renderItem = ({ item }: { item: Memory }) => (
@@ -95,12 +97,12 @@ const OtherMemories: React.FC = () => {
       <View style={styles.bannerContainer}>
         <Pressable onPress={handleNavigation}>
           <View style={styles.headingContainer}>
-            <Image
-              source={require("../../../../../assets/png/MymemoriesIcon.png")}
-              style={styles.bannerImage}
-            />
+          <Bannericon width={13} height={32} color="#522F60"/>
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerTitle}>Memories from Others</Text>
+            </View>
+            <View style={styles.bannerarrow} >
+            <Icon name="chevron-right" size={16} color="#522F60" />
             </View>
           </View>
         </Pressable>

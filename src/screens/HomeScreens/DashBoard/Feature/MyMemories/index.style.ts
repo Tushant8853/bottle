@@ -21,13 +21,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
+  bannerarrow: {
+    marginLeft: 6,
+    marginTop: 10,
+  },
   bannerTitle: {
     fontSize: 13,
     fontWeight: "600",
     color: "#522F60",
     textAlign: "left",
-    marginTop: 5,
-    marginLeft: 2,
+    marginLeft: 6,
   },
   cardsContainer: {
     flexDirection: "row",

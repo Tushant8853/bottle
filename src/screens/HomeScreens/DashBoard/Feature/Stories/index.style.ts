@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
   },
   bannerContainer: {
     //borderWidth: 1,
-    marginBottom: 5,
+   // marginBottom: 5,
+    marginTop: 15,
     padding: 10,
     flexDirection: "row",
   },
@@ -27,12 +28,24 @@ const styles = StyleSheet.create({
   bannerTextContainer: {
     flex: 1,
   },
+  bannericonContainer: {
+    position: "absolute",
+    top: 1,
+    right: 10,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 11,
+    width: 32,
+    height: 32,
+  },
   bannerTitle: {
     fontSize: 14,
     fontWeight: "600",
     color: "#522F60",
     textAlign: "left",
     marginTop: 7,
+    marginLeft: 2,
   },
   ///////////////////////////////////////Storeies ////////////////////////////////////////
   row: {

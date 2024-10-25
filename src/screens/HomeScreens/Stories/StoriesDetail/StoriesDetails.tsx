@@ -93,8 +93,9 @@ export default StoriesDetail;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "white",
+    paddingBottom: 400
   },
   imageContainer: {
     position: 'relative',
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    top: 25,
+    top: 55,
     right: 15,
     flexDirection: 'row',
     gap: 10, // Space between buttons
@@ -126,12 +127,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 25,
     color: "gray",
     marginBottom: 16,
   },
@@ -144,18 +145,23 @@ const styles = StyleSheet.create({
 
 // Custom styles for Markdown rendering
 const markdownStyles = {
-  text: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
   heading1: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
+    fontWeight: '600',
+    marginTop: 10,
+    lineHeight: 36,
   },
   heading2: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: "#000000",
     marginVertical: 8,
   },
+  paragraph: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#000000",
+    fontWeight: '300',
+  },
 };
+

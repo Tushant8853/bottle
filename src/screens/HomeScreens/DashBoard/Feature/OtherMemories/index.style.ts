@@ -26,8 +26,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#522F60",
     textAlign: "left",
-    marginTop: 5,
-    marginLeft: 2,
+    marginLeft: 6,
+  },
+  bannerarrow: {
+    marginLeft: 6,
+    marginTop: 10,
   },
   cardsContainer: {
     flexDirection: "row",

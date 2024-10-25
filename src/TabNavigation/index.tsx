@@ -30,6 +30,18 @@ const TabNavigation: React.FC = () => {
         return (
             <Stack.Navigator initialRouteName="Dashboard">
                 <Stack.Screen
+                    name="UserDashboardScreen"
+                    component={MeDashboard}
+                    options={{ headerShown: false }}
+                />
+            </Stack.Navigator>
+        );
+    };
+
+    const StackNavigation2: React.FC = () => {
+        return (
+            <Stack.Navigator initialRouteName="UserDashboard">
+                <Stack.Screen
                     name="Dashboard"
                     component={Dashboard}
                     options={{ headerShown: false }}
@@ -80,18 +92,6 @@ const TabNavigation: React.FC = () => {
         );
     };
 
-    const StackNavigation2: React.FC = () => {
-        return (
-            <Stack.Navigator initialRouteName="UserDashboard">
-                <Stack.Screen
-                    name="UserDashboardScreen"
-                    component={MeDashboard}
-                    options={{ headerShown: false }}
-                />
-            </Stack.Navigator>
-        );
-    };
-
     const StackNavigation3: React.FC = () => {
         return (
             <Stack.Navigator initialRouteName="WineDashboard">
@@ -108,7 +108,7 @@ const TabNavigation: React.FC = () => {
 
     return (
         <Tab.Navigator
-            initialRouteName="Home"
+            initialRouteName="UserDashboard"
             screenOptions={{
                 tabBarShowLabel: false,
                 tabBarActiveTintColor: '#522F60',

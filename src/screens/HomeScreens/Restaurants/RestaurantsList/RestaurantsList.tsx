@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingBottom: 1,
-    paddingTop: 47,
+    paddingTop: 55,
     backgroundColor: "white",
     width: "100%",
   },
@@ -157,6 +157,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333",
     flex: 1,
+    alignItems: "center",
+    width: '100%'
   },
   searchContainer: {
     flexDirection: "row",
@@ -200,8 +202,9 @@ const styles = StyleSheet.create({
     color: '#3C3C3C',
   },
   restaurantLocation: {
-    fontSize: 11,
-    color: 'gray',
+    fontWeight: '600',
+    fontSize: 13,
+    color: '#3C3C3C',
   },
   iconsContainer: {
     flexDirection: 'row',

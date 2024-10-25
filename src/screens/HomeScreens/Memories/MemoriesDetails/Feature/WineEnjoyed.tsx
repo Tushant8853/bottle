@@ -16,7 +16,7 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
                         <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
-                        <Text style={styles.text}>wines enjoyed</Text>
+                        <Text style={styles.text}>  wines enjoyed</Text>
                     </View>
                     <AntDesign
                             name="arrowright"
