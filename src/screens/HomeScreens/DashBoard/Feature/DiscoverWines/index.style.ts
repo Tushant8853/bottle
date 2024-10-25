@@ -53,7 +53,7 @@ const styles = StyleSheet.create<Styles>({
         fontWeight: '600',
         color: '#522F60',
         marginBottom: 2,
-        marginLeft: 2
+        marginLeft: 6
     },
     ListOfStoriesContainer: {
         marginTop: 6,

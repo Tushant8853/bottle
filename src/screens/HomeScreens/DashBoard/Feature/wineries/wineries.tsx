@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
-
+import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
 // Configure TwicPics
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
@@ -77,10 +77,7 @@ const Wineries: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
-        <Image
-              source={require("../../../../../assets/png/MymemoriesIcon.png")}
-              style={styles.bannerImage}
-            />
+        <Bannericon width={13} height={32} color="#522F60"/>
           <Text style={styles.text}>featured wineries</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('WineriesList')}>
@@ -160,7 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#522F60',
-    marginLeft: 2,
+    marginLeft: 6,
   },
   gridContainer: {
     flexDirection: 'row',

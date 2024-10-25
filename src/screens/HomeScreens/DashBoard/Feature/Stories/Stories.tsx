@@ -12,7 +12,7 @@ import Icons from "react-native-vector-icons/AntDesign";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from './index.style'; // Importing styles from index.style.js
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
-
+import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
 // Install TwicPics configuration
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -58,8 +58,8 @@ const Stories: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.bannerContainer}>
-        <Image source={require('../../../../../assets/png/MymemoriesIcon.png')} style={styles.bannerImage} />
-        <View style={styles.bannerTextContainer}>
+      <Bannericon width={13} height={32} color="#522F60"/>
+      <View style={styles.bannerTextContainer}>
           <Text style={styles.bannerTitle}>Featured Stories</Text>
         </View>
         <View>
