@@ -36,7 +36,7 @@ const DiscoverWines: React.FC<DiscoverWinesProps> = () => {
                                     </View>
                                 </View>
                                 <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                    Samantha’s Sauvignon Blanc, Alexander Valley
+                                    Samantha's Sauvignon Blanc, Alexander Valley
                                 </Text>
                                 <View style={styles.StoriesDescriptionConatiner}>
                                     <Text style={styles.StoriesDescription} numberOfLines={1}>

@@ -34,7 +34,8 @@ const styles = StyleSheet.create<Styles>({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginTop: 10,
+        marginBottom: 15,
     },
     leftContainer: {
         flexDirection: 'row',
@@ -51,8 +52,8 @@ const styles = StyleSheet.create<Styles>({
         fontSize: 14,
         fontWeight: '600',
         color: '#522F60',
-        marginTop: 3,
         marginBottom: 2,
+        marginLeft: 2
     },
     ListOfStoriesContainer: {
         marginTop: 6,
@@ -97,10 +98,11 @@ const styles = StyleSheet.create<Styles>({
         color: '#66605E',
         fontFamily: 'SF Pro',
         fontWeight: '700',
+        marginTop: 6
     },
     StoriesSubtitle: {
         fontSize: 12,
-        color: 'black',
+        color: '#1F2626',
         fontFamily: 'SF Pro',
         fontWeight: '400',
     },
@@ -118,7 +120,7 @@ const styles = StyleSheet.create<Styles>({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 1,
+        marginTop: 5,
     },
     boldText: {
         fontSize: 12,

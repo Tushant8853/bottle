@@ -64,7 +64,7 @@ const Stories: React.FC = () => {
         </View>
         <View>
         <Pressable
-                        style={styles.saveButton}
+                        style={styles.bannericonContainer}
                         onPress={() => navigation.navigate("StoriesList")}
                       >
           <Icons name="arrowright" size={22} color="#522F60" />

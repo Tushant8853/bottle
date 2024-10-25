@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    top: 25,
+    top: 55,
     right: 15,
     flexDirection: 'row',
     gap: 10, // Space between buttons
@@ -149,7 +149,7 @@ const markdownStyles = {
     lineHeight: 24,
   },
   heading1: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     marginVertical: 10,
   },

@@ -154,7 +154,7 @@ const StoriesList: React.FC = () => {
                         name="heart-o"
                         size={16}
                         color="#808080"
-                        marginRight={5}
+                        marginRight={8}
                       />
                       <Icons name="share-outline" size={17} color="#808080" />
                     </View>
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     paddingBottom: 1,
-    paddingTop: 47,
+    paddingTop: 55,
     backgroundColor: "white",
     width: "100%",
   },

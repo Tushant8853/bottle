@@ -77,6 +77,10 @@ const Wineries: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
+        <Image
+              source={require("../../../../../assets/png/MymemoriesIcon.png")}
+              style={styles.bannerImage}
+            />
           <Text style={styles.text}>featured wineries</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('WineriesList')}>
@@ -99,19 +103,23 @@ const Wineries: React.FC = () => {
                   )}
                   <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
                     <Icon
-                      name={likedStatus[index] ? 'heart' : 'heart-o'}
+                      name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
                       size={20}
                       color="#30425F"
                     />
                   </Pressable>
                 </View>
-                <View>
-                <Text style={styles.componentText}>
-                  {winery.winery_name}{' '}
-                  {winery.verified && <Icons name="verified" size={14} color="#522F60" />}
+              <View>
+                <View style={styles.componentTitle}>
+                <Text style={styles.componentText} numberOfLines={1}>
+                  {winery.winery_name}{' '}               
                 </Text>
-                <Text style={styles.subcomponentText}>{winery.address}</Text>
+                <Text style={styles.componentText1}>
+                  {winery.verified && <Icons name="verified" size={14} color="#522F60"/>}
+                </Text> 
                 </View>
+                <Text style={styles.subcomponentText}>{winery.address}</Text>
+              </View>
               </View>
             </View>
           ))}
@@ -131,6 +139,13 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 3,
   },
+  bannerImage: {
+    width: 13,
+    height: 32,
+    borderRadius: 1,
+    resizeMode: "contain",
+    marginRight: 4,
+  },
   TitleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -145,7 +160,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#522F60',
-    marginTop: 3,
     marginLeft: 2,
   },
   gridContainer: {
@@ -173,17 +187,25 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 10,
   },
+  componentTitle: {
+    flexDirection: 'row',
+  },
   componentText: {
-    fontSize: 14,
+    fontSize: 16,
     marginTop: 1,
     color: '#000',
     flexWrap: 'wrap',
-    maxWidth: '100%',
+    maxWidth: '90%',
+    textAlign: 'left',
+    fontWeight: '600',
+  },
+  componentText1: {
+    marginTop: 5,
     textAlign: 'left',
     fontWeight: '600',
   },
   subcomponentText: {
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 1,
     color: '#66605E',
     flexWrap: 'wrap',

@@ -75,7 +75,7 @@ const Restaurants: React.FC = () => {
         <View style={styles.leftContainer}>
           <Icons
             name="restaurant"
-            size={20}
+            size={19}
             color="#522F60"
           />
           <Text style={styles.text}>featured restaurants</Text>
@@ -107,10 +107,14 @@ const Restaurants: React.FC = () => {
                   </Pressable>
                 </View>
                 <View>
-                <Text style={styles.componentText}>
-                  {restaurant.restro_name}{' '}
-                  {restaurant.verified && <Icons name="verified" size={14} color="#522F60" />}
+                <View style={styles.componentTitle}>
+                <Text style={styles.componentText} numberOfLines={1}>
+                  {restaurant.restro_name}{' '}               
                 </Text>
+                <Text style={styles.componentText1}>
+                  {restaurant.verified && <Icons name="verified" size={14} color="#522F60"/>}
+                </Text> 
+                </View>
                 <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
               </View>
@@ -146,8 +150,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#522F60',
-    marginTop: 3,
-    marginLeft: 2,
+    marginLeft: 4,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -174,12 +177,20 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 10,
   },
+  componentTitle: {
+    flexDirection: 'row',
+  },
   componentText: {
-    fontSize: 14,
+    fontSize: 16,
     marginTop: 1,
     color: '#000',
     flexWrap: 'wrap',
-    maxWidth: '100%',
+    maxWidth: '90%',
+    textAlign: 'left',
+    fontWeight: '600',
+  },
+  componentText1: {
+    marginTop: 5,
     textAlign: 'left',
     fontWeight: '600',
   },

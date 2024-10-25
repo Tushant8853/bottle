@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#522F60",
     textAlign: "left",
-    marginTop: 5,
     marginLeft: 2,
   },
   cardsContainer: {
