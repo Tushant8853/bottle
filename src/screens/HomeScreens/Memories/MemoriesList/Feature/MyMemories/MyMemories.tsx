@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
     marginTop: 4,
-    marginBottom: 4,
+    marginBottom: 8,
     backgroundColor: "white",
     flexDirection: "row",
   },
@@ -250,10 +250,9 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontFamily: "SF Pro",
     color: "#808080",
-    width: "30%",
   },
   usernameIcon: {
-    marginLeft: 4,
+    marginLeft: 1,
   },
   descriptionContainer: {
     height: 35,

@@ -44,7 +44,7 @@ const styles = StyleSheet.create<Styles>({
         width: 13,
         height: 32,
         borderRadius: 1,
-        resizeMode: 'contain',
+        resizeMode: "contain",
         marginRight: 4,
     },
     text: {
@@ -94,6 +94,7 @@ const styles = StyleSheet.create<Styles>({
         alignItems: 'center',
     },
     StoriesTitleText: {
+        marginTop:4,
         fontSize: 14,
         color: '#66605E',
         fontFamily: 'SF Pro',
@@ -106,6 +107,7 @@ const styles = StyleSheet.create<Styles>({
         fontWeight: '400',
     },
     StoriesDescription: {
+        marginTop:4,
         fontSize: 12,
         color: 'black',
         fontFamily: 'SF Pro',
