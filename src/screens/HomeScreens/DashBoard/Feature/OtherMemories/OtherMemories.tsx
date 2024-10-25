@@ -73,7 +73,7 @@ const OtherMemories: React.FC = () => {
   }, []);
 
   const handleNavigation = () => {
-    navigation.navigate("MemoriesList" as never);
+    navigation.navigate("MemoriesList", { memoryType: "Public" } as never);
   };
 
   const renderItem = ({ item }: { item: Memory }) => (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,14 +8,21 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import MyMemories from "./Feature/MyMemories/MyMemories";
 import PublicMemories from "./Feature/PublicMemories/PublicMemories";
+type MemorieListRouteProp = RouteProp<RootStackParamList, 'MemoriesList'>;
 
 const MemorieList: React.FC = () => {
+  const route = useRoute<MemorieListRouteProp>();
   const [selectedMemory, setSelectedMemory] = useState<"Public" | "My">("My"); // Set "My" as default
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  useEffect(() => {
+    if (route.params?.memoryType) {
+      setSelectedMemory(route.params.memoryType);
+    }
+  }, [route.params?.memoryType]);
 
   return (
     <View style={styles.StoriesListContainer}>
@@ -168,6 +175,7 @@ const styles = StyleSheet.create({
   },
   PublicMemoriesContainer: {
     alignSelf: "center",
+    justifyContent:"center",
     marginLeft: 4,
     flex: 1,
   },
