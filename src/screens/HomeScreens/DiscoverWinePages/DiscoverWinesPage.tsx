@@ -1,23 +1,30 @@
-import { View, Text, Image, Pressable } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from './index.style';
-import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    ScrollView,
+    Image
+} from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
-import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import Bannericon from "../../../assets/svg/SvgCodeFile/bannericon";
+import { supabase } from "../../../../backend/supabase/supabaseClient";
+import styles from './index.style';
 
 interface Wine {
     id: string;
     image: string;
     wines_name: string;
-    year: number; // Assuming this is a number now
+    year: number;
     winery_id: number;
     address?: string;
 }
 
-const DiscoverWines: React.FC = () => {
+const DiscoverWinespages: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const [searchText, setSearchText] = useState('');
     const [wines, setWines] = useState<Wine[]>([]);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
 
@@ -46,11 +53,10 @@ const DiscoverWines: React.FC = () => {
                                 console.error(`Error fetching address for winery_id ${wine.winery_id}:`, wineryError);
                             }
 
-                            const wineWithAddress = {
+                            return {
                                 ...wine,
                                 address: wineryData?.address || "Address not available",
                             };
-                            return wineWithAddress;
                         })
                     );
 
@@ -65,25 +71,36 @@ const DiscoverWines: React.FC = () => {
     }, []);
 
     return (
-        <View>
-            <View style={styles.container}>
-                <View style={styles.TitleContainer}>
-                    <View style={styles.leftContainer}>
-                        <Bannericon width={13} height={32} color="#522F60" />
-                        <Text style={styles.text}>discover wines</Text>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <View style={styles.headingContainer}>
+                    <Bannericon width={13} height={22} color="#30425F" />
+                    <View style={styles.bannerTextContainer}>
+                        <Text style={styles.bannerTitle}>discover wines</Text>
                     </View>
-                    <Pressable onPress={() => navigation.navigate('DiscoverWinespages')}>
-                        <Icon name="chevron-right" size={16} color="#522F60" />
-                    </Pressable>
                 </View>
+            </View>
 
-                {wines.slice(0, 4).map((wine) => (
+            <View style={styles.searchContainer}>
+                <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search"
+                    placeholderTextColor={"#e5e8e8"}
+                    value={searchText}
+                    onChangeText={setSearchText}
+                />
+                <FontAwesome name="microphone" size={16} color="#989999" />
+            </View>
+
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {wines.map((wine) => (
                     <View key={wine.id} style={styles.ListOfStoriesContainer}>
                         <View style={styles.Stories}>
                             <View style={styles.StoriesImgContainer}>
-                                <Image 
-                                    source={{ uri: `${imagePrefix}${wine.image}` }} 
-                                    style={styles.StoriesImage} 
+                                <Image
+                                    source={{ uri: `${imagePrefix}${wine.image}` }}
+                                    style={styles.StoriesImage}
                                 />
                             </View>
                             <View style={styles.StoriesText}>
@@ -95,11 +112,11 @@ const DiscoverWines: React.FC = () => {
                                     </View>
                                 </View>
                                 <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                    {wine.wines_name || "Address not available dbj"}
+                                    {wine.wines_name || "Address not available"}
                                 </Text>
                                 <View style={styles.StoriesDescriptionConatiner}>
                                     <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                        {new Date(wine.year).getFullYear()} {/* Display only the year */}
+                                        {new Date(wine.year).getFullYear()}
                                     </Text>
                                     <Text style={styles.StoriesDescription} numberOfLines={1}>
                                         bottleshock<Text style={styles.boldText}>100</Text>
@@ -109,9 +126,10 @@ const DiscoverWines: React.FC = () => {
                         </View>
                     </View>
                 ))}
-            </View>
+            </ScrollView>
+            <View style={styles.bottom}></View>
         </View>
     );
 }
 
-export default DiscoverWines;
+export default DiscoverWinespages;

@@ -1,49 +1,45 @@
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
-// Define the types for each style object
-interface Styles {
-    container: ViewStyle;
-    TitleContainer: ViewStyle;
-    leftContainer: ViewStyle;
-    MemoriesImg: ImageStyle;
-    text: TextStyle;
-    ListOfStoriesContainer: ViewStyle;
-    Stories: ViewStyle;
-    StoriesImgContainer: ViewStyle;
-    StoriesImage: ImageStyle;
-    StoriesText: ViewStyle;
-    StoriesTitle: ViewStyle;
-    StoriesTitleText: TextStyle;
-    StoriesSubtitle: TextStyle;
-    StoriesDescription: TextStyle;
-    StoriesTitleIMG: ViewStyle;
-    StoriesDescriptionConatiner: ViewStyle;
-    boldText: TextStyle;
-    StoriesTitleTextContainer:ViewStyle;
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 16,
-        backgroundColor: '#fff',
-      },
-      header: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingBottom: 1,
-        paddingTop: 55,
         backgroundColor: "white",
-        width: "100%",
-      },
-      headerTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        textAlign: "center",
-        color: "#333",
+    },
+    scrollViewContent: {
+    },
+    bottom:{
+        marginBottom:100
+    },
+    header: {
+        marginTop: 40,
+        backgroundColor: "white",
+        height: 22,
+        marginBottom:4,
+    },
+    headingContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    bannerTextContainer: {
         flex: 1,
-      },
-      searchContainer: {
+        justifyContent: "center",
+    },
+    bannerarrow: {
+    },
+    bannerTitle: {
+        fontFamily: 'Hiragino Sans',
+        fontSize: 13,
+        fontWeight: '600',
+        lineHeight: 22,
+        letterSpacing: 0.02,
+        textAlign: 'left',
+        marginLeft: 6,
+        color: '#30425F',
+    },
+    
+////////////////////////////Search //////////////////////////
+    searchContainer: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "white",
@@ -51,7 +47,7 @@ const styles = StyleSheet.create<Styles>({
         borderWidth: 1,
         paddingHorizontal: 18,
         paddingVertical: 1,
-        marginBottom: 13,
+        marginBottom: 4,
         marginVertical: 4,
         borderRadius: 8,
         shadowColor: "#000",
@@ -59,43 +55,19 @@ const styles = StyleSheet.create<Styles>({
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 6,
         elevation: 3,
-        height: 40,
-      },
-      searchIcon: {
+        height:42,
+    },
+    searchIcon: {
         marginRight: 7,
-      },
-      searchInput: {
+    },
+    searchInput: {
         flex: 1,
         fontSize: 14,
         color: "black",
-      },
-    TitleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 15,
     },
-    leftContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    MemoriesImg: {
-        width: 13,
-        height: 32,
-        borderRadius: 1,
-        resizeMode: 'contain',
-        marginRight: 4,
-    },
-    text: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#522F60',
-        marginBottom: 2,
-        marginLeft: 6
-    },
+    /////////////////////////////////// List of Wines ///////////////////////////////
     ListOfStoriesContainer: {
-        marginTop: 6,
+        marginTop: 4,
         backgroundColor: '#522F600D',
         height: 88,
         borderRadius: 5,
@@ -168,7 +140,7 @@ const styles = StyleSheet.create<Styles>({
         textAlign: 'right',
         color: '#834B99',
     },
-    StoriesTitleTextContainer:{
+    StoriesTitleTextContainer: {
 
     },
 });

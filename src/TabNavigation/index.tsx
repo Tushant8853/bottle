@@ -18,7 +18,7 @@ import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesDetails/Mem
 import RestaurantsList from '../screens/HomeScreens/Restaurants/RestaurantsList/RestaurantsList';
 import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDetails/RestaurantsDetails';
 import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
-import DiscoverWinespages from '../screens/HomeScreens/DiscoverWines/DiscoverWinesPage';
+import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/DiscoverWinesPage';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
