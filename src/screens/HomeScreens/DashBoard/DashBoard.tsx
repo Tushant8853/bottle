@@ -74,7 +74,7 @@ const DashBoard: React.FC = () => {
                     <View style={[styles.HeaderImgContainer, { width }]}>
                       <TwicImg
                         src={imageUrl}
-                        style={styles.image}
+                        style={styles.img}
                         alt={memory.heading || "Default Heading"} // Add alt text for accessibility
                       />
                       <Text style={styles.text}>

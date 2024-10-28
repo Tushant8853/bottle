@@ -126,7 +126,7 @@ const WineriesList = () => {
               <TwicImg 
                 src={winery.logo} 
                 style={styles.logo} 
-                resizeMode="contain" // Adjusted to fit the image correctly
+                //resizeMode="contain" // Adjusted to fit the image correctly
               />
             )}
           </View>

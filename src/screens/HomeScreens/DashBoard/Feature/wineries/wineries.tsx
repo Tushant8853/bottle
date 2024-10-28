@@ -9,13 +9,14 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
-// Configure TwicPics
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
   debug: true,
@@ -30,17 +31,18 @@ interface WineryData {
   location: string;
   banner: string;
   verified: boolean;
+  address:string;
+  winery_name: string;
 }
 
 const Wineries: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [wineries, setWineries] = useState<WineryData[]>([]);
-  const navigation = useNavigation(); // Initialize navigation hook
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
   useEffect(() => {
-    // Fetch winery data from Supabase
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from('bottleshock_wineries')
@@ -51,12 +53,11 @@ const Wineries: React.FC = () => {
         return;
       }
 
-      const fetchedWineries = data.map((winery: WineryData) => ({
-        ...winery,
-        banner: winery.banner ? `${imagePrefix}${winery.banner}` : null,
+      const fetchedWineries = data.map((WineryData) => ({
+        ...WineryData,
+        banner: WineryData.banner ? `${imagePrefix}${WineryData.banner}` : null,
       }));
 
-      // Limit the displayed wineries to 4 (2 rows with 2 items each)
       setWineries(fetchedWineries.slice(0, 4));
       setLikedStatus(new Array(fetchedWineries.length).fill(false));
     };
@@ -95,7 +96,7 @@ const Wineries: React.FC = () => {
                     <TwicImg
                       src={winery.banner}
                       style={styles.component}
-                      resizeMode="cover"
+                      //resizeMode="cover"
                     />
                   )}
                   <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>

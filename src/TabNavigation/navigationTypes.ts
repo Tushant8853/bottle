@@ -2,7 +2,7 @@
 export type RootStackParamList = {
     Dashboard: undefined;
     StoriesList: undefined;
-    StoriesDetail: { id: number };
+    StoriesDetail: { memoryId: number };
     MemoriesList: undefined;
     WineriesList: undefined;
     UserDashboardScreen: undefined;
@@ -11,4 +11,5 @@ export type RootStackParamList = {
     RestaurantList: undefined;
     RestaurantsDetails: undefined;
     WineriesDetails: undefined;
+    DiscoverWinespages:undefined;
 };

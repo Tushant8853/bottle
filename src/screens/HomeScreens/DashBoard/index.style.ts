@@ -1,29 +1,6 @@
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from "react-native";
 
-interface Styles {
-  DashBoardContainer: ViewStyle;
-  HeaderScrollContainer: ViewStyle;
-  HeaderContainer: ViewStyle;
-  HeaderImgContainer: ViewStyle;
-  image: ImageStyle;
-  text: TextStyle;
-  subtext: TextStyle;
-  inputContainer: ViewStyle;
-  MyMemoriesDashboardContainer: ViewStyle;
-  OtherMemoriesDashboardContainer: ViewStyle;
-  scrollViewContent: ViewStyle;
-  bottoms: ViewStyle;
-  searchContainer: ViewStyle;
-  searchIcon: ViewStyle;
-  searchInput: TextStyle;
-  saveButton: ViewStyle;
-  DiscoverWinesDashboardContainer: ViewStyle;
-  WineriesDashboardContainer: ViewStyle;
-  RestaurantsDashboardContainer: ViewStyle;
-  StoriesDashboardContainer: ViewStyle; // Corrected to add this type
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
   DashBoardContainer: {
     flex: 1,
     backgroundColor: "white",
@@ -36,7 +13,7 @@ const styles = StyleSheet.create<Styles>({
     height: 300,
     marginRight: 0,
   },
-  image: {
+  img: {
     height: 300,
     width: "100%",
     resizeMode: "cover",
@@ -125,6 +102,7 @@ const styles = StyleSheet.create<Styles>({
     borderBottomWidth: 1,
     borderColor: "lightgray",
   },
+  noMemoriesText:{},
 });
 
 export default styles;

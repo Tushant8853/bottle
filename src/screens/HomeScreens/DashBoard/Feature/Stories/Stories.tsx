@@ -10,10 +10,10 @@ import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/AntDesign";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
-import styles from './index.style'; // Importing styles from index.style.js
+import styles from './index.style';
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
-// Install TwicPics configuration
+
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
   debug: true,
@@ -22,14 +22,14 @@ installTwicPics({
 
 const Stories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]); // Track if the item is saved or not
+  const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]);
   const [memories, setMemories] = useState<any[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   const handleSavePress = (index: number) => {
     const newStatus = [...likedStatus];
-    newStatus[index] = !newStatus[index]; // Toggle the like status
-    setLikedStatus(newStatus); // Toggle the state on button press
+    newStatus[index] = !newStatus[index];
+    setLikedStatus(newStatus);
   };
 
   useEffect(() => {
@@ -37,14 +37,13 @@ const Stories: React.FC = () => {
       try {
         const { data: heroMemoriesData, error } = await supabase
           .from("bottleshock_stories")
-          .select("id,thumbnail_image"); // Selecting only the thumbnail_image field
+          .select("id,thumbnail_image");
 
         if (error) {
           console.error("Error fetching memories:", error.message);
           return;
         }
 
-        // Only keep the first 4 memories
         setMemories(heroMemoriesData?.slice(0, 4) || []);
         console.log("Number of memories:", (heroMemoriesData || []).length);
       } catch (err) {
@@ -58,37 +57,37 @@ const Stories: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.bannerContainer}>
-      <Bannericon width={13} height={32} color="#522F60"/>
-      <View style={styles.bannerTextContainer}>
+        <Bannericon width={13} height={32} color="#522F60" />
+        <View style={styles.bannerTextContainer}>
           <Text style={styles.bannerTitle}>Featured Stories</Text>
         </View>
         <View>
-        <Pressable
-                        style={styles.bannericonContainer}
-                        onPress={() => navigation.navigate("StoriesList")}
-                      >
-          <Icons name="arrowright" size={22} color="#522F60" />
-        </Pressable>
+          <Pressable
+            style={styles.bannericonContainer}
+            onPress={() => navigation.navigate("StoriesList")}
+          >
+            <Icons name="arrowright" size={22} color="#522F60" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.containerf}>
-        {memories.reduce((rows, memory, index) => {
+        {memories.reduce<JSX.Element[][]>((rows, memory, index) => {
           if (index % 2 === 0) {
             rows.push([]);
           }
           rows[rows.length - 1].push(
             <View key={index} style={styles.ComponentContainer}>
               <View style={styles.imageWrapper}>
-              <Pressable
-                    key={memory.id}
-                    onPress={() =>
-                      navigation.navigate("StoriesDetail", { memoryId: memory.id })
-                    }
-                  >
-                <TwicImg 
-                  src={`${imagePrefix}${memory.thumbnail_image}`} // Correctly using a string for the src prop
-                  style={styles.componentIMGStyle}
-                />
+                <Pressable
+                  key={memory.id}
+                  onPress={() =>
+                    navigation.navigate("StoriesDetail", { memoryId: memory.id })
+                  }
+                >
+                  <TwicImg
+                    src={`${imagePrefix}${memory.thumbnail_image}`}
+                    style={styles.componentIMGStyle}
+                  />
                 </Pressable>
                 <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
                   <Icon

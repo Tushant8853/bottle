@@ -8,7 +8,8 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
@@ -29,12 +30,13 @@ interface RestaurantData {
   location: string;
   banner: string;
   verified: boolean;
+  hashtags: string[];
 }
 
 const Restaurants: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
-  const navigation = useNavigation(); // Initialize navigation hook
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
@@ -80,7 +82,7 @@ const Restaurants: React.FC = () => {
           />
           <Text style={styles.text}>featured restaurants</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('RestaurantsList')}>
+        <TouchableOpacity onPress={() => navigation.navigate('RestaurantList')}>
           <Icon name="chevron-right" size={16} color="#522F60" />
         </TouchableOpacity>
       </View>
@@ -95,7 +97,7 @@ const Restaurants: React.FC = () => {
                     <TwicImg
                       src={restaurant.banner}
                       style={styles.component}
-                      resizeMode="cover"
+                      //resizeMode="cover"
                     />
                   )}
                   <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
@@ -214,4 +216,5 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  hashtags:{},
 });

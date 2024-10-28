@@ -1,13 +1,74 @@
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
-const styles = StyleSheet.create({
+// Define the types for each style object
+interface Styles {
+    container: ViewStyle;
+    TitleContainer: ViewStyle;
+    leftContainer: ViewStyle;
+    MemoriesImg: ImageStyle;
+    text: TextStyle;
+    ListOfStoriesContainer: ViewStyle;
+    Stories: ViewStyle;
+    StoriesImgContainer: ViewStyle;
+    StoriesImage: ImageStyle;
+    StoriesText: ViewStyle;
+    StoriesTitle: ViewStyle;
+    StoriesTitleText: TextStyle;
+    StoriesSubtitle: TextStyle;
+    StoriesDescription: TextStyle;
+    StoriesTitleIMG: ViewStyle;
+    StoriesDescriptionConatiner: ViewStyle;
+    boldText: TextStyle;
+    StoriesTitleTextContainer:ViewStyle;
+}
+
+const styles = StyleSheet.create<Styles>({
     container: {
-        height: 'auto',
-        width: '100%',
-        marginBottom: 5,
-        padding: 10,
-        paddingBottom: 3,
-    },
+        flex: 1,
+        paddingHorizontal: 16,
+        backgroundColor: '#fff',
+      },
+      header: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingBottom: 1,
+        paddingTop: 55,
+        backgroundColor: "white",
+        width: "100%",
+      },
+      headerTitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        textAlign: "center",
+        color: "#333",
+        flex: 1,
+      },
+      searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "white",
+        borderColor: "#522F60",
+        borderWidth: 1,
+        paddingHorizontal: 18,
+        paddingVertical: 1,
+        marginBottom: 13,
+        marginVertical: 4,
+        borderRadius: 8,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 6,
+        elevation: 3,
+        height: 40,
+      },
+      searchIcon: {
+        marginRight: 7,
+      },
+      searchInput: {
+        flex: 1,
+        fontSize: 14,
+        color: "black",
+      },
     TitleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

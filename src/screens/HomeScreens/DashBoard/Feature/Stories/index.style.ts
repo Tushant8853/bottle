@@ -57,13 +57,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 4,
     marginTop: 4,
+
   },
   imageWrapper: {
     width: width / 2 - 22,
   },
   componentIMGStyle: {
     width: "100%",
-    height:170
+    height:170,
   },
   saveButton: {
     position: "absolute",
