@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Pressable
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
@@ -84,6 +85,7 @@ const WineriesList = () => {
       {/* List of Wineries */}
       <ScrollView>
         {filteredWineries.map((winery) => (
+        <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })}>
           <View key={winery.id} style={styles.wineryContainer}>
             {/* Winery Info */}
             <View style={styles.wineryInfo}>
@@ -130,6 +132,7 @@ const WineriesList = () => {
               />
             )}
           </View>
+        </Pressable>
         ))}
       </ScrollView>
     </View>

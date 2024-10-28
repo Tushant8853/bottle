@@ -7,9 +7,8 @@ import {
     TouchableOpacity,
     Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverWines from "./Feature/WineEnjoyed";
 
@@ -22,7 +21,6 @@ const WineriesDetails: React.FC = () => {
                 <Image source={HeaderImg} style={styles.image} />
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>Heading</Text>
-                    <Text style={styles.subtext}>Subheading</Text>
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button}>
@@ -34,6 +32,40 @@ const WineriesDetails: React.FC = () => {
                     <TouchableOpacity style={styles.button}>
                         <Ionicons name="share-outline" size={24} />
                     </TouchableOpacity>
+                </View>
+            </View>
+            <View style={styles.memoriesContainer}>
+                <View style={styles.memoriesHeaderContainer}>
+                    <View style={styles.leftContent}>
+                        <FontAwesome
+                            style={styles.memoriesIcons}
+                            name="image"
+                            size={16}
+                            color="#522F60"
+                        />
+                        <Text style={styles.memoriesHeadertext}> memories </Text>
+                    </View>
+                    <View style={styles.rightContent}>
+                        <AntDesign
+                            style={styles.memoriesArrowIcons}
+                            name="arrowright"
+                            size={20}
+                            color="#522F60"
+                        />
+                    </View>
+                </View>
+                <View style={styles.memoriesMainContainer}>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false} // This hides the scrollbar
+                        contentContainerStyle={styles.memories}
+                    >
+                        <Image source={HeaderImg} style={styles.memoriesImage} />
+                        <Image source={HeaderImg} style={styles.memoriesImage} />
+                        <Image source={HeaderImg} style={styles.memoriesImage} />
+                        <Image source={HeaderImg} style={styles.memoriesImage} />
+                        <Image source={HeaderImg} style={styles.memoriesImage} />
+                    </ScrollView>
                 </View>
             </View>
 
@@ -51,95 +83,71 @@ const WineriesDetails: React.FC = () => {
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                         pulvinar lobortis dui, id iaculis est consectetur id. Donec viverra,
                         arcu condimentum consectetur, libero nunc condimentum nunc, id
-                        pulvinar nisi purus in velit.
+                        pulvinar nisi purus in velit. igyighiuh
                     </Text>
                 </View>
             </View>
-
-            <View style={styles.datecontainer}>
-                <View style={styles.descriptionIconsContainer}>
-                    <Ionicons
-                        name="calendar-outline"
-                        size={16}
-                        color="#522F60"
-                        style={styles.icon}
-                    />
-                </View>
-                <View style={styles.DateTextContainer}>
-                    <Text style={styles.dateText}>07/04/2024</Text>
-                </View>
-            </View>
-
-            <View style={styles.picandvideoContainer}>
-                <View style={styles.picandvideoHeaderContainer}>
-                    <View style={styles.leftContent}>
-                        <FontAwesome
-                            style={styles.picandvideoIcons}
-                            name="image"
-                            size={16}
-                            color="#522F60"
-                        />
-                        <Text style={styles.picandvideoHeadertext}> pic and videos</Text>
-                    </View>
-                    <View style={styles.rightContent}>
-                        <AntDesign
-                            style={styles.picandvideoArrowIcons}
-                            name="arrowright"
-                            size={20}
-                            color="#522F60"
-                        />
-                    </View>
-                </View>
-                <View style={styles.picandvideoMainContainer}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false} // This hides the scrollbar
-                        contentContainerStyle={styles.picandvideo}
-                    >
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                        <Image source={HeaderImg} style={styles.picandvideoImage} />
-                    </ScrollView>
-                </View>
-            </View>
-
             <View style={styles.MapContainer}>
-                <View style={styles.MapContainerHeader}>
-                    <View style={styles.locationHeaderContainer}>
-                        <View style={styles.oneContent}>
-                            <View style={styles.descriptionIconsContainer}>
-                                <Ionicons
-                                    name="pin"
-                                    size={16}
-                                    color="#522F60"
-                                    style={styles.Mapicon}
-                                />
-                            </View>
-                            <View style={styles.locationTextContainer}>
-                                <Text style={styles.locationHeadertext}>Lucknow</Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.actionHeaderContainer}>
-                        <View style={styles.twoContent}>
-                            <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
-                        </View>
-                        <View style={styles.threeContent}>
-                            <Ionicons name="heart-outline" size={14} />
-                        </View>
-                        <View style={styles.fourContent}>
-                            <Ionicons name="share-outline" size={14} />
-                        </View>
-                    </View>
-
-                </View>
-
                 <View style={styles.mapSDKContainer}>
                     <Text>Map </Text>
                 </View>
+                <View style={styles.fulladdress}>
+                        <View style={styles.MapIconsContainer}>
+                            <Ionicons
+                                name="pin"
+                                size={16}
+                                color="#522F60"
+                                style={styles.Mapicon}
+                            />
+                        </View>
+                        <View style={styles.fulladdressTextContainer}>
+                            <Text style={styles.fulladdressText} numberOfLines={1}>15001 Chalk Hill Road, Healdsburg, CA 95448</Text>
+                        </View>
+                </View>
             </View>
+            <View style={styles.InfoContainer}>
+                <View style={styles.contactRow}>
+                   <View style={styles.infocomponent}>
+                    <Ionicons name="call-outline" size={18} color="#522F60" style={styles.icon} />
+                    <View style={styles.separator} />
+                    <Text style={styles.contactText}>707-433-8178</Text>
+                   </View> 
+                    <TouchableOpacity style={styles.contactButton}>
+                        <Ionicons name="call-outline" size={18} color="white" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.contactRow}>
+                  <View style={styles.infocomponent}>
+                    <Ionicons name="time-outline" size={18} color="#522F60" style={styles.icon} />
+                    <View style={styles.separator} />
+                    <Text style={styles.time}>11:00 ~ 17:00</Text>
+                   </View>
+                 <View style={styles.infocomponent}>
+                    <MaterialIcons name="event" size={18} color="#522F60" style={styles.icon} />
+                    <View style={styles.separator} />
+                    <Text style={styles.date}>Open All Year</Text>
+                </View>
+                </View>
+                <View style={styles.contactRow}>
+                  <View style={styles.infocomponent}>
+                  <FontAwesome name="star" size={18} color="#522F60" style={styles.icon} />
+                  <View style={styles.separator} />
+                 <Text style={styles.rating}>4.5</Text>
+                   </View>
+                 <View style={styles.infocomponent}>
+                 <FontAwesome name="thumbs-up" size={18} color="#522F60" style={styles.icon} />
+                 <View style={styles.separator} />
+                 <Text style={styles.likes}>40,853</Text>
+                </View>
+                </View>
+
+                <View style={styles.infocomponent}>
+                    <MaterialIcons name="tag" size={18} color="#522F60" style={styles.icon} />
+                    <View style={styles.separator} />
+                    <Text style={styles.hashtags}>#sonoma #healdsburg #california</Text>
+                </View>
+            </View>
+
 
             <DiscoverWines />
             <View style={styles.bottom}></View>
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         position: "absolute",
-        top: 25,
+        top: 55,
         right: 15,
         flexDirection: "row",
         gap: 10,
@@ -191,14 +199,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         position: "absolute",
         bottom: 25,
-        left: 16,
-    },
-    subtext: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "400",
-        position: "absolute",
-        bottom: 10,
         left: 16,
     },
     textContainer: {},
@@ -256,13 +256,13 @@ const styles = StyleSheet.create({
         color: "#522F60",
     },
     //////////////////////////////////////////Pic and Video //////////////////////////////////////////
-    picandvideoContainer: {
+    memoriesContainer: {
         marginTop: 8,
         borderRadius: 4,
         borderColor: "#522F6080",
         height: 146,
     },
-    picandvideoHeaderContainer: {
+    memoriesHeaderContainer: {
         height: 22,
         marginHorizontal: 16,
         flexDirection: "row",
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
-    picandvideoHeadertext: {
+    memoriesHeadertext: {
         fontFamily: "Hiragino Sans",
         fontSize: 13,
         fontWeight: "600",
@@ -281,79 +281,53 @@ const styles = StyleSheet.create({
         letterSpacing: 0.02,
         color: "#522F60",
     },
-    picandvideoMainContainer: {
+    memoriesMainContainer: {
         marginTop: 4,
         marginLeft: 16,
     },
-    picandvideo: {
+    memories: {
         flexDirection: "row",
     },
-    picandvideoImage: {
+     memoriesImage: {
         width: 100,
         height: 100,
         marginHorizontal: 1,
     },
-    picandvideoIcons: {},
+    memoriesIcons: {},
     rightContent: {},
-    picandvideoArrowIcons: {},
-    icon: {},
+    memoriesArrowIcons: {},
     ///////////////////////////////////// Map ///////////////////////////////////////////
     MapContainer: {},
-    MapContainerHeader: {
+    MapIconsContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        borderRightWidth: 1,
+        height: 30,
+        width: 32,
+        borderColor: "#522F6080",
+    },
+    fulladdress: {
+        //marginTop:1,
         marginHorizontal: 16,
+        borderRadius: 4,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        borderBottomWidth: 1,
+        borderRightWidth: 1,
+        borderLeftWidth: 1,
+        borderColor: "#522F6080",
         height: 30,
         flexDirection: "row",
-        justifyContent: "space-between",
     },
-    actionHeaderContainer: {
-        flexDirection: "row",
-    },
-    locationHeaderContainer: {
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: "#522F6080",
-        flexDirection: "row",
-        flex: 1
-    },
-    oneContent: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    locationTextContainer: {
+    fulladdressTextContainer: {
+        flex: 1,
         marginLeft: 10,
+        justifyContent: "center",
     },
-    locationHeadertext: {
+    fulladdressText: {
         fontFamily: "SF Pro",
-        fontSize: 16,
-        fontWeight: "400",
+        fontSize: 14,
         color: "#522F60",
-    },
-    twoContent: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 4,
-        borderColor: "#522F6080",
-        height: 30,
-        width: 30,
-        borderWidth: 1,
-    },
-    threeContent: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 4,
-        borderColor: "#522F6080",
-        height: 30,
-        width: 30,
-        borderWidth: 1,
-    },
-    fourContent: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 4,
-        borderColor: "#522F6080",
-        height: 30,
-        width: 30,
-        borderWidth: 1,
     },
     Mapicon: {},
     ////////////////////////////////
@@ -363,9 +337,85 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 16,
-        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#522F6080",
+        borderRadius: 8,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+    },
+    ////////////////////////////////////////// Contact Info //////////////////////////////////////////
+    InfoContainer: {
+        marginHorizontal: 16,
+        marginVertical: 4,
+    },
+    infocomponent: {
+        flexDirection: "row",
+        alignItems: "center",
         borderWidth: 1,
         borderColor: "#522F6080",
         borderRadius: 4,
+        height: 30,
+        marginVertical: 4,
+        marginRight: 4,
+        paddingHorizontal: 8,
+        width: 'auto',
+        flex: 1
     },
+    contactRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flex: 1
+    },
+    contactText: {
+        fontSize: 14,
+        color: "#522F60",
+        flex: 1, // This allows the text to take up available space
+        paddingLeft: 8,
+    },
+    time: {
+        fontSize: 14,
+        color: "#522F60",
+        flex: 1, // This allows the text to take up available space
+        paddingLeft: 8,
+    },
+    date: {
+        fontSize: 14,
+        color: "#522F60",
+        flex: 1, // This allows the text to take up available space
+        paddingLeft: 8,
+    },
+    rating: {
+        fontSize: 14,
+        color: "#522F60",
+        flex: 1, // This allows the text to take up available space
+        paddingLeft: 8,
+    },
+    likes: {
+        fontSize: 14,
+        color: "#522F60",
+        flex: 1, // This allows the text to take up available space
+        paddingLeft: 8,
+    },
+    contactButton: {
+        backgroundColor: "#522F60",
+        borderRadius: 4,
+        width: 30,
+        height: 30,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    separator: {
+        width: 1,
+        height: "100%",
+        backgroundColor: "#522F6080",
+        marginHorizontal: 5,
+    },
+    hashtags: {
+        fontSize: 14,
+        color: "#522F60",
+    },
+    // icon: {
+    //     marginRight: 8,
+    // },
 });
