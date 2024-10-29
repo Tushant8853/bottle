@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#522F60",
     },
-    // icon: {
-    //     marginRight: 8,
-    // },
+    icon: {},
+    errorText:{},
+    loading:{},
 });
