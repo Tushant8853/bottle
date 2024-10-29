@@ -1,40 +1,112 @@
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    Image,
-} from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
+import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
 
+type WineriesDetailsRouteProp = RouteProp<RootStackParamList, 'WineriesDetails'>;
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
+interface WineryDetails {
+  id: string;
+  name: string;
+  banner: string;
+  description: string;
+  location: string;
+  phone: string;
+  working_hours: string;
+  star_rating: number;
+  seasons_open: string;
+  likes: number;
+  hashtags: string[];
+}
 
-const WineriesDetails: React.FC = () => {
+const WineriesDetails = () => {
+  const route = useRoute<WineriesDetailsRouteProp>();
+  const { id } = route.params;
+  const [winery, setWinery] = useState<WineryDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const imagePrefix = "https://bottleshock.twic.pics/file/";
+
+  useEffect(() => {
+    const fetchWineryDetails = async () => {
+      const { data, error } = await supabase
+        .from('bottleshock_wineries')
+        .select(`
+          id, winery_name, banner, description, address, phone, working_hours,
+          star_rating, seasons_open, likes, hashtags
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching winery details:", error.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data) {
+        setWinery({
+          id: data.id,
+          name: data.winery_name,
+          banner: `${imagePrefix}${data.banner}`,
+          description: data.description,
+          location: data.address,
+          phone: data.phone,
+          working_hours: data.working_hours,
+          star_rating: data.star_rating,
+          seasons_open: data.seasons_open,
+          likes: data.likes,
+          hashtags: data.hashtags.split(', '), // Assuming hashtags are comma-separated
+        });
+      }
+
+      setLoading(false);
+    };
+
+    fetchWineryDetails();
+  }, [id]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
+  }
+
+  if (!winery) {
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.imageContainer}>
-                <Image source={HeaderImg} style={styles.image} />
-                <View style={styles.textContainer}>
-                    <Text style={styles.text}>Heading</Text>
-                </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="heart-outline" size={24} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Ionicons name="share-outline" size={24} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={styles.memoriesContainer}>
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Winery details not found.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.imageContainer}>
+        {winery.banner ? (
+          <TwicImg src={winery.banner} style={styles.headerimage} />
+        ) : (
+          <Image source={HeaderImg} style={styles.headerimage} />
+        )}
+        <View style={styles.textContainer}>
+          <Text style={styles.titletext}>{winery.name}</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="heart-outline" size={24} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
+            <Ionicons name="share-outline" size={24} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.memoriesContainer}>
                 <View style={styles.memoriesHeaderContainer}>
                     <View style={styles.leftContent}>
                         <FontAwesome
@@ -80,10 +152,7 @@ const WineriesDetails: React.FC = () => {
                 </View>
                 <View style={styles.descriptionTextContainer}>
                     <Text style={styles.descriptionText} numberOfLines={5}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                        pulvinar lobortis dui, id iaculis est consectetur id. Donec viverra,
-                        arcu condimentum consectetur, libero nunc condimentum nunc, id
-                        pulvinar nisi purus in velit. igyighiuh
+                    {winery.description}
                     </Text>
                 </View>
             </View>
@@ -101,7 +170,7 @@ const WineriesDetails: React.FC = () => {
                             />
                         </View>
                         <View style={styles.fulladdressTextContainer}>
-                            <Text style={styles.fulladdressText} numberOfLines={1}>15001 Chalk Hill Road, Healdsburg, CA 95448</Text>
+                            <Text style={styles.fulladdressText} numberOfLines={1}>{winery.location}</Text>
                         </View>
                 </View>
             </View>
@@ -110,7 +179,7 @@ const WineriesDetails: React.FC = () => {
                    <View style={styles.infocomponent}>
                     <Ionicons name="call-outline" size={18} color="#522F60" style={styles.icon} />
                     <View style={styles.separator} />
-                    <Text style={styles.contactText}>707-433-8178</Text>
+                    <Text style={styles.contactText}>{winery.phone}</Text>
                    </View> 
                     <TouchableOpacity style={styles.contactButton}>
                         <Ionicons name="call-outline" size={18} color="white" />
@@ -120,39 +189,39 @@ const WineriesDetails: React.FC = () => {
                   <View style={styles.infocomponent}>
                     <Ionicons name="time-outline" size={18} color="#522F60" style={styles.icon} />
                     <View style={styles.separator} />
-                    <Text style={styles.time}>11:00 ~ 17:00</Text>
+                    <Text style={styles.time}>{winery.working_hours}</Text>
                    </View>
                  <View style={styles.infocomponent}>
                     <MaterialIcons name="event" size={18} color="#522F60" style={styles.icon} />
                     <View style={styles.separator} />
-                    <Text style={styles.date}>Open All Year</Text>
+                    <Text style={styles.date}>{winery.seasons_open}</Text>
                 </View>
                 </View>
                 <View style={styles.contactRow}>
                   <View style={styles.infocomponent}>
                   <FontAwesome name="star" size={18} color="#522F60" style={styles.icon} />
                   <View style={styles.separator} />
-                 <Text style={styles.rating}>4.5</Text>
+                 <Text style={styles.rating}>{winery.star_rating}</Text>
                    </View>
                  <View style={styles.infocomponent}>
                  <FontAwesome name="thumbs-up" size={18} color="#522F60" style={styles.icon} />
                  <View style={styles.separator} />
-                 <Text style={styles.likes}>40,853</Text>
+                 <Text style={styles.likes}>{winery.likes}</Text>
                 </View>
                 </View>
 
                 <View style={styles.infocomponent}>
                     <MaterialIcons name="tag" size={18} color="#522F60" style={styles.icon} />
                     <View style={styles.separator} />
-                    <Text style={styles.hashtags}>#sonoma #healdsburg #california</Text>
+                    <Text style={styles.hashtags}>{winery.hashtags}</Text>
                 </View>
             </View>
 
 
             <DiscoverWines />
             <View style={styles.bottom}></View>
-        </ScrollView>
-    );
+    </ScrollView>
+  );
 };
 
 export default WineriesDetails;
@@ -168,7 +237,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         position: "relative",
     },
-    image: {
+    headerimage: {
         height: 320,
         width: "100%",
         resizeMode: "cover",
@@ -193,7 +262,7 @@ const styles = StyleSheet.create({
     rotatedIcon: {
         transform: [{ rotate: "45deg" }],
     },
-    text: {
+    titletext: {
         color: "white",
         fontSize: 32,
         fontWeight: "600",

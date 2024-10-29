@@ -65,6 +65,7 @@ const Wineries: React.FC = () => {
     fetchWineries();
   }, []);
 
+
   const handleSavePress = (index: number): void => {
     const newStatus = [...likedStatus];
     newStatus[index] = !newStatus[index];
@@ -90,6 +91,7 @@ const Wineries: React.FC = () => {
         <View style={styles.gridContainer}>
           {wineries.map((winery, index) => (
             <View key={winery.id} style={styles.gridItem}>
+             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })}>
               <View style={styles.ComponentContainer}>
                 <View style={styles.imageWrapper}>
                   {winery.banner && (
@@ -119,6 +121,7 @@ const Wineries: React.FC = () => {
                 <Text style={styles.subcomponentText}>{winery.address}</Text>
               </View>
               </View>
+             </Pressable>
             </View>
           ))}
         </View>
