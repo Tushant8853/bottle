@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -8,9 +8,10 @@ import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
+import MapView, { Marker } from 'react-native-maps';
 
 type WineriesDetailsRouteProp = RouteProp<RootStackParamList, 'WineriesDetails'>;
-const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
+
 interface WineryDetails {
   id: string;
   name: string;
@@ -23,53 +24,85 @@ interface WineryDetails {
   seasons_open: string;
   likes: number;
   hashtags: string[];
+  location_lat: number;
+  location_long: number;
 }
 
 const WineriesDetails = () => {
   const route = useRoute<WineriesDetailsRouteProp>();
-  const { id } = route.params;
+  const { id: wineryId } = route.params;
   const [winery, setWinery] = useState<WineryDetails | null>(null);
+  const [memoriesImages, setMemoriesImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
+  const [expandedwinery, setExpandedwinery] = useState<string | null>(null); // State to track expanded description
 
+  const handleToggleDescription = (id: string) => {
+    setExpandedwinery(prev => (prev === id ? null : id));
+  };
   useEffect(() => {
-    const fetchWineryDetails = async () => {
-      const { data, error } = await supabase
-        .from('bottleshock_wineries')
-        .select(`
-          id, winery_name, banner, description, address, phone, working_hours,
-          star_rating, seasons_open, likes, hashtags
-        `)
-        .eq('id', id)
-        .single();
+    const fetchWineryAndMemories = async () => {
+      try {
+        // Fetch winery details
+        const { data: wineryData, error: wineryError } = await supabase
+          .from('bottleshock_wineries')
+          .select('wineries_id, winery_name, banner, description, address, phone, working_hours,star_rating, seasons_open, likes, hashtags, location_lat, location_long ')
+          .eq('wineries_id', wineryId)
+          .single();
 
-      if (error) {
-        console.error("Error fetching winery details:", error.message);
+        if (wineryError) throw new Error(wineryError.message);
+
+        if (wineryData) {
+          setWinery({
+            id: wineryData.wineries_id,
+            name: wineryData.winery_name,
+            banner: `${imagePrefix}${wineryData.banner}`,
+            description: wineryData.description,
+            location: wineryData.address,
+            phone: wineryData.phone,
+            working_hours: wineryData.working_hours,
+            star_rating: wineryData.star_rating,
+            seasons_open: wineryData.seasons_open,
+            likes: wineryData.likes,
+            hashtags: wineryData.hashtags.split(', '),
+            location_lat: wineryData.location_lat,
+            location_long: wineryData.location_long,
+          });
+        }
+
+        // Fetch memories and related images
+        const { data: memoriesData, error: memoriesError } = await supabase
+          .from('bottleshock_memories')
+          .select('id')
+          .eq("is_public", true)
+          .eq('winery_id', wineryId);
+
+        if (memoriesError) throw new Error(memoriesError.message);
+
+        const memoryIds = memoriesData.map((memory) => memory.id);
+        
+        // Fetch images from `bottleshock_memory_gallery` for the retrieved memory IDs
+        if (memoryIds.length > 0) {
+          const { data: imagesData, error: imagesError } = await supabase
+            .from('bottleshock_memory_gallery')
+            .select('file')
+            .eq("is_thumbnail", true)
+            .in('memory_id', memoryIds);
+
+          if (imagesError) throw new Error(imagesError.message);
+
+          setMemoriesImages(imagesData.map((img) => `${imagePrefix}${img.file}`));
+        }
+
         setLoading(false);
-        return;
+      } catch (error) {
+        console.error("Error fetching winery and memories details:", error);
+        setLoading(false);
       }
-
-      if (data) {
-        setWinery({
-          id: data.id,
-          name: data.winery_name,
-          banner: `${imagePrefix}${data.banner}`,
-          description: data.description,
-          location: data.address,
-          phone: data.phone,
-          working_hours: data.working_hours,
-          star_rating: data.star_rating,
-          seasons_open: data.seasons_open,
-          likes: data.likes,
-          hashtags: data.hashtags.split(', '), // Assuming hashtags are comma-separated
-        });
-      }
-
-      setLoading(false);
     };
 
-    fetchWineryDetails();
-  }, [id]);
+    fetchWineryAndMemories();
+  }, [wineryId]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
@@ -105,41 +138,31 @@ const WineriesDetails = () => {
             <Ionicons name="share-outline" size={24} />
           </TouchableOpacity>
         </View>
-      </View>
+      </View>      
       <View style={styles.memoriesContainer}>
-                <View style={styles.memoriesHeaderContainer}>
-                    <View style={styles.leftContent}>
-                        <FontAwesome
-                            style={styles.memoriesIcons}
-                            name="image"
-                            size={16}
-                            color="#522F60"
-                        />
-                        <Text style={styles.memoriesHeadertext}> memories </Text>
-                    </View>
-                    <View style={styles.rightContent}>
-                        <AntDesign
-                            style={styles.memoriesArrowIcons}
-                            name="arrowright"
-                            size={20}
-                            color="#522F60"
-                        />
-                    </View>
-                </View>
-                <View style={styles.memoriesMainContainer}>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false} // This hides the scrollbar
-                        contentContainerStyle={styles.memories}
-                    >
-                        <Image source={HeaderImg} style={styles.memoriesImage} />
-                        <Image source={HeaderImg} style={styles.memoriesImage} />
-                        <Image source={HeaderImg} style={styles.memoriesImage} />
-                        <Image source={HeaderImg} style={styles.memoriesImage} />
-                        <Image source={HeaderImg} style={styles.memoriesImage} />
-                    </ScrollView>
-                </View>
-            </View>
+        <View style={styles.memoriesHeaderContainer}>
+          <View style={styles.leftContent}>
+            <FontAwesome style={styles.memoriesIcons} name="image" size={16} color="#522F60" />
+            <Text style={styles.memoriesHeadertext}> Memories</Text>
+          </View>
+          <View style={styles.rightContent}>
+            <AntDesign style={styles.memoriesArrowIcons} name="arrowright" size={20} color="#522F60" />
+          </View>
+        </View>
+        
+        <View style={styles.memoriesMainContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memories}>
+            {memoriesImages.length > 0 ? (
+              memoriesImages.map((image, index) => (
+                <TwicImg key={index} src={image} style={styles.memoriesImage} />
+              ))
+            ) : (
+              <Text>No memories available</Text>
+            )}
+          </ScrollView>
+        </View>
+      </View>
+
 
             <View style={styles.descriptionContainer}>
                 <View style={styles.descriptionIconsContainer}>
@@ -151,15 +174,37 @@ const WineriesDetails = () => {
                     />
                 </View>
                 <View style={styles.descriptionTextContainer}>
-                    <Text style={styles.descriptionText} numberOfLines={5}>
-                    {winery.description}
-                    </Text>
+                <Pressable
+                            style={[
+                                styles.descriptiontextContainer,
+                                expandedwinery === winery.id && { height: 'auto' }, // Auto height when expanded
+                            ]}
+                            onPress={() => handleToggleDescription(winery.id)}
+                        >
+                            <Text style={styles.descriptionText} numberOfLines={expandedwinery === winery.id ? undefined : 5}>
+                                {winery.description}
+                            </Text>
+                </Pressable>
                 </View>
             </View>
             <View style={styles.MapContainer}>
-                <View style={styles.mapSDKContainer}>
-                    <Text>Map </Text>
-                </View>
+            <MapView
+                        style={styles.mapSDKContainer}
+                        initialRegion={{
+                            latitude: winery.location_lat,
+                            longitude: winery.location_long,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }}
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: winery.location_lat,
+                                longitude: winery.location_long,
+                            }}
+                            title={winery.name}
+                        />
+                    </MapView>
                 <View style={styles.fulladdress}>
                         <View style={styles.MapIconsContainer}>
                             <Ionicons
@@ -275,7 +320,6 @@ const styles = StyleSheet.create({
     descriptionContainer: {
         borderWidth: 1,
         marginHorizontal: 16,
-        height: 110,
         marginTop: 8,
         borderRadius: 4,
         borderColor: "#522F6080",
@@ -302,6 +346,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
     },
     descriptionIcons: {},
+    descriptiontextContainer:{},
     //////////////////////////////////////////Date and Time //////////////////////////////////////////
     datecontainer: {
         flexDirection: "row",
@@ -366,7 +411,8 @@ const styles = StyleSheet.create({
     rightContent: {},
     memoriesArrowIcons: {},
     ///////////////////////////////////// Map ///////////////////////////////////////////
-    MapContainer: {},
+    MapContainer: {
+    },
     MapIconsContainer: {
         alignItems: "center",
         justifyContent: "center",

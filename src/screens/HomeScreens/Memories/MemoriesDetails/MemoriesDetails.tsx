@@ -115,7 +115,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: winery, error: wineryError } = await supabase
                                 .from("bottleshock_wineries")
                                 .select("winery_name")
-                                .eq("id", memory.winery_id)
+                                .eq("wineries_id", memory.winery_id)
                                 .single();
 
                             if (wineryError) {

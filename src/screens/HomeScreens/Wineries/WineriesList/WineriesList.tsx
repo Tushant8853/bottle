@@ -31,7 +31,7 @@ const WineriesList = () => {
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from("bottleshock_wineries")
-        .select("id, winery_name, address, verified, banner");
+        .select("wineries_id, winery_name, address, verified, banner");
 
       if (error) {
         console.error("Error fetching wineries:", error.message);
@@ -39,7 +39,7 @@ const WineriesList = () => {
       }
 
       const formattedWineries = data.map((winery: any) => ({
-        id: winery.id,
+        id: winery.wineries_id,
         name: winery.winery_name,
         address: winery.address,
         logo: winery.banner ? `${imagePrefix}${winery.banner}` : null,

@@ -46,7 +46,7 @@ const Wineries: React.FC = () => {
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from('bottleshock_wineries')
-        .select('id, winery_name, address, verified, banner');
+        .select('wineries_id, winery_name, address, verified, banner');
 
       if (error) {
         console.error('Error fetching wineries:', error.message);
@@ -91,7 +91,7 @@ const Wineries: React.FC = () => {
         <View style={styles.gridContainer}>
           {wineries.map((winery, index) => (
             <View key={winery.id} style={styles.gridItem}>
-             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })}>
+             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.wineries_id })}>
               <View style={styles.ComponentContainer}>
                 <View style={styles.imageWrapper}>
                   {winery.banner && (

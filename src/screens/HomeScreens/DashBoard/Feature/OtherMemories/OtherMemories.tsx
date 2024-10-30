@@ -39,6 +39,7 @@ const OtherMemories: React.FC = () => {
         const { data: memories, error } = await supabase
           .from("bottleshock_memories")
           .select("*")
+          .eq("is_public", true)
           .neq("user_id", UID);
 
         if (error) {
