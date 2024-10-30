@@ -26,13 +26,13 @@ installTwicPics({
 const { width } = Dimensions.get('window');
 
 interface WineryData {
-  id: number;
   name: string;
   location: string;
   banner: string;
   verified: boolean;
-  address:string;
+  address: string;
   winery_name: string;
+  wineries_id:number;
 }
 
 const Wineries: React.FC = () => {
@@ -79,7 +79,7 @@ const Wineries: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
-        <Bannericon width={13} height={32} color="#522F60"/>
+          <Bannericon width={13} height={32} color="#522F60" />
           <Text style={styles.text}>featured wineries</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('WineriesList')}>
@@ -90,40 +90,41 @@ const Wineries: React.FC = () => {
       <ScrollView>
         <View style={styles.gridContainer}>
           {wineries.map((winery, index) => (
-            <View key={winery.id} style={styles.gridItem}>
-             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.wineries_id })}>
-              <View style={styles.ComponentContainer}>
-                <View style={styles.imageWrapper}>
-                  {winery.banner && (
-                    <TwicImg
-                      src={winery.banner}
-                      style={styles.component}
+            <View key={winery.wineries_id} style={styles.gridItem}>
+              <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.wineries_id })}>
+                <View style={styles.ComponentContainer}>
+                  <View style={styles.imageWrapper}>
+                    {winery.banner && (
+                      <TwicImg
+                        src={winery.banner}
+                        style={styles.component}
                       //resizeMode="cover"
-                    />
-                  )}
-                  <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
-                    <Icon
-                      name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
-                      size={20}
-                      color="#30425F"
-                    />
-                  </Pressable>
+                      />
+                    )}
+                    <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
+                      <Icon
+                        name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
+                        size={20}
+                        color="#30425F"
+                      />
+                    </Pressable>
+                  </View>
+                  <View>
+                    <View style={styles.componentTitle}>
+                      <Text style={styles.componentText} numberOfLines={1}>
+                        {winery.winery_name}{' '}
+                      </Text>
+                      <Text style={styles.componentText1}>
+                        {winery.verified && <Icons name="verified" size={14} color="#522F60" />}
+                      </Text>
+                    </View>
+                    <Text style={styles.subcomponentText}>{winery.address}</Text>
+                  </View>
                 </View>
-              <View>
-                <View style={styles.componentTitle}>
-                <Text style={styles.componentText} numberOfLines={1}>
-                  {winery.winery_name}{' '}               
-                </Text>
-                <Text style={styles.componentText1}>
-                  {winery.verified && <Icons name="verified" size={14} color="#522F60"/>}
-                </Text> 
-                </View>
-                <Text style={styles.subcomponentText}>{winery.address}</Text>
-              </View>
-              </View>
-             </Pressable>
+              </Pressable>
             </View>
           ))}
+
         </View>
       </ScrollView>
     </View>
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     height: 'auto',
     position: 'relative',
-   paddingBottom: 1,
+    paddingBottom: 1,
   },
   ComponentContainer: {
     borderRadius: 10,

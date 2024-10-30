@@ -10,6 +10,6 @@ export type RootStackParamList = {
     MemoriesDetails: { id: string };
     RestaurantList: undefined;
     RestaurantsDetails: undefined;
-    WineriesDetails: { id: string };
+    WineriesDetails: { id: number };
     DiscoverWinespages:undefined;
 };
