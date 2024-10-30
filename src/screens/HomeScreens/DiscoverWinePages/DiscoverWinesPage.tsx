@@ -5,7 +5,8 @@ import {
     TextInput,
     ScrollView,
     Image,
-    Animated
+    Animated,
+    Pressable
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
@@ -19,8 +20,9 @@ interface Wine {
     year: number;
     brand_name: string;
     varietal_name: string;
-    winery_name:string;
-    bottleshock_rating:number;
+    winery_name: string;
+    bottleshock_rating: number;
+    winery_id: number; // Ensure winery_id is included here
 }
 
 const WineSkeletonLoader = () => {
@@ -114,20 +116,21 @@ const DiscoverWinespages: React.FC = () => {
                 const { data: bottleshock_wineries_Data, error: wineriesError } = await supabase
                     .from("bottleshock_wineries")
                     .select("wineries_id, winery_name");
-        
+
                 if (wineriesError) {
                     console.error("🚨 Error fetching wineries:", wineriesError.message);
                     return;
                 }
-        
+
                 if (bottleshock_wineries_Data) {
                     const bottleshock_winery_varietals_Details = await Promise.all(
                         bottleshock_wineries_Data.map(async (winery) => {
                             const { data: varietalsData, error: varietalsError } = await supabase
                                 .from("bottleshock_winery_varietals")
                                 .select("varietal_name, brand_name, winery_varietals_id")
-                                .eq("winery_id", winery.wineries_id)
+                                .eq("winery_id", winery.wineries_id) // Use winery.wineries_id for filtering
                                 .limit(1);
+
                             if (varietalsError) {
                                 return { winery_name: winery.winery_name, varietals: [], wines: [] };
                             }
@@ -135,30 +138,31 @@ const DiscoverWinespages: React.FC = () => {
                                 (varietalsData || []).map(async (varietal) => {
                                     const { data: wineDetails, error: wineError } = await supabase
                                         .from("bottleshock_wines")
-                                        .select("year, image, wines_id, varietal_id,bottleshock_rating")
+                                        .select("year, image, wines_id, varietal_id, bottleshock_rating")
                                         .eq("varietal_id", varietal.winery_varietals_id)
                                         .limit(1);
-        
+
                                     if (wineError) {
                                         console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
                                         return [];
                                     }
-        
+
                                     return (wineDetails || []).map((wine) => ({
                                         ...wine,
                                         year: wine.year.slice(0, 4),  // Extract only the year
                                         image: `${imagePrefix}${wine.image}`,
                                         winery_name: winery.winery_name,
                                         varietal_name: varietal.varietal_name,
-                                        brand_name: varietal.brand_name
+                                        brand_name: varietal.brand_name,
+                                        winery_id: winery.wineries_id // Include the winery_id
                                     }));
                                 })
                             );
-        
+
                             return winesData.flat();
                         })
                     );
-        
+
                     setWines(bottleshock_winery_varietals_Details.flat());
                 }
             } finally {
@@ -201,36 +205,38 @@ const DiscoverWinespages: React.FC = () => {
                     </>
                 ) : (
                     wines.map((wine, index) => (
-                        <View key={index} style={styles.ListOfStoriesContainer}>
-                            <View style={styles.Stories}>
-                                <View style={styles.StoriesImgContainer}>
-                                    <Image
-                                        source={{ uri: wine.image }}
-                                        style={styles.StoriesImage}
-                                    />
-                                </View>
-                                <View style={styles.StoriesText}>
-                                    <View style={styles.StoriesTitle}>
-                                        <View style={styles.StoriesTitleTextContainer}>
-                                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                                {wine.winery_name}
+                        <Pressable onPress={() => navigation.navigate("WineListVarietal", { winery_id: wine.winery_id })}>
+                            <View style={styles.ListOfStoriesContainer}>
+                                <View style={styles.Stories}>
+                                    <View style={styles.StoriesImgContainer}>
+                                        <Image
+                                            source={{ uri: wine.image }}
+                                            style={styles.StoriesImage}
+                                        />
+                                    </View>
+                                    <View style={styles.StoriesText}>
+                                        <View style={styles.StoriesTitle}>
+                                            <View style={styles.StoriesTitleTextContainer}>
+                                                <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                                    {wine.winery_name}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                                            {wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}
+                                        </Text>
+                                        <View style={styles.StoriesDescriptionConatiner}>
+                                            <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                                {wine.year}
+                                            </Text>
+                                            <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                                bottleshock<Text style={styles.boldText}>{wine.bottleshock_rating}</Text>
                                             </Text>
                                         </View>
                                     </View>
-                                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                        {wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}
-                                    </Text>
-                                    <View style={styles.StoriesDescriptionConatiner}>
-                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            {wine.year}
-                                        </Text>
-                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            bottleshock<Text style={styles.boldText}>{wine.bottleshock_rating}</Text>
-                                        </Text>
-                                    </View>
                                 </View>
                             </View>
-                        </View>
+                        </Pressable>
                     ))
                 )}
             </ScrollView>

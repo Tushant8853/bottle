@@ -12,4 +12,5 @@ export type RootStackParamList = {
     RestaurantsDetails: { id: number };
     WineriesDetails: { id: number };
     DiscoverWinespages:undefined;
+    WineListVarietal: {winery_id:number};
 };
