@@ -15,12 +15,12 @@ import { supabase } from "../../../../backend/supabase/supabaseClient";
 import styles from './index.style';
 
 interface Wine {
-    id: string;
     image: string;
-    wines_name: string;
     year: number;
-    winery_id: number;
-    address?: string;
+    brand_name: string;
+    varietal_name: string;
+    winery_name:string;
+    bottleshock_rating:number;
 }
 
 const WineSkeletonLoader = () => {
@@ -111,44 +111,60 @@ const DiscoverWinespages: React.FC = () => {
         const fetchWines = async () => {
             try {
                 setIsLoading(true);
-                const { data: WinesData, error } = await supabase
-                    .from("bottleshock_wines")
-                    .select("id, image, wines_name, year, winery_id");
-
-                if (error) {
-                    console.error("Error fetching wines:", error.message);
+                const { data: bottleshock_wineries_Data, error: wineriesError } = await supabase
+                    .from("bottleshock_wineries")
+                    .select("wineries_id, winery_name");
+        
+                if (wineriesError) {
+                    console.error("🚨 Error fetching wineries:", wineriesError.message);
                     return;
                 }
-
-                if (WinesData) {
-                    const updatedWines = await Promise.all(
-                        WinesData.map(async (wine) => {
-                            const { data: wineryData, error: wineryError } = await supabase
-                                .from("bottleshock_wineries")
-                                .select("address")
-                                .eq("id", wine.winery_id)
-                                .single();
-
-                            if (wineryError) {
-                                console.error(`Error fetching address for winery_id ${wine.winery_id}:`, wineryError);
+        
+                if (bottleshock_wineries_Data) {
+                    const bottleshock_winery_varietals_Details = await Promise.all(
+                        bottleshock_wineries_Data.map(async (winery) => {
+                            const { data: varietalsData, error: varietalsError } = await supabase
+                                .from("bottleshock_winery_varietals")
+                                .select("varietal_name, brand_name, winery_varietals_id")
+                                .eq("winery_id", winery.wineries_id)
+                                .limit(1);
+                            if (varietalsError) {
+                                return { winery_name: winery.winery_name, varietals: [], wines: [] };
                             }
-
-                            return {
-                                ...wine,
-                                address: wineryData?.address || "Address not available",
-                            };
+                            const winesData = await Promise.all(
+                                (varietalsData || []).map(async (varietal) => {
+                                    const { data: wineDetails, error: wineError } = await supabase
+                                        .from("bottleshock_wines")
+                                        .select("year, image, wines_id, varietal_id,bottleshock_rating")
+                                        .eq("varietal_id", varietal.winery_varietals_id)
+                                        .limit(1);
+        
+                                    if (wineError) {
+                                        console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
+                                        return [];
+                                    }
+        
+                                    return (wineDetails || []).map((wine) => ({
+                                        ...wine,
+                                        year: wine.year.slice(0, 4),  // Extract only the year
+                                        image: `${imagePrefix}${wine.image}`,
+                                        winery_name: winery.winery_name,
+                                        varietal_name: varietal.varietal_name,
+                                        brand_name: varietal.brand_name
+                                    }));
+                                })
+                            );
+        
+                            return winesData.flat();
                         })
                     );
-
-                    setWines(updatedWines);
+        
+                    setWines(bottleshock_winery_varietals_Details.flat());
                 }
-            } catch (err) {
-                console.error("Error fetching wines:", err);
             } finally {
                 setIsLoading(false);
             }
         };
-
         fetchWines();
     }, []);
 
@@ -184,12 +200,12 @@ const DiscoverWinespages: React.FC = () => {
                         <WineSkeletonLoader />
                     </>
                 ) : (
-                    wines.map((wine) => (
-                        <View key={wine.id} style={styles.ListOfStoriesContainer}>
+                    wines.map((wine, index) => (
+                        <View key={index} style={styles.ListOfStoriesContainer}>
                             <View style={styles.Stories}>
                                 <View style={styles.StoriesImgContainer}>
                                     <Image
-                                        source={{ uri: `${imagePrefix}${wine.image}` }}
+                                        source={{ uri: wine.image }}
                                         style={styles.StoriesImage}
                                     />
                                 </View>
@@ -197,19 +213,19 @@ const DiscoverWinespages: React.FC = () => {
                                     <View style={styles.StoriesTitle}>
                                         <View style={styles.StoriesTitleTextContainer}>
                                             <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                                {wine.address}
+                                                {wine.winery_name}
                                             </Text>
                                         </View>
                                     </View>
                                     <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                        {wine.wines_name || "Address not available"}
+                                        {wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}
                                     </Text>
                                     <View style={styles.StoriesDescriptionConatiner}>
                                         <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            {new Date(wine.year).getFullYear()}
+                                            {wine.year}
                                         </Text>
                                         <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            bottleshock<Text style={styles.boldText}>100</Text>
+                                            bottleshock<Text style={styles.boldText}>{wine.bottleshock_rating}</Text>
                                         </Text>
                                     </View>
                                 </View>
