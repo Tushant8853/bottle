@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
     TextInput,
     ScrollView,
-    Image
+    Image,
+    Animated
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
@@ -22,15 +23,94 @@ interface Wine {
     address?: string;
 }
 
+const WineSkeletonLoader = () => {
+    const animatedValue = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const animate = () => {
+            Animated.sequence([
+                Animated.timing(animatedValue, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(animatedValue, {
+                    toValue: 0,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ]).start(() => animate());
+        };
+
+        animate();
+        return () => animatedValue.stopAnimation();
+    }, []);
+
+    const opacity = animatedValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.3, 0.7],
+    });
+
+    return (
+        <View style={styles.ListOfStoriesContainer}>
+            <View style={styles.Stories}>
+                <Animated.View style={[
+                    styles.StoriesImgContainer,
+                    { opacity, backgroundColor: '#E1E9EE' }
+                ]} />
+                <View style={styles.StoriesText}>
+                    <View style={styles.StoriesTitle}>
+                        <View style={styles.StoriesTitleTextContainer}>
+                            <Animated.View style={{
+                                width: 100,
+                                height: 12,
+                                backgroundColor: '#E1E9EE',
+                                borderRadius: 4,
+                                opacity
+                            }} />
+                        </View>
+                    </View>
+                    <Animated.View style={{
+                        width: 200,
+                        height: 14,
+                        backgroundColor: '#E1E9EE',
+                        borderRadius: 4,
+                        marginTop: 6,
+                        opacity
+                    }} />
+                    <View style={styles.StoriesDescriptionConatiner}>
+                        <Animated.View style={{
+                            width: 60,
+                            height: 12,
+                            backgroundColor: '#E1E9EE',
+                            borderRadius: 4,
+                            opacity
+                        }} />
+                        <Animated.View style={{
+                            width: 80,
+                            height: 12,
+                            backgroundColor: '#E1E9EE',
+                            borderRadius: 4,
+                            opacity
+                        }} />
+                    </View>
+                </View>
+            </View>
+        </View>
+    );
+};
+
 const DiscoverWinespages: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [searchText, setSearchText] = useState('');
     const [wines, setWines] = useState<Wine[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
 
     useEffect(() => {
         const fetchWines = async () => {
             try {
+                setIsLoading(true);
                 const { data: WinesData, error } = await supabase
                     .from("bottleshock_wines")
                     .select("id, image, wines_name, year, winery_id");
@@ -64,6 +144,8 @@ const DiscoverWinespages: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Error fetching wines:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -94,38 +176,47 @@ const DiscoverWinespages: React.FC = () => {
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                {wines.map((wine) => (
-                    <View key={wine.id} style={styles.ListOfStoriesContainer}>
-                        <View style={styles.Stories}>
-                            <View style={styles.StoriesImgContainer}>
-                                <Image
-                                    source={{ uri: `${imagePrefix}${wine.image}` }}
-                                    style={styles.StoriesImage}
-                                />
-                            </View>
-                            <View style={styles.StoriesText}>
-                                <View style={styles.StoriesTitle}>
-                                    <View style={styles.StoriesTitleTextContainer}>
-                                        <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                            {wine.address}
+                {isLoading ? (
+                    <>
+                        <WineSkeletonLoader />
+                        <WineSkeletonLoader />
+                        <WineSkeletonLoader />
+                        <WineSkeletonLoader />
+                    </>
+                ) : (
+                    wines.map((wine) => (
+                        <View key={wine.id} style={styles.ListOfStoriesContainer}>
+                            <View style={styles.Stories}>
+                                <View style={styles.StoriesImgContainer}>
+                                    <Image
+                                        source={{ uri: `${imagePrefix}${wine.image}` }}
+                                        style={styles.StoriesImage}
+                                    />
+                                </View>
+                                <View style={styles.StoriesText}>
+                                    <View style={styles.StoriesTitle}>
+                                        <View style={styles.StoriesTitleTextContainer}>
+                                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                                {wine.address}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                                        {wine.wines_name || "Address not available"}
+                                    </Text>
+                                    <View style={styles.StoriesDescriptionConatiner}>
+                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                            {new Date(wine.year).getFullYear()}
+                                        </Text>
+                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                            bottleshock<Text style={styles.boldText}>100</Text>
                                         </Text>
                                     </View>
                                 </View>
-                                <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                    {wine.wines_name || "Address not available"}
-                                </Text>
-                                <View style={styles.StoriesDescriptionConatiner}>
-                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                        {new Date(wine.year).getFullYear()}
-                                    </Text>
-                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                        bottleshock<Text style={styles.boldText}>100</Text>
-                                    </Text>
-                                </View>
                             </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                )}
             </ScrollView>
             <View style={styles.bottom}></View>
         </View>
