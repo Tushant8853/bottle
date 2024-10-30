@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Pressable,
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
@@ -38,7 +39,7 @@ const RestaurantsList = () => {
       }
 
       const formattedRestaurants = data.map((restaurant: any) => ({
-        id: restaurant.id,
+        Restaurants_id: restaurant.Restaurants_id,
         name: restaurant.restro_name,
         location: restaurant.location,
         logo: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
@@ -85,6 +86,7 @@ const RestaurantsList = () => {
       {/* List of Restaurants */}
       <ScrollView>
         {filteredRestaurants.map((restaurant) => (
+          <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })}>
           <View key={restaurant.id} style={styles.restaurantContainer}>
             {/* Restaurant Info */}
             <View style={styles.restaurantInfo}>
@@ -127,10 +129,11 @@ const RestaurantsList = () => {
               <TwicImg 
                 src={restaurant.logo} 
                 style={styles.logo} 
-                resizeMode="contain" // Adjusted to fit the image correctly
+                //resizeMode="contain" // Adjusted to fit the image correctly
               />
             )}
           </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>

@@ -25,7 +25,7 @@ installTwicPics({
 const { width } = Dimensions.get('window');
 
 interface RestaurantData {
-  id: number;
+  Restaurants_id: number;
   restro_name: string;
   location: string;
   banner: string;
@@ -82,7 +82,7 @@ const Restaurants: React.FC = () => {
           />
           <Text style={styles.text}>featured restaurants</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('RestaurantList')}>
+        <TouchableOpacity onPress={() => navigation.navigate('RestaurantsList')}>
           <Icon name="chevron-right" size={16} color="#522F60" />
         </TouchableOpacity>
       </View>
@@ -90,7 +90,8 @@ const Restaurants: React.FC = () => {
       <ScrollView>
         <View style={styles.gridContainer}>
           {restaurants.map((restaurant, index) => (
-            <View key={restaurant.id} style={styles.gridItem}>
+            <View key={restaurant.Restaurants_id} style={styles.gridItem}>
+              <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })}>
               <View style={styles.ComponentContainer}>
                 <View style={styles.imageWrapper}>
                   {restaurant.banner && (
@@ -120,6 +121,7 @@ const Restaurants: React.FC = () => {
                 <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
               </View>
+              </Pressable>
             </View>
           ))}
         </View>

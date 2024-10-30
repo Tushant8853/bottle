@@ -8,8 +8,8 @@ export type RootStackParamList = {
     UserDashboardScreen: undefined;
     WineDashboardScreen: undefined;
     MemoriesDetails: { id: string };
-    RestaurantList: undefined;
-    RestaurantsDetails: undefined;
+    RestaurantsList: undefined;
+    RestaurantsDetails: { id: number };
     WineriesDetails: { id: number };
     DiscoverWinespages:undefined;
 };
