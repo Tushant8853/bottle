@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable,Linking, Alert } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -9,6 +9,7 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 type RestaurantsDetailsRouteProp = RouteProp<RootStackParamList, 'RestaurantsDetails'>;
 
@@ -27,12 +28,17 @@ interface RestaurantDetails {
   location_lat: number;
   location_long: number;
 }
+interface MemoryData {
+    id: string;
+    file: string;
+  }
 
 const RestaurantsDetails = () => {
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RestaurantsDetailsRouteProp>();
   const { id: RestaurantId } = route.params;
   const [Restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
-  const [memoriesImages, setMemoriesImages] = useState<string[]>([]);
+  const [memoriesData, setMemoriesData] = useState<MemoryData[]>([]);
   const [loading, setLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [expandedwinery, setExpandedRestaurant] = useState<string | null>(null); // State to track expanded description
@@ -40,10 +46,15 @@ const RestaurantsDetails = () => {
   const handleToggleDescription = (id: string) => {
     setExpandedRestaurant(prev => (prev === id ? null : id));
   };
+  const handlePhoneCall = (phoneNumber: string) => {
+    const phoneUrl = `tel:${phoneNumber}`;
+    Linking.openURL(phoneUrl).catch(() => {
+      Alert.alert('Error', 'Unable to make the call');
+    });
+  };
   useEffect(() => {
     const fetchRestaurantAndMemories = async () => {
       try {
-        // Fetch winery details
         const { data: RestaurantData, error: wineryError } = await supabase
           .from('bottleshock_restaurants')
           .select('Restaurants_id, restro_name, banner, description, address, phone, working_hours,star_rating, seasons_open, likes, hashtags, location_lat, location_long ')
@@ -71,50 +82,54 @@ const RestaurantsDetails = () => {
         }
 
         // Fetch memories and related images
-        const { data: memoriesData, error: memoriesError } = await supabase
-          .from('bottleshock_memories')
-          .select('id')
-          .eq("is_public", true)
-          .eq('restaurant_id', RestaurantId);
+         // Fetch memories and related images
+         const { data: memoriesDataResponse, error: memoriesError } = await supabase
+         .from('bottleshock_memories')
+         .select('id')
+         .eq("is_public", true)
+         .eq('restaurant_id', RestaurantId);
 
-        if (memoriesError) throw new Error(memoriesError.message);
+       if (memoriesError) throw new Error(memoriesError.message);
 
-        const memoryIds = memoriesData.map((memory) => memory.id);
-        
-        // Fetch images from `bottleshock_memory_gallery` for the retrieved memory IDs
-        if (memoryIds.length > 0) {
-          const { data: imagesData, error: imagesError } = await supabase
-            .from('bottleshock_memory_gallery')
-            .select('file')
-            .eq("is_thumbnail", true)
-            .in('memory_id', memoryIds);
+       const memoryIds = memoriesDataResponse.map((memory) => memory.id);
 
-          if (imagesError) throw new Error(imagesError.message);
+       // Fetch images from `bottleshock_memory_gallery` for the retrieved memory IDs
+       if (memoryIds.length > 0) {
+         const { data: imagesData, error: imagesError } = await supabase
+           .from('bottleshock_memory_gallery')
+           .select('memory_id, file')
+           .eq("is_thumbnail", true)
+           .in('memory_id', memoryIds);
 
-          setMemoriesImages(imagesData.map((img) => `${imagePrefix}${img.file}`));
-        }
+         if (imagesError) throw new Error(imagesError.message);
 
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching winery and memories details:", error);
-        setLoading(false);
-      }
-    };
+         setMemoriesData(imagesData.map((img) => ({
+           id: img.memory_id,
+           file: `${imagePrefix}${img.file}`,
+         })));
+       }
 
-    fetchRestaurantAndMemories();
-  }, [RestaurantId]);
+       setLoading(false);
+     } catch (error) {
+       console.error("Error fetching winery and memories details:", error);
+       setLoading(false);
+     }
+   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
-  }
+   fetchRestaurantAndMemories();
+ }, [RestaurantId]);
 
-  if (!Restaurant) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Winery details not found.</Text>
-      </View>
-    );
-  }
+ if (loading) {
+   return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
+ }
+
+ if (!Restaurant) {
+   return (
+     <View style={styles.container}>
+       <Text style={styles.errorText}>Winery details not found.</Text>
+     </View>
+   );
+ }
 
   return (
     <ScrollView style={styles.container}>
@@ -152,9 +167,12 @@ const RestaurantsDetails = () => {
         
         <View style={styles.memoriesMainContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memories}>
-            {memoriesImages.length > 0 ? (
-              memoriesImages.map((image, index) => (
-                <TwicImg key={index} src={image} style={styles.memoriesImage} />
+            {memoriesData.length > 0 ? (
+              memoriesData.map((memory) => (
+                <Pressable key={memory.id} onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
+                  <TwicImg src={memory.file} style={styles.memoriesImage} />
+                  <FontAwesome style={styles.selectIcons} name="circle-o" size={18} color="#FFFFFF" selectionColor={'#FFFFFF'} />
+                </Pressable>
               ))
             ) : (
               <Text>No memories available</Text>
@@ -226,7 +244,7 @@ const RestaurantsDetails = () => {
                     <View style={styles.separator} />
                     <Text style={styles.contactText}>{Restaurant.phone}</Text>
                    </View> 
-                    <TouchableOpacity style={styles.contactButton}>
+                    <TouchableOpacity style={styles.contactButton} onPress={() => handlePhoneCall(Restaurant.phone)}>
                         <Ionicons name="call-outline" size={18} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -407,6 +425,11 @@ const styles = StyleSheet.create({
         height: 100,
         marginHorizontal: 1,
     },
+    selectIcons: {
+        position: "absolute",
+          top: 7,
+          right: 7,
+      },
     memoriesIcons: {},
     rightContent: {},
     memoriesArrowIcons: {},

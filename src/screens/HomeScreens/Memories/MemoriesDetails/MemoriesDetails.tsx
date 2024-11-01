@@ -100,7 +100,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: restaurant, error: restaurantError } = await supabase
                                 .from("bottleshock_restaurants")
                                 .select("restro_name")
-                                .eq("id", memory.restaurant_id)
+                                .eq("Restaurants_id", memory.restaurant_id)
                                 .single();
 
                             if (restaurantError) {
