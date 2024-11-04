@@ -143,6 +143,14 @@ const styles = StyleSheet.create({
     StoriesTitleTextContainer: {
 
     },
+    ArrowConatiner: {
+        position: 'absolute',
+        height: '100%',
+        right: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+    },
+    Arrow:{},
 });
 
 export default styles;

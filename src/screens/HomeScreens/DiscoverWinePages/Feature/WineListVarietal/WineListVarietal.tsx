@@ -8,7 +8,7 @@ import {
     Animated,
     Pressable
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
@@ -18,13 +18,14 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 
 
 interface Wine {
-    winery_id:number;
+    winery_id: number;
     image: string;
     year: number;
     brand_name: string;
     varietal_name: string;
     winery_name: string;
     bottleshock_rating: number;
+    winery_varietals_id:number;
 }
 
 const WineSkeletonLoader = () => {
@@ -128,46 +129,49 @@ const WineListVarietal: React.FC = () => {
                     return;
                 }
 
-                if (bottleshock_wineries_Data) {
-                    const bottleshock_winery_varietals_Details = await Promise.all(
-                        bottleshock_wineries_Data.map(async (winery) => {
-                            const { data: varietalsData, error: varietalsError } = await supabase
-                                .from("bottleshock_winery_varietals")
-                                .select("varietal_name, brand_name, winery_varietals_id")
-                                .eq("winery_id", winery.wineries_id)
-                            if (varietalsError) {
-                                return { winery_name: winery.winery_name, varietals: [], wines: [] };
-                            }
-                            const winesData = await Promise.all(
-                                (varietalsData || []).map(async (varietal) => {
-                                    const { data: wineDetails, error: wineError } = await supabase
-                                        .from("bottleshock_wines")
-                                        .select("year, image, wines_id, varietal_id,bottleshock_rating")
-                                        .eq("varietal_id", varietal.winery_varietals_id)
-                                        .limit(1);
+                const bottleshock_winery_varietals_Details: Wine[][] = await Promise.all(
+                    bottleshock_wineries_Data.map(async (winery) => {
+                        const { data: varietalsData, error: varietalsError } = await supabase
+                            .from("bottleshock_winery_varietals")
+                            .select("varietal_name, brand_name, winery_varietals_id")
+                            .eq("winery_id", winery.wineries_id);
 
-                                    if (wineError) {
-                                        console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
-                                        return [];
-                                    }
+                        if (varietalsError) {
+                            return [];
+                        }
 
-                                    return (wineDetails || []).map((wine) => ({
-                                        ...wine,
-                                        year: wine.year.slice(0, 4),  // Extract only the year
-                                        image: `${imagePrefix}${wine.image}`,
-                                        winery_name: winery.winery_name,
-                                        varietal_name: varietal.varietal_name,
-                                        brand_name: varietal.brand_name
-                                    }));
-                                })
-                            );
+                        const winesData: Wine[][] = await Promise.all(
+                            (varietalsData || []).map(async (varietal) => {
+                                const { data: wineDetails, error: wineError } = await supabase
+                                    .from("bottleshock_wines")
+                                    .select("year, image, wines_id, varietal_id, bottleshock_rating")
+                                    .eq("varietal_id", varietal.winery_varietals_id)
+                                    .limit(1);
 
-                            return winesData.flat();
-                        })
-                    );
+                                if (wineError) {
+                                    console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
+                                    return [];
+                                }
 
-                    setWines(bottleshock_winery_varietals_Details.flat());
-                }
+                                return (wineDetails || []).map((wine) => ({
+                                    ...wine,
+                                    year: wine.year.slice(0, 4), // Extract only the year
+                                    image: `${imagePrefix}${wine.image}`,
+                                    winery_name: winery.winery_name,
+                                    varietal_name: varietal.varietal_name,
+                                    brand_name: varietal.brand_name,
+                                    winery_id: winery.wineries_id,
+                                    winery_varietals_id:varietal.winery_varietals_id
+                                }));
+                            })
+                        );
+
+                        return winesData.flat();
+                    })
+                );
+
+                setWines(bottleshock_winery_varietals_Details.flat());
+
             } finally {
                 setIsLoading(false);
             }
@@ -208,7 +212,7 @@ const WineListVarietal: React.FC = () => {
                     </>
                 ) : (
                     wines.map((wine, index) => (
-                        //<Pressable onPress={() => navigation.navigate("")}>
+                        <Pressable onPress={() => navigation.navigate("WineListVintage", { winery_id: wine.winery_id, winery_varietals_id :wine.winery_varietals_id})}>
                             <View key={index} style={styles.ListOfStoriesContainer}>
                                 <View style={styles.Stories}>
                                     <View style={styles.StoriesImgContainer}>
@@ -230,8 +234,15 @@ const WineListVarietal: React.FC = () => {
                                         </Text>
                                     </View>
                                 </View>
+                                <View style={styles.ArrowConatiner}>
+                                    <View style={styles.Arrow}>
+                                        <AntDesign name="right" size={16} color="#989999" />
+                                    </View>
+                                </View>
+
+
                             </View>
-                        //</Pressable>
+                        </Pressable>
                     ))
                 )}
             </ScrollView>

@@ -20,6 +20,8 @@ import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDe
 import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
 import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/DiscoverWinesPage';
 import WineListVarietal from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVarietal/WineListVarietal';
+import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVintage/WineListVintage';
+import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -97,6 +99,16 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="WineListVarietal"
                     component={WineListVarietal}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineListVintage"
+                    component={WineListVintage}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineDetails"
+                    component={WineDetails}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
