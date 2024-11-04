@@ -42,7 +42,7 @@ const RestaurantsList = () => {
         Restaurants_id: restaurant.Restaurants_id,
         name: restaurant.restro_name,
         location: restaurant.location,
-        logo: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
+        logo: restaurant.logo ? `${imagePrefix}${restaurant.logo}` : null,
         verified: restaurant.verified,
         hashtags: restaurant.hashtags,
       }));
@@ -86,53 +86,58 @@ const RestaurantsList = () => {
       {/* List of Restaurants */}
       <ScrollView>
         {filteredRestaurants.map((restaurant) => (
-          <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })}>
-          <View key={restaurant.id} style={styles.restaurantContainer}>
-            {/* Restaurant Info */}
-            <View style={styles.restaurantInfo}>
-              <Text style={styles.restaurantName}>
-                {restaurant.name}  {restaurant.verified && (
-                  <MaterialIcons
-                    name="verified"
-                    size={13}
-                    color="#522F60"
-                  />
-                )}
-              </Text>
-              <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
-            </View>
+          <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
+            <View style={styles.restaurantContainer}>
+              {/* Restaurant Info */}
+              <View style={styles.restaurantInfo}>
+                <Text style={styles.restaurantName}>
+                  {restaurant.name}  {restaurant.verified && (
+                    <MaterialIcons
+                      name="verified"
+                      size={13}
+                      color="#522F60"
+                    />
+                  )}
+                </Text>
+                <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
+              </View>
 
-            {/* Action Icons */}
-            <View style={styles.iconsContainer}>
-              <TouchableOpacity 
-                accessibilityLabel={`Link to ${restaurant.name}`} 
-                accessibilityRole="button"
-              >
-                <Feather name="paperclip" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                accessibilityLabel={`Favorite ${restaurant.name}`} 
-                accessibilityRole="button"
-              >
-                <FontAwesome name="heart-o" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                accessibilityLabel={`Share ${restaurant.name}`} 
-                accessibilityRole="button"
-              >
-                <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-            </View>
+              {/* Action Icons */}
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity 
+                  accessibilityLabel={`Link to ${restaurant.name}`} 
+                  accessibilityRole="button"
+                >
+                  <Feather name="paperclip" size={16} color="gray" style={styles.icon} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  accessibilityLabel={`Favorite ${restaurant.name}`} 
+                  accessibilityRole="button"
+                >
+                  <FontAwesome name="heart-o" size={16} color="gray" style={styles.icon} />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  accessibilityLabel={`Share ${restaurant.name}`} 
+                  accessibilityRole="button"
+                >
+                  <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
+                </TouchableOpacity>
+              </View>
 
-            {/* Restaurant Logo */}
-            {restaurant.logo && (
-              <TwicImg 
-                src={restaurant.logo} 
-                style={styles.logo} 
-                //resizeMode="contain" // Adjusted to fit the image correctly
-              />
-            )}
-          </View>
+              {/* Restaurant Logo or Initials Placeholder */}
+              {restaurant.logo ? (
+                <TwicImg 
+                  src={restaurant.logo} 
+                  style={styles.logo} 
+                />
+              ) : (
+                <View style={styles.logo} >
+                <View style={styles.initialsPlaceholder}>
+                  <Text style={styles.initialsText}>{restaurant.name.slice(0, 2).toUpperCase()}</Text>
+                </View>
+                </View>
+              )}
+            </View>
           </Pressable>
         ))}
       </ScrollView>
@@ -223,6 +228,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#522F60',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  initialsPlaceholder: {
+    width: 38,
+    height: 38,
+    borderRadius: 15,
+    backgroundColor: '#522F60',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  initialsText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   backButton: {
     marginRight: 10, // Add some margin for better spacing
