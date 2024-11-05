@@ -157,6 +157,8 @@ const PublicMemories: React.FC = () => {
         );
         setMemories(updatedMemories);
         setIsLoading(false);
+        await checkSavedMemories(updatedMemories);
+        await checkFavoriteMemories(updatedMemories);
       } catch (err) {
         console.error("Error fetching memories:", err);
         setIsLoading(false);
