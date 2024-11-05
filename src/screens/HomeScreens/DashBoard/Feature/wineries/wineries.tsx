@@ -9,13 +9,14 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
-// Configure TwicPics
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
   debug: true,
@@ -25,44 +26,45 @@ installTwicPics({
 const { width } = Dimensions.get('window');
 
 interface WineryData {
-  id: number;
   name: string;
   location: string;
   banner: string;
   verified: boolean;
+  address: string;
+  winery_name: string;
+  wineries_id:number;
 }
 
 const Wineries: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [wineries, setWineries] = useState<WineryData[]>([]);
-  const navigation = useNavigation(); // Initialize navigation hook
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
   useEffect(() => {
-    // Fetch winery data from Supabase
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from('bottleshock_wineries')
-        .select('id, winery_name, address, verified, banner');
+        .select('wineries_id, winery_name, address, verified, banner');
 
       if (error) {
         console.error('Error fetching wineries:', error.message);
         return;
       }
 
-      const fetchedWineries = data.map((winery: WineryData) => ({
-        ...winery,
-        banner: winery.banner ? `${imagePrefix}${winery.banner}` : null,
+      const fetchedWineries = data.map((WineryData) => ({
+        ...WineryData,
+        banner: WineryData.banner ? `${imagePrefix}${WineryData.banner}` : null,
       }));
 
-      // Limit the displayed wineries to 4 (2 rows with 2 items each)
       setWineries(fetchedWineries.slice(0, 4));
       setLikedStatus(new Array(fetchedWineries.length).fill(false));
     };
 
     fetchWineries();
   }, []);
+
 
   const handleSavePress = (index: number): void => {
     const newStatus = [...likedStatus];
@@ -77,7 +79,7 @@ const Wineries: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
-        <Bannericon width={13} height={32} color="#522F60"/>
+          <Bannericon width={13} height={32} color="#522F60" />
           <Text style={styles.text}>featured wineries</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('WineriesList')}>
@@ -88,38 +90,41 @@ const Wineries: React.FC = () => {
       <ScrollView>
         <View style={styles.gridContainer}>
           {wineries.map((winery, index) => (
-            <View key={winery.id} style={styles.gridItem}>
-              <View style={styles.ComponentContainer}>
-                <View style={styles.imageWrapper}>
-                  {winery.banner && (
-                    <TwicImg
-                      src={winery.banner}
-                      style={styles.component}
-                      resizeMode="cover"
-                    />
-                  )}
-                  <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
-                    <Icon
-                      name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
-                      size={20}
-                      color="#30425F"
-                    />
-                  </Pressable>
+            <View key={winery.wineries_id} style={styles.gridItem}>
+              <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.wineries_id })}>
+                <View style={styles.ComponentContainer}>
+                  <View style={styles.imageWrapper}>
+                    {winery.banner && (
+                      <TwicImg
+                        src={winery.banner}
+                        style={styles.component}
+                      //resizeMode="cover"
+                      />
+                    )}
+                    <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
+                      <Icon
+                        name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
+                        size={20}
+                        color="#30425F"
+                      />
+                    </Pressable>
+                  </View>
+                  <View>
+                    <View style={styles.componentTitle}>
+                      <Text style={styles.componentText} numberOfLines={1}>
+                        {winery.winery_name}{' '}
+                      </Text>
+                      <Text style={styles.componentText1}>
+                        {winery.verified && <Icons name="verified" size={14} color="#522F60" />}
+                      </Text>
+                    </View>
+                    <Text style={styles.subcomponentText}>{winery.address}</Text>
+                  </View>
                 </View>
-              <View>
-                <View style={styles.componentTitle}>
-                <Text style={styles.componentText} numberOfLines={1}>
-                  {winery.winery_name}{' '}               
-                </Text>
-                <Text style={styles.componentText1}>
-                  {winery.verified && <Icons name="verified" size={14} color="#522F60"/>}
-                </Text> 
-                </View>
-                <Text style={styles.subcomponentText}>{winery.address}</Text>
-              </View>
-              </View>
+              </Pressable>
             </View>
           ))}
+
         </View>
       </ScrollView>
     </View>
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     height: 'auto',
     position: 'relative',
-   paddingBottom: 1,
+    paddingBottom: 1,
   },
   ComponentContainer: {
     borderRadius: 10,

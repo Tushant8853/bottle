@@ -5,9 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from './navigationTypes'; // Adjust the path according to your project structure
+import { RootStackParamList } from './navigationTypes';
 
-// Import your screens
 import Dashboard from '../screens/HomeScreens/DashBoard/DashBoard';
 import StoriesList from '../screens/HomeScreens/Stories/StoriesList/StoriesList';
 import StoriesDetail from '../screens/HomeScreens/Stories/StoriesDetail/StoriesDetails';
@@ -19,6 +18,10 @@ import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesDetails/Mem
 import RestaurantsList from '../screens/HomeScreens/Restaurants/RestaurantsList/RestaurantsList';
 import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDetails/RestaurantsDetails';
 import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
+import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/DiscoverWinesPage';
+import WineListVarietal from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVarietal/WineListVarietal';
+import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVintage/WineListVintage';
+import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +89,26 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="RestaurantsDetails"
                     component={RestaurantsDetails}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="DiscoverWinespages"
+                    component={DiscoverWinespages}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineListVarietal"
+                    component={WineListVarietal}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineListVintage"
+                    component={WineListVintage}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="WineDetails"
+                    component={WineDetails}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

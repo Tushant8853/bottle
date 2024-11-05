@@ -2,39 +2,72 @@ import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
-        height: 'auto',
-        width: '100%',
-        marginBottom: 5,
-        padding: 10,
-        paddingBottom: 3,
+        flex: 1,
+        paddingHorizontal: 16,
+        backgroundColor: "white",
     },
-    TitleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 15,
+    scrollViewContent: {
     },
-    leftContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    bottom:{
+        marginBottom:100
     },
-    MemoriesImg: {
-        width: 13,
-        height: 32,
-        borderRadius: 1,
-        resizeMode: 'contain',
-        marginRight: 4,
+    header: {
+        marginTop: 40,
+        backgroundColor: "white",
+        height: 22,
+        marginBottom:4,
     },
-    text: {
-        fontSize: 14,
+    headingContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    bannerTextContainer: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    bannerarrow: {
+    },
+    bannerTitle: {
+        fontFamily: 'Hiragino Sans',
+        fontSize: 13,
         fontWeight: '600',
-        color: '#522F60',
-        marginBottom: 2,
-        marginLeft: 6
+        lineHeight: 22,
+        letterSpacing: 0.02,
+        textAlign: 'left',
+        marginLeft: 6,
+        color: '#30425F',
     },
+    
+////////////////////////////Search //////////////////////////
+    searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "white",
+        borderColor: "#522F60",
+        borderWidth: 1,
+        paddingHorizontal: 18,
+        paddingVertical: 1,
+        marginBottom: 4,
+        marginVertical: 4,
+        borderRadius: 8,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 6,
+        elevation: 3,
+        height:42,
+    },
+    searchIcon: {
+        marginRight: 7,
+    },
+    searchInput: {
+        flex: 1,
+        fontSize: 14,
+        color: "black",
+    },
+    /////////////////////////////////// List of Wines ///////////////////////////////
     ListOfStoriesContainer: {
-        marginTop: 6,
+        marginTop: 4,
         backgroundColor: '#522F600D',
         height: 88,
         borderRadius: 5,
@@ -107,9 +140,17 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         color: '#834B99',
     },
-    StoriesTitleTextContainer:{
+    StoriesTitleTextContainer: {
 
     },
+    ArrowConatiner: {
+        position: 'absolute',
+        height: '100%',
+        right: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+    },
+    Arrow:{},
 });
 
 export default styles;

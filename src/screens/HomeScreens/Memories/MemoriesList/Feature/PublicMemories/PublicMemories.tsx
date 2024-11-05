@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
   FlatList,
+  Animated,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -30,10 +31,79 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonLoader: React.FC = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.leftContent}>
+        <View style={styles.titleMainContainer}>
+          <Animated.View style={[styles.skeletonTitle, { opacity }]} />
+          <View style={styles.actionIcons}>
+            {[1, 2, 3].map((i) => (
+              <Animated.View
+                key={i}
+                style={[styles.skeletonIcon, { opacity }]}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={styles.titleSecondMainContainer}>
+          <Animated.View style={[styles.skeletonUsername, { opacity }]} />
+          <View style={styles.starRating}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Animated.View
+                key={i}
+                style={[styles.skeletonStar, { opacity }]}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={styles.descriptionContainer}>
+          <Animated.View style={[styles.skeletonDescription, { opacity }]} />
+          <Animated.View
+            style={[styles.skeletonDescription, { width: '60%', opacity }]}
+          />
+        </View>
+      </View>
+      <View style={styles.rightContent}>
+        <Animated.View style={[styles.skeletonImage, { opacity }]} />
+      </View>
+    </View>
+  );
+};
+
 const PublicMemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -76,8 +146,10 @@ const PublicMemories: React.FC = () => {
           })
         );
         setMemories(updatedMemories);
+        setIsLoading(false);
       } catch (err) {
         console.error("Error fetching memories:", err);
+        setIsLoading(false);
       }
     };
     fetchMemories();
@@ -164,6 +236,17 @@ const PublicMemories: React.FC = () => {
     </View>
   );
 
+  if (isLoading) {
+    return (
+      <FlatList
+        contentContainerStyle={styles.scrollContainer}
+        data={[1, 2, 3, 4, 5]} // Show 5 skeleton items
+        renderItem={() => <SkeletonLoader />}
+        keyExtractor={(item) => item.toString()}
+      />
+    );
+  }
+
   return (
     <FlatList
       contentContainerStyle={styles.scrollContainer}
@@ -175,6 +258,48 @@ const PublicMemories: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  // ... existing styles ...
+
+  // Skeleton styles
+  skeletonTitle: {
+    height: 16,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '70%',
+  },
+  skeletonIcon: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#E1E9EE',
+    marginHorizontal: 4,
+  },
+  skeletonUsername: {
+    height: 12,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '40%',
+  },
+  skeletonStar: {
+    width: 11,
+    height: 11,
+    borderRadius: 2,
+    backgroundColor: '#E1E9EE',
+    marginHorizontal: 2,
+  },
+  skeletonDescription: {
+    height: 12,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '100%',
+    marginVertical: 4,
+  },
+  skeletonImage: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+  },
   scrollContainer: {
     paddingBottom: 350,
   },

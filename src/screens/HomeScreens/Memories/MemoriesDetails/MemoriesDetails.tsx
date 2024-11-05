@@ -100,7 +100,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: restaurant, error: restaurantError } = await supabase
                                 .from("bottleshock_restaurants")
                                 .select("restro_name")
-                                .eq("id", memory.restaurant_id)
+                                .eq("Restaurants_id", memory.restaurant_id)
                                 .single();
 
                             if (restaurantError) {
@@ -115,7 +115,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: winery, error: wineryError } = await supabase
                                 .from("bottleshock_wineries")
                                 .select("winery_name")
-                                .eq("id", memory.winery_id)
+                                .eq("wineries_id", memory.winery_id)
                                 .single();
 
                             if (wineryError) {

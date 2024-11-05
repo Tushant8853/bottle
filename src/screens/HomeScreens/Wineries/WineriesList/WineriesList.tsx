@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Pressable
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
@@ -30,7 +31,7 @@ const WineriesList = () => {
     const fetchWineries = async () => {
       const { data, error } = await supabase
         .from("bottleshock_wineries")
-        .select("id, winery_name, address, verified, banner");
+        .select("wineries_id, winery_name, address, verified, banner, logo");
 
       if (error) {
         console.error("Error fetching wineries:", error.message);
@@ -38,10 +39,10 @@ const WineriesList = () => {
       }
 
       const formattedWineries = data.map((winery: any) => ({
-        id: winery.id,
+        id: winery.wineries_id,
         name: winery.winery_name,
         address: winery.address,
-        logo: winery.banner ? `${imagePrefix}${winery.banner}` : null,
+        logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
         verified: winery.verified,
       }));
 
@@ -84,6 +85,7 @@ const WineriesList = () => {
       {/* List of Wineries */}
       <ScrollView>
         {filteredWineries.map((winery) => (
+        <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })}>
           <View key={winery.id} style={styles.wineryContainer}>
             {/* Winery Info */}
             <View style={styles.wineryInfo}>
@@ -122,14 +124,20 @@ const WineriesList = () => {
             </View>
 
             {/* Winery Logo */}
-            {winery.logo && (
-              <TwicImg 
-                src={winery.logo} 
-                style={styles.logo} 
-                resizeMode="contain" // Adjusted to fit the image correctly
-              />
-            )}
+            {winery.logo ? (
+                <TwicImg 
+                  src={winery.logo} 
+                  style={styles.logo} 
+                />
+              ) : (
+                <View style={styles.logo} >
+                <View style={styles.initialsPlaceholder}>
+                  <Text style={styles.initialsText}>{winery.name.slice(0, 2).toUpperCase()}</Text>
+                </View>
+                </View>
+              )}
           </View>
+        </Pressable>
         ))}
       </ScrollView>
     </View>
@@ -217,6 +225,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#522F60',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  initialsPlaceholder: {
+    width: 38,
+    height: 38,
+    borderRadius: 15,
+    backgroundColor: '#522F60',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  initialsText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   backButton: {
     marginRight: 10, // Add some margin for better spacing

@@ -8,7 +8,8 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
@@ -24,17 +25,18 @@ installTwicPics({
 const { width } = Dimensions.get('window');
 
 interface RestaurantData {
-  id: number;
+  Restaurants_id: number;
   restro_name: string;
   location: string;
   banner: string;
   verified: boolean;
+  hashtags: string[];
 }
 
 const Restaurants: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
-  const navigation = useNavigation(); // Initialize navigation hook
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
@@ -88,14 +90,15 @@ const Restaurants: React.FC = () => {
       <ScrollView>
         <View style={styles.gridContainer}>
           {restaurants.map((restaurant, index) => (
-            <View key={restaurant.id} style={styles.gridItem}>
+            <View key={restaurant.Restaurants_id} style={styles.gridItem}>
+              <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })}>
               <View style={styles.ComponentContainer}>
                 <View style={styles.imageWrapper}>
                   {restaurant.banner && (
                     <TwicImg
                       src={restaurant.banner}
                       style={styles.component}
-                      resizeMode="cover"
+                      //resizeMode="cover"
                     />
                   )}
                   <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
@@ -118,6 +121,7 @@ const Restaurants: React.FC = () => {
                 <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
               </View>
+              </Pressable>
             </View>
           ))}
         </View>
@@ -214,4 +218,5 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  hashtags:{},
 });

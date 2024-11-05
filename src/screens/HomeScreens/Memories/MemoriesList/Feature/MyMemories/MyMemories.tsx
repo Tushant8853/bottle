@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
   FlatList,
+  Animated,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -30,10 +31,79 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonLoader: React.FC = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.leftContent}>
+        <View style={styles.titleMainContainer}>
+          <Animated.View style={[styles.skeletonTitle, { opacity }]} />
+          <View style={styles.actionIcons}>
+            {[1, 2, 3].map((i) => (
+              <Animated.View
+                key={i}
+                style={[styles.skeletonIcon, { opacity }]}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={styles.titleSecondMainContainer}>
+          <Animated.View style={[styles.skeletonUsername, { opacity }]} />
+          <View style={styles.starRating}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Animated.View
+                key={i}
+                style={[styles.skeletonStar, { opacity }]}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={styles.descriptionContainer}>
+          <Animated.View style={[styles.skeletonDescription, { opacity }]} />
+          <Animated.View
+            style={[styles.skeletonDescription, { width: '60%', opacity }]}
+          />
+        </View>
+      </View>
+      <View style={styles.rightContent}>
+        <Animated.View style={[styles.skeletonImage, { opacity }]} />
+      </View>
+    </View>
+  );
+};
+
 const MyMemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -42,6 +112,7 @@ const MyMemories: React.FC = () => {
 
         if (!UID) {
           console.error("UID is missing from AsyncStorage");
+          setIsLoading(false);
           return;
         }
         const { data: memories, error } = await supabase
@@ -51,6 +122,7 @@ const MyMemories: React.FC = () => {
 
         if (error) {
           console.error("Error fetching memories:", error.message);
+          setIsLoading(false);
           return;
         }
         const updatedMemories = await Promise.all(
@@ -86,8 +158,10 @@ const MyMemories: React.FC = () => {
         );
 
         setMemories(updatedMemories);
+        setIsLoading(false);
       } catch (err) {
         console.error("Error fetching memories:", err);
+        setIsLoading(false);
       }
     };
 
@@ -146,12 +220,7 @@ const MyMemories: React.FC = () => {
             {Array(4)
               .fill(null)
               .map((_, index) => (
-                <FontAwesome
-                  key={index}
-                  name="star"
-                  size={11}
-                  color="grey"
-                />
+                <FontAwesome key={index} name="star" size={11} color="grey" />
               ))}
             <FontAwesome name="star-half-full" size={11} color="grey" />
           </View>
@@ -180,6 +249,17 @@ const MyMemories: React.FC = () => {
     </View>
   );
 
+  if (isLoading) {
+    return (
+      <FlatList
+        data={[1, 2, 3, 4, 5]} // Show 5 skeleton items
+        renderItem={() => <SkeletonLoader />}
+        keyExtractor={(item) => item.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
+    );
+  }
+
   return (
     <FlatList
       data={memories}
@@ -191,6 +271,47 @@ const MyMemories: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  // Skeleton styles
+  skeletonTitle: {
+    height: 16,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '70%',
+  },
+  skeletonIcon: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#E1E9EE',
+    marginHorizontal: 4,
+  },
+  skeletonUsername: {
+    height: 12,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '40%',
+  },
+  skeletonStar: {
+    width: 11,
+    height: 11,
+    borderRadius: 2,
+    backgroundColor: '#E1E9EE',
+    marginHorizontal: 2,
+  },
+  skeletonDescription: {
+    height: 12,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '100%',
+    marginVertical: 4,
+  },
+  skeletonImage: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+  },
+  // Existing styles
   scrollContainer: {
     paddingBottom: 350,
   },
@@ -272,7 +393,7 @@ const styles = StyleSheet.create({
   placeholderImage: {
     width: 60,
     height: 60,
-    backgroundColor: "#e0e0e0", // Light gray placeholder
+    backgroundColor: "#e0e0e0",
     borderRadius: 8,
   },
 });
