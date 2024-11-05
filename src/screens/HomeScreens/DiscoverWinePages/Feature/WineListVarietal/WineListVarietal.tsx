@@ -16,7 +16,6 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from './index.style';
 import { useRoute, RouteProp } from "@react-navigation/native";
 
-
 interface Wine {
     winery_id: number;
     image: string;
@@ -25,7 +24,7 @@ interface Wine {
     varietal_name: string;
     winery_name: string;
     bottleshock_rating: number;
-    winery_varietals_id:number;
+    winery_varietals_id: number;
 }
 
 const WineSkeletonLoader = () => {
@@ -109,7 +108,6 @@ const WineListVarietal: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<{ params: { winery_id: number } }, 'params'>>();
     const { winery_id } = route.params;
-    console.log("Winery ID:", winery_id);
     const [searchText, setSearchText] = useState('');
     const [wines, setWines] = useState<Wine[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +123,7 @@ const WineListVarietal: React.FC = () => {
                     .eq("wineries_id", winery_id);
 
                 if (wineriesError) {
-                    console.error("🚨 Error fetching wineries:", wineriesError.message);
+                    console.error("Error fetching wineries:", wineriesError.message);
                     return;
                 }
 
@@ -137,6 +135,7 @@ const WineListVarietal: React.FC = () => {
                             .eq("winery_id", winery.wineries_id);
 
                         if (varietalsError) {
+                            console.error("Error fetching varietals:", varietalsError.message);
                             return [];
                         }
 
@@ -149,7 +148,7 @@ const WineListVarietal: React.FC = () => {
                                     .limit(1);
 
                                 if (wineError) {
-                                    console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
+                                    console.error(`Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
                                     return [];
                                 }
 
@@ -161,7 +160,7 @@ const WineListVarietal: React.FC = () => {
                                     varietal_name: varietal.varietal_name,
                                     brand_name: varietal.brand_name,
                                     winery_id: winery.wineries_id,
-                                    winery_varietals_id:varietal.winery_varietals_id
+                                    winery_varietals_id: varietal.winery_varietals_id
                                 }));
                             })
                         );
@@ -171,7 +170,8 @@ const WineListVarietal: React.FC = () => {
                 );
 
                 setWines(bottleshock_winery_varietals_Details.flat());
-
+            } catch (error) {
+                console.error("Error fetching wines:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -211,9 +211,12 @@ const WineListVarietal: React.FC = () => {
                         <WineSkeletonLoader />
                     </>
                 ) : (
-                    wines.map((wine, index) => (
-                        <Pressable onPress={() => navigation.navigate("WineListVintage", { winery_id: wine.winery_id, winery_varietals_id :wine.winery_varietals_id})}>
-                            <View key={index} style={styles.ListOfStoriesContainer}>
+                    wines.map((wine) => (
+                        <Pressable 
+                            key={`${wine.winery_varietals_id}-${wine.year}`}
+                            onPress={() => navigation.navigate("WineListVintage", { winery_id: wine.winery_id, winery_varietals_id: wine.winery_varietals_id })}
+                        >
+                            <View style={styles.ListOfStoriesContainer}>
                                 <View style={styles.Stories}>
                                     <View style={styles.StoriesImgContainer}>
                                         <Image
@@ -239,8 +242,6 @@ const WineListVarietal: React.FC = () => {
                                         <AntDesign name="right" size={16} color="#989999" />
                                     </View>
                                 </View>
-
-
                             </View>
                         </Pressable>
                     ))
