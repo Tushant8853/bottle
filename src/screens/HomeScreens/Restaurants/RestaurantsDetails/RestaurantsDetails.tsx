@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable,Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable, Linking, Alert } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -10,6 +10,7 @@ import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RestaurantsDetailsRouteProp = RouteProp<RootStackParamList, 'RestaurantsDetails'>;
 
@@ -28,108 +29,221 @@ interface RestaurantDetails {
   location_lat: number;
   location_long: number;
 }
+
 interface MemoryData {
     id: string;
     file: string;
-  }
+}
 
 const RestaurantsDetails = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const route = useRoute<RestaurantsDetailsRouteProp>();
-  const { id: RestaurantId } = route.params;
-  const [Restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
-  const [memoriesData, setMemoriesData] = useState<MemoryData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const imagePrefix = "https://bottleshock.twic.pics/file/";
-  const [expandedwinery, setExpandedRestaurant] = useState<string | null>(null); // State to track expanded description
+    const route = useRoute<RestaurantsDetailsRouteProp>();
+    const { id: RestaurantId } = route.params;
+    const [Restaurant, setRestaurant] = useState<RestaurantDetails | null>(null);
+    const [memoriesData, setMemoriesData] = useState<MemoryData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [favoriteStatus, setFavoriteStatus] = useState(false);
+    const [savedStatus, setSavedStatus] = useState(false);
+    const imagePrefix = "https://bottleshock.twic.pics/file/";
+    const [expandedwinery, setExpandedRestaurant] = useState<string | null>(null);
 
-  const handleToggleDescription = (id: string) => {
-    setExpandedRestaurant(prev => (prev === id ? null : id));
-  };
-  const handlePhoneCall = (phoneNumber: string) => {
-    const phoneUrl = `tel:${phoneNumber}`;
-    Linking.openURL(phoneUrl).catch(() => {
-      Alert.alert('Error', 'Unable to make the call');
-    });
-  };
-  useEffect(() => {
-    const fetchRestaurantAndMemories = async () => {
-      try {
-        const { data: RestaurantData, error: wineryError } = await supabase
-          .from('bottleshock_restaurants')
-          .select('Restaurants_id, restro_name, banner, description, address, phone, working_hours,star_rating, seasons_open, likes, hashtags, location_lat, location_long ')
-          .eq('Restaurants_id', RestaurantId)
-          .single();
+    const handleToggleDescription = (id: string) => {
+        setExpandedRestaurant(prev => (prev === id ? null : id));
+    };
 
-        if (wineryError) throw new Error(wineryError.message);
+    const handlePhoneCall = (phoneNumber: string) => {
+        const phoneUrl = `tel:${phoneNumber}`;
+        Linking.openURL(phoneUrl).catch(() => {
+            Alert.alert('Error', 'Unable to make the call');
+        });
+    };
 
-        if (RestaurantData) {
-          setRestaurant({
-            id: RestaurantData.Restaurants_id,
-            name: RestaurantData.restro_name,
-            banner: `${imagePrefix}${RestaurantData.banner}`,
-            description: RestaurantData.description,
-            location: RestaurantData.address,
-            phone: RestaurantData.phone,
-            working_hours: RestaurantData.working_hours,
-            star_rating: RestaurantData.star_rating,
-            seasons_open:RestaurantData.seasons_open,
-            likes: RestaurantData.likes,
-            hashtags: RestaurantData.hashtags.split(', '),
-            location_lat: RestaurantData.location_lat,
-            location_long: RestaurantData.location_long,
-          });
+    useEffect(() => {
+        const fetchRestaurantAndMemories = async () => {
+            try {
+                const { data: RestaurantData, error: wineryError } = await supabase
+                    .from('bottleshock_restaurants')
+                    .select('Restaurants_id, restro_name, banner, description, address, phone, working_hours,star_rating, seasons_open, likes, hashtags, location_lat, location_long ')
+                    .eq('Restaurants_id', RestaurantId)
+                    .single();
+
+                if (wineryError) throw new Error(wineryError.message);
+
+                if (RestaurantData) {
+                    setRestaurant({
+                        id: RestaurantData.Restaurants_id,
+                        name: RestaurantData.restro_name,
+                        banner: `${imagePrefix}${RestaurantData.banner}`,
+                        description: RestaurantData.description,
+                        location: RestaurantData.address,
+                        phone: RestaurantData.phone,
+                        working_hours: RestaurantData.working_hours,
+                        star_rating: RestaurantData.star_rating,
+                        seasons_open: RestaurantData.seasons_open,
+                        likes: RestaurantData.likes,
+                        hashtags: RestaurantData.hashtags.split(', '),
+                        location_lat: RestaurantData.location_lat,
+                        location_long: RestaurantData.location_long,
+                    });
+                    await checkFavoriteStatus(RestaurantData.Restaurants_id);
+                    await checkSavedStatus(RestaurantData.Restaurants_id);
+                }
+
+                // Fetch memories and related images
+                const { data: memoriesDataResponse, error: memoriesError } = await supabase
+                    .from('bottleshock_memories')
+                    .select('id')
+                    .eq("is_public", true)
+                    .eq('restaurant_id', RestaurantId);
+
+                if (memoriesError) throw new Error(memoriesError.message);
+
+                const memoryIds = memoriesDataResponse.map((memory) => memory.id);
+
+                if (memoryIds.length > 0) {
+                    const { data: imagesData, error: imagesError } = await supabase
+                        .from('bottleshock_memory_gallery')
+                        .select('memory_id, file')
+                        .eq("is_thumbnail", true)
+                        .in('memory_id', memoryIds);
+
+                    if (imagesError) throw new Error(imagesError.message);
+
+                    setMemoriesData(imagesData.map((img) => ({
+                        id: img.memory_id,
+                        file: `${imagePrefix}${img.file}`,
+                    })));
+                }
+
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching winery and memories details:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchRestaurantAndMemories();
+    }, [RestaurantId]);
+
+    const checkFavoriteStatus = async (restaurantId: string) => {
+        try {
+            const UID = await AsyncStorage.getItem("UID");
+            if (!UID) return;
+
+            const { data: favorites, error } = await supabase
+                .from('bottleshock_fav_restaurants')
+                .select('restaurant_id')
+                .eq('user_id', UID)
+                .eq('restaurant_id', restaurantId);
+
+            if (error) {
+                console.error('Error fetching favorite status:', error.message);
+                return;
+            }
+
+            setFavoriteStatus(favorites.length > 0);
+        } catch (error) {
+            console.error('Error checking favorite status:', error);
         }
+    };
 
-        // Fetch memories and related images
-         // Fetch memories and related images
-         const { data: memoriesDataResponse, error: memoriesError } = await supabase
-         .from('bottleshock_memories')
-         .select('id')
-         .eq("is_public", true)
-         .eq('restaurant_id', RestaurantId);
+    const checkSavedStatus = async (restaurantId: string) => {
+        try {
+            const UID = await AsyncStorage.getItem("UID");
+            if (!UID) return;
 
-       if (memoriesError) throw new Error(memoriesError.message);
+            const { data: savedRestaurants, error } = await supabase
+                .from('bottleshock_saved_restaurants')
+                .select('restaurant_id')
+                .eq('user_id', UID)
+                .eq('restaurant_id', restaurantId);
 
-       const memoryIds = memoriesDataResponse.map((memory) => memory.id);
+            if (error) {
+                console.error('Error fetching saved status:', error.message);
+                return;
+            }
 
-       // Fetch images from `bottleshock_memory_gallery` for the retrieved memory IDs
-       if (memoryIds.length > 0) {
-         const { data: imagesData, error: imagesError } = await supabase
-           .from('bottleshock_memory_gallery')
-           .select('memory_id, file')
-           .eq("is_thumbnail", true)
-           .in('memory_id', memoryIds);
+            setSavedStatus(savedRestaurants.length > 0);
+        } catch (error) {
+            console.error('Error checking saved status:', error);
+        }
+    };
 
-         if (imagesError) throw new Error(imagesError.message);
+    const handleFavoritePress = async () => {
+        try {
+            const UID = await AsyncStorage.getItem("UID");
+            if (!UID) return;
 
-         setMemoriesData(imagesData.map((img) => ({
-           id: img.memory_id,
-           file: `${imagePrefix}${img.file}`,
-         })));
-       }
+            if (favoriteStatus) {
+                const { error } = await supabase
+                    .from('bottleshock_fav_restaurants')
+                    .delete()
+                    .match({ user_id: UID, restaurant_id: Restaurant.id });
 
-       setLoading(false);
-     } catch (error) {
-       console.error("Error fetching winery and memories details:", error);
-       setLoading(false);
-     }
-   };
+                if (error) {
+                    console.error('Error removing favorite restaurant:', error.message);
+                    return;
+                }
+            } else {
+                const { error } = await supabase
+                    .from('bottleshock_fav_restaurants')
+                    .insert([{ user_id: UID, restaurant_id: Restaurant.id, created_at: new Date().toISOString() }]);
 
-   fetchRestaurantAndMemories();
- }, [RestaurantId]);
+                if (error) {
+                    console.error('Error favoriting restaurant:', error.message);
+                    return;
+                }
+            }
 
- if (loading) {
-   return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
- }
+            setFavoriteStatus(!favoriteStatus);
+        } catch (error) {
+            console.error('Error handling favorite press:', error);
+        }
+    };
 
- if (!Restaurant) {
-   return (
-     <View style={styles.container}>
-       <Text style={styles.errorText}>Winery details not found.</Text>
-     </View>
-   );
- }
+    const handleSavePress = async () => {
+        try {
+            const UID = await AsyncStorage.getItem("UID");
+            if (!UID) return;
+
+            if (savedStatus) {
+                const { error } = await supabase
+                    .from('bottleshock_saved_restaurants')
+                    .delete()
+                    .match({ user_id: UID, restaurant_id: Restaurant.id });
+
+                if (error) {
+                    console.error('Error removing saved restaurant:', error.message);
+                    return;
+                }
+            } else {
+                const { error } = await supabase
+                    .from('bottleshock_saved_restaurants')
+                    .insert([{ user_id: UID, restaurant_id: Restaurant.id, created_at: new Date().toISOString() }]);
+
+                if (error) {
+                    console.error('Error saving restaurant:', error.message);
+                    return;
+                }
+            }
+
+            setSavedStatus(!savedStatus);
+        } catch (error) {
+            console.error('Error handling save press:', error);
+        }
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
+    }
+
+    if (!Restaurant) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.errorText}>Restaurant details not found.</Text>
+            </View>
+        );
+    }
 
   return (
     <ScrollView style={styles.container}>
@@ -143,15 +257,15 @@ const RestaurantsDetails = () => {
           <Text style={styles.titletext}>{Restaurant.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="heart-outline" size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+        <Pressable style={styles.button} onPress={handleSavePress}>
+            <Ionicons name="attach" size={24} color={savedStatus ? "#522F60" : "gray"} style={styles.rotatedIcon} />
+          </Pressable>
+          <Pressable style={styles.button} onPress={handleFavoritePress}>
+            <Ionicons name={favoriteStatus ? "heart" : "heart-outline"} size={24} />
+          </Pressable>
+          <Pressable style={styles.button}>
             <Ionicons name="share-outline" size={24} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>      
       <View style={styles.memoriesContainer}>

@@ -13,6 +13,7 @@ import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configure TwicPics
 installTwicPics({
@@ -25,6 +26,8 @@ const RestaurantsList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   useEffect(() => {
@@ -48,12 +51,151 @@ const RestaurantsList = () => {
       }));
 
       setRestaurants(formattedRestaurants);
+      await checkSavedRestaurants(formattedRestaurants);
+      await checkFavoriteRestaurants(formattedRestaurants);
     };
 
     fetchRestaurants();
   }, []);
 
-  // Handle search filtering
+  const checkSavedRestaurants = async (fetchedRestaurants: any[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: savedRestaurants, error } = await supabase
+        .from('bottleshock_saved_restaurants')
+        .select('restaurant_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching saved restaurants:', error.message);
+        return;
+      }
+
+      const savedIds = savedRestaurants?.map((restaurant) => restaurant.restaurant_id);
+      const updatedSavedStatus = fetchedRestaurants.map((restaurant) =>
+        savedIds.includes(restaurant.Restaurants_id)
+      );
+
+      setSavedStatus(updatedSavedStatus);
+    } catch (error) {
+      console.error('Error in checkSavedRestaurants:', error);
+    }
+  };
+
+  const checkFavoriteRestaurants = async (fetchedRestaurants: any[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: favoriteRestaurants, error } = await supabase
+        .from('bottleshock_fav_restaurants')
+        .select('restaurant_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching favorite restaurants:', error.message);
+        return;
+      }
+
+      const favoriteIds = favoriteRestaurants?.map((restaurant) => restaurant.restaurant_id);
+      const updatedFavoriteStatus = fetchedRestaurants.map((restaurant) =>
+        favoriteIds.includes(restaurant.Restaurants_id)
+      );
+
+      setFavoriteStatus(updatedFavoriteStatus);
+    } catch (error) {
+      console.error('Error in checkFavoriteRestaurants:', error);
+    }
+  };
+
+  const handleSavePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const restaurant = restaurants[index];
+      const isSaved = savedStatus[index];
+
+      if (isSaved) {
+        const { error } = await supabase
+          .from('bottleshock_saved_restaurants')
+          .delete()
+          .match({ user_id: UID, restaurant_id: restaurant.Restaurants_id });
+
+        if (error) {
+          console.error('Error removing restaurant:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_restaurants')
+          .insert([{ user_id: UID, restaurant_id: restaurant.Restaurants_id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving restaurant:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...savedStatus];
+      newStatus[index] = !newStatus[index];
+      setSavedStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
+
+  const handleFavoritePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const restaurant = restaurants[index];
+      const isFavorited = favoriteStatus[index];
+
+      if (isFavorited) {
+        const { error } = await supabase
+          .from('bottleshock_fav_restaurants')
+          .delete()
+          .match({ user_id: UID, restaurant_id: restaurant.Restaurants_id });
+
+        if (error) {
+          console.error('Error removing favorite restaurant:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_restaurants')
+          .insert([{ user_id: UID, restaurant_id: restaurant.Restaurants_id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting restaurant:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...favoriteStatus];
+      newStatus[index] = !newStatus[index];
+      setFavoriteStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
+
   const filteredRestaurants = restaurants.filter((restaurant) =>
     restaurant.name.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -70,7 +212,6 @@ const RestaurantsList = () => {
         <Text style={styles.headerTitle}>Restaurants</Text>
       </View>
       
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
         <TextInput
@@ -83,12 +224,10 @@ const RestaurantsList = () => {
         <FontAwesome name="microphone" size={16} color="#989999" />
       </View>
 
-      {/* List of Restaurants */}
       <ScrollView>
-        {filteredRestaurants.map((restaurant) => (
+        {filteredRestaurants.map((restaurant, index) => (
           <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
             <View style={styles.restaurantContainer}>
-              {/* Restaurant Info */}
               <View style={styles.restaurantInfo}>
                 <Text style={styles.restaurantName}>
                   {restaurant.name}  {restaurant.verified && (
@@ -102,19 +241,30 @@ const RestaurantsList = () => {
                 <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
               </View>
 
-              {/* Action Icons */}
               <View style={styles.iconsContainer}>
                 <TouchableOpacity 
+                  onPress={() => handleSavePress(index)}
                   accessibilityLabel={`Link to ${restaurant.name}`} 
                   accessibilityRole="button"
                 >
-                  <Feather name="paperclip" size={16} color="gray" style={styles.icon} />
+                  <Feather
+                    name="paperclip"
+                    size={16}
+                    color={savedStatus[index] ? '#522F60' : 'gray'}
+                    style={styles.icon}
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity 
+                  onPress={() => handleFavoritePress(index)}
                   accessibilityLabel={`Favorite ${restaurant.name}`} 
                   accessibilityRole="button"
                 >
-                  <FontAwesome name="heart-o" size={16} color="gray" style={styles.icon} />
+                  <FontAwesome
+                    name={favoriteStatus[index] ? "heart" : "heart-o"}
+                    size={16}
+                    color='gray'
+                    style={styles.icon}
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity 
                   accessibilityLabel={`Share ${restaurant.name}`} 
@@ -124,7 +274,6 @@ const RestaurantsList = () => {
                 </TouchableOpacity>
               </View>
 
-              {/* Restaurant Logo or Initials Placeholder */}
               {restaurant.logo ? (
                 <TwicImg 
                   src={restaurant.logo} 
@@ -132,9 +281,9 @@ const RestaurantsList = () => {
                 />
               ) : (
                 <View style={styles.logo} >
-                <View style={styles.initialsPlaceholder}>
-                  <Text style={styles.initialsText}>{restaurant.name.slice(0, 2).toUpperCase()}</Text>
-                </View>
+                  <View style={styles.initialsPlaceholder}>
+                    <Text style={styles.initialsText}>{restaurant.name.slice(0, 2).toUpperCase()}</Text>
+                  </View>
                 </View>
               )}
             </View>

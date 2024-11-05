@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable,Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable, Linking, Alert } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -10,6 +10,7 @@ import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type WineriesDetailsRouteProp = RouteProp<RootStackParamList, 'WineriesDetails'>;
 
@@ -28,6 +29,7 @@ interface WineryDetails {
   location_lat: number;
   location_long: number;
 }
+
 interface MemoryData {
   id: string;
   file: string;
@@ -41,24 +43,28 @@ const WineriesDetails = () => {
   const [memoriesData, setMemoriesData] = useState<MemoryData[]>([]);
   const [loading, setLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
-  const [expandedwinery, setExpandedwinery] = useState<string | null>(null); // State to track expanded description
+  const [expandedwinery, setExpandedwinery] = useState<string | null>(null);
+  const [favoriteStatus, setFavoriteStatus] = useState(false);
+  const [savedStatus, setSavedStatus] = useState(false);
 
   const handleToggleDescription = (id: string) => {
     setExpandedwinery(prev => (prev === id ? null : id));
   };
+
   const handlePhoneCall = (phoneNumber: string) => {
     const phoneUrl = `tel:${phoneNumber}`;
     Linking.openURL(phoneUrl).catch(() => {
       Alert.alert('Error', 'Unable to make the call');
     });
   };
+
   useEffect(() => {
     const fetchWineryAndMemories = async () => {
       try {
         // Fetch winery details
         const { data: wineryData, error: wineryError } = await supabase
           .from('bottleshock_wineries')
-          .select('wineries_id, winery_name, banner, description, address, phone, working_hours,star_rating, seasons_open, likes, hashtags, location_lat, location_long ')
+          .select('wineries_id, winery_name, banner, description, address, phone, working_hours, star_rating, seasons_open, likes, hashtags, location_lat, location_long')
           .eq('wineries_id', wineryId)
           .single();
 
@@ -80,56 +86,165 @@ const WineriesDetails = () => {
             location_lat: wineryData.location_lat,
             location_long: wineryData.location_long,
           });
+          await checkFavoriteStatus(wineryData.wineries_id);
+          await checkSavedStatus(wineryData.wineries_id);
         }
 
+        // Fetch memories
         const { data: memoriesDataResponse, error: memoriesError } = await supabase
-        .from('bottleshock_memories')
-        .select('id')
-        .eq("is_public", true)
+          .from('bottleshock_memories')
+          .select('id')
+          .eq("is_public", true)
           .eq('winery_id', wineryId);
 
-      if (memoriesError) throw new Error(memoriesError.message);
+        if (memoriesError) throw new Error(memoriesError.message);
 
-      const memoryIds = memoriesDataResponse.map((memory) => memory.id);
+        const memoryIds = memoriesDataResponse.map((memory) => memory.id);
 
-      // Fetch images from `bottleshock_memory_gallery` for the retrieved memory IDs
-      if (memoryIds.length > 0) {
-        const { data: imagesData, error: imagesError } = await supabase
-          .from('bottleshock_memory_gallery')
-          .select('memory_id, file')
-          .eq("is_thumbnail", true)
-          .in('memory_id', memoryIds);
+        if (memoryIds.length > 0) {
+          const { data: imagesData, error: imagesError } = await supabase
+            .from('bottleshock_memory_gallery')
+            .select('memory_id, file')
+            .eq("is_thumbnail", true)
+            .in('memory_id', memoryIds);
 
-        if (imagesError) throw new Error(imagesError.message);
+          if (imagesError) throw new Error(imagesError.message);
 
-        setMemoriesData(imagesData.map((img) => ({
-          id: img.memory_id,
-          file: `${imagePrefix}${img.file}`,
-        })));
+          setMemoriesData(imagesData.map((img) => ({
+            id: img.memory_id,
+            file: `${imagePrefix}${img.file}`,
+          })));
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching winery and memories details:", error);
+        setLoading(false);
       }
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching winery and memories details:", error);
-      setLoading(false);
-    }
-  };
+    };
 
     fetchWineryAndMemories();
   }, [wineryId]);
 
-if (loading) {
-  return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
-}
+  const checkFavoriteStatus = async (wineryId: string) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      const { data: favorites, error } = await supabase
+        .from('bottleshock_fav_wineries')
+        .select('winery_id')
+        .eq('user_id', UID)
+        .eq('winery_id', wineryId);
+
+      if (error) {
+        console.error('Error fetching favorite status:', error.message);
+        return;
+      }
+
+      setFavoriteStatus(favorites.length > 0);
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  const checkSavedStatus = async (wineryId: string) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      const { data: savedWineries, error } = await supabase
+        .from('bottleshock_saved_wineries')
+        .select('winery_id')
+        .eq('user_id', UID)
+        .eq('winery_id', wineryId);
+
+      if (error) {
+        console.error('Error fetching saved status:', error.message);
+        return;
+      }
+
+      setSavedStatus(savedWineries.length > 0);
+    } catch (error) {
+      console.error('Error checking saved status:', error);
+    }
+  };
+
+  const handleFavoritePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (favoriteStatus) {
+        const { error } = await supabase
+          .from('bottleshock_fav_wineries')
+          .delete()
+          .match({ user_id: UID, winery_id: winery.id });
+
+        if (error) {
+          console.error('Error removing favorite winery:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_wineries')
+          .insert([{ user_id: UID, winery_id: winery.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting winery:', error.message);
+          return;
+        }
+      }
+
+      setFavoriteStatus(!favoriteStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
+
+  const handleSavePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (savedStatus) {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .delete()
+          .match({ user_id: UID, winery_id: winery.id });
+
+        if (error) {
+          console.error('Error removing saved winery:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .insert([{ user_id: UID, winery_id: winery.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving winery:', error.message);
+          return;
+        }
+      }
+
+      setSavedStatus(!savedStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#522F60" style={styles.loading} />;
+  }
 
   if (!winery) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.errorText}>Winery details not found.</Text>
-    </View>
-  );
-}
-
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Winery details not found.</Text>
+      </View>
+    );
+  }
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
@@ -142,15 +257,15 @@ if (loading) {
           <Text style={styles.titletext}>{winery.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="attach" size={24} style={styles.rotatedIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="heart-outline" size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
+        <Pressable style={styles.button} onPress={handleSavePress}>
+            <Ionicons name="attach" size={24} color={savedStatus ? "#522F60" : "gray"} style={styles.rotatedIcon} />
+          </Pressable>
+          <Pressable style={styles.button} onPress={handleFavoritePress}>
+            <Ionicons name={favoriteStatus ? "heart" : "heart-outline"} size={24} />
+          </Pressable>
+          <Pressable style={styles.button}>
             <Ionicons name="share-outline" size={24} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>      
       <View style={styles.memoriesContainer}>

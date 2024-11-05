@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Pressable } from "react-native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { useRoute } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Markdown from 'react-native-markdown-display';
-import { Ionicons } from '@expo/vector-icons'; // Import icon library
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -21,11 +22,13 @@ const StoriesDetail: React.FC = () => {
   const { memoryId } = route.params as RouteParams;
 
   const [story, setStory] = useState<any>(null);
-  const [loading, setLoading] = useState(true); // State to manage loading
+  const [loading, setLoading] = useState(true);
+  const [favoriteStatus, setFavoriteStatus] = useState(false);
+  const [savedStatus, setSavedStatus] = useState(false);
 
   useEffect(() => {
     const fetchStoryDetails = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       const { data, error } = await supabase
         .from("bottleshock_stories")
         .select("id, heading, sub_heading, content, thumbnail_image")
@@ -36,50 +39,155 @@ const StoriesDetail: React.FC = () => {
         console.error("Error fetching story details:", error.message);
       } else {
         setStory(data);
+        await checkFavoriteStatus(data.id);
+        await checkSavedStatus(data.id);
       }
-      setLoading(false); // Stop loading
+      setLoading(false);
     };
 
     fetchStoryDetails();
   }, [memoryId]);
 
-  // Function to extract content after the first image in Markdown
-  const extractContentAfterFirstImage = (content: string) => {
-    const imagePattern = /!\[.*?\]\(.*?\)/;
-    const modifiedContent = content.replace(imagePattern, "").trim();
-    return modifiedContent;
+  const checkFavoriteStatus = async (storyId: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      const { data: favorites, error } = await supabase
+        .from('bottleshock_fav_stories')
+        .select('story_id')
+        .eq('user_id', UID)
+        .eq('story_id', storyId);
+
+      if (error) {
+        console.error('Error fetching favorite status:', error.message);
+        return;
+      }
+
+      setFavoriteStatus(favorites.length > 0);
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
   };
 
-  // Show a loading spinner while data is being fetched
+  const checkSavedStatus = async (storyId: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      const { data: savedStories, error } = await supabase
+        .from('bottleshock_saved_stories')
+        .select('story_id')
+        .eq('user_id', UID)
+        .eq('story_id', storyId);
+
+      if (error) {
+        console.error('Error fetching saved status:', error.message);
+        return;
+      }
+
+      setSavedStatus(savedStories.length > 0);
+    } catch (error) {
+      console.error('Error checking saved status:', error);
+    }
+  };
+
+  const handleFavoritePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (favoriteStatus) {
+        const { error } = await supabase
+          .from('bottleshock_fav_stories')
+          .delete()
+          .match({ user_id: UID, story_id: story.id });
+
+        if (error) {
+          console.error('Error removing favorite story:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_stories')
+          .insert([{ user_id: UID, story_id: story.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting story:', error.message);
+          return;
+        }
+      }
+
+      setFavoriteStatus(!favoriteStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
+
+  const handleSavePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (savedStatus) {
+        const { error } = await supabase
+          .from('bottleshock_saved_stories')
+          .delete()
+          .match({ user_id: UID, story_id: story.id });
+
+        if (error) {
+          console.error('Error removing saved story:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_stories')
+          .insert([{ user_id: UID, story_id: story.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving story:', error.message);
+          return;
+        }
+      }
+
+      setSavedStatus(!savedStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
+
+  const extractContentAfterFirstImage = (content: string) => {
+    const imagePattern = /!\[.*?\]\(.*?\)/;
+    return content.replace(imagePattern, "").trim();
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#522F60" style={styles.loader} />;
   }
 
   if (!story) {
-    return <Text>Story not found.</Text>; // Handle the case where no story is found
+    return <Text>Story not found.</Text>;
   }
 
-  // Extract content without the first image
   const contentWithoutFirstImage = extractContentAfterFirstImage(story.content);
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
         <TwicImg
-          src={`https://bottleshock.twic.pics/file/${story.thumbnail_image}`} // Display thumbnail image
+          src={`https://bottleshock.twic.pics/file/${story.thumbnail_image}`}
           style={styles.image}
         />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="attach" size={24} style={styles.rotatedIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="heart-outline" size={24}  />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="share-outline" size={24}  />
-          </TouchableOpacity>
+          <Pressable style={styles.button} onPress={handleSavePress}>
+            <Ionicons name="attach" size={24} color={savedStatus ? "#522F60" : "gray"} style={styles.rotatedIcon} />
+          </Pressable>
+          <Pressable style={styles.button} onPress={handleFavoritePress}>
+            <Ionicons name={favoriteStatus ? "heart" : "heart-outline"} size={24} />
+          </Pressable>
+          <Pressable style={styles.button}>
+            <Ionicons name="share-outline" size={24} />
+          </Pressable>
         </View>
       </View>
       <View style={styles.content}>
@@ -109,32 +217,22 @@ const styles = StyleSheet.create({
     top: 55,
     right: 15,
     flexDirection: 'row',
-    gap: 10, // Space between buttons
+    gap: 10,
   },
   button: {
-    backgroundColor: 'white', // Semi-transparent background
+    backgroundColor: 'white',
     borderRadius: 5,
     alignContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     justifyContent: 'center',
     width: 40,
     height: 40
   },
-  rotatedIcon: {
-    transform: [{ rotate: '45deg' }], // Rotate the icon 45 degrees
-  },
   content: {
     padding: 16,
   },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 25,
-    color: "gray",
-    marginBottom: 16,
+  rotatedIcon: {
+    transform: [{ rotate: '45deg' }], // Rotate the icon 45 degrees
   },
   loader: {
     flex: 1,
@@ -164,4 +262,3 @@ const markdownStyles = {
     fontWeight: '300',
   },
 };
-

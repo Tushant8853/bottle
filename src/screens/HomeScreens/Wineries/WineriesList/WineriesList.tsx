@@ -6,13 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Pressable
+  Pressable,
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configure TwicPics
 installTwicPics({
@@ -25,6 +26,8 @@ const WineriesList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const [wineries, setWineries] = useState<any[]>([]);
+  const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   useEffect(() => {
@@ -47,10 +50,150 @@ const WineriesList = () => {
       }));
 
       setWineries(formattedWineries);
+      await checkSavedWineries(formattedWineries);
+      await checkFavoriteWineries(formattedWineries);
     };
 
     fetchWineries();
   }, []);
+
+  const checkSavedWineries = async (fetchedWineries: any[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: savedWineries, error } = await supabase
+        .from('bottleshock_saved_wineries')
+        .select('winery_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching saved wineries:', error.message);
+        return;
+      }
+
+      const savedIds = savedWineries?.map((winery) => winery.winery_id);
+      const updatedSavedStatus = fetchedWineries.map((winery) =>
+        savedIds.includes(winery.id)
+      );
+
+      setSavedStatus(updatedSavedStatus);
+    } catch (error) {
+      console.error('Error in checkSavedWineries:', error);
+    }
+  };
+
+  const checkFavoriteWineries = async (fetchedWineries: any[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: favoriteWineries, error } = await supabase
+        .from('bottleshock_fav_wineries')
+        .select('winery_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching favorite wineries:', error.message);
+        return;
+      }
+
+      const favoriteIds = favoriteWineries?.map((winery) => winery.winery_id);
+      const updatedFavoriteStatus = fetchedWineries.map((winery) =>
+        favoriteIds.includes(winery.id)
+      );
+
+      setFavoriteStatus(updatedFavoriteStatus);
+    } catch (error) {
+      console.error('Error in checkFavoriteWineries:', error);
+    }
+  };
+
+  const handleSavePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const winery = wineries[index];
+      const isSaved = savedStatus[index];
+
+      if (isSaved) {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .delete()
+          .match({ user_id: UID, winery_id: winery.id });
+
+        if (error) {
+          console.error('Error removing winery:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .insert([{ user_id: UID, winery_id: winery.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving winery:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...savedStatus];
+      newStatus[index] = !newStatus[index];
+      setSavedStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
+
+  const handleFavoritePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const winery = wineries[index];
+      const isFavorited = favoriteStatus[index];
+
+      if (isFavorited) {
+        const { error } = await supabase
+          .from('bottleshock_fav_wineries')
+          .delete()
+          .match({ user_id: UID, winery_id: winery.id });
+
+        if (error) {
+          console.error('Error removing favorite winery:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_wineries')
+          .insert([{ user_id: UID, winery_id: winery.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting winery:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...favoriteStatus];
+      newStatus[index] = !newStatus[index];
+      setFavoriteStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
 
   // Handle search filtering
   const filteredWineries = wineries.filter((winery) =>
@@ -84,60 +227,72 @@ const WineriesList = () => {
 
       {/* List of Wineries */}
       <ScrollView>
-        {filteredWineries.map((winery) => (
-        <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })}>
-          <View key={winery.id} style={styles.wineryContainer}>
-            {/* Winery Info */}
-            <View style={styles.wineryInfo}>
-              <Text style={styles.wineryName}>
-                {winery.name}  {winery.verified && (
-                  <MaterialIcons
-                    name="verified"
-                    size={13}
-                    color="#522F60"
+        {filteredWineries.map((winery, index) => (
+          <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
+            <View style={styles.wineryContainer}>
+              {/* Winery Info */}
+              <View style={styles.wineryInfo}>
+                <Text style={styles.wineryName}>
+                  {winery.name} {winery.verified && (
+                    <MaterialIcons
+                      name="verified"
+                      size={13}
+                      color="#522F60"
+                    />
+                  )}
+                </Text>
+                <Text style={styles.wineryLocation}>{winery.address}</Text>
+              </View>
+
+              {/* Action Icons */}
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity 
+                  onPress={() => handleSavePress(index)}
+                  accessibilityLabel={`Link to ${winery.name}`} 
+                  accessibilityRole="button"
+                >
+                  <Feather
+                    name="paperclip"
+                    size={16}
+                    color={savedStatus[index] ? '#522F60' : 'gray'}
+                    style={styles.icon}
                   />
-                )}
-              </Text>
-              <Text style={styles.wineryLocation}>{winery.address}</Text>
-            </View>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => handleFavoritePress(index)}
+                  accessibilityLabel={`Favorite ${winery.name}`} 
+                  accessibilityRole="button"
+                >
+                  <FontAwesome
+                    name={favoriteStatus[index] ? "heart" : "heart-o"}
+                    size={16}
+                    color='gray'
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  accessibilityLabel={`Share ${winery.name}`} 
+                  accessibilityRole="button"
+                >
+                  <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
+                </TouchableOpacity>
+              </View>
 
-            {/* Action Icons */}
-            <View style={styles.iconsContainer}>
-              <TouchableOpacity 
-                accessibilityLabel={`Link to ${winery.name}`} 
-                accessibilityRole="button"
-              >
-                <Feather name="paperclip" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                accessibilityLabel={`Favorite ${winery.name}`} 
-                accessibilityRole="button"
-              >
-                <FontAwesome name="heart-o" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                accessibilityLabel={`Share ${winery.name}`} 
-                accessibilityRole="button"
-              >
-                <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Winery Logo */}
-            {winery.logo ? (
+              {/* Winery Logo */}
+              {winery.logo ? (
                 <TwicImg 
                   src={winery.logo} 
                   style={styles.logo} 
                 />
               ) : (
-                <View style={styles.logo} >
-                <View style={styles.initialsPlaceholder}>
-                  <Text style={styles.initialsText}>{winery.name.slice(0, 2).toUpperCase()}</Text>
-                </View>
+                <View style={styles.logo}>
+                  <View style={styles.initialsPlaceholder}>
+                    <Text style={styles.initialsText}>{winery.name.slice(0, 2).toUpperCase()}</Text>
+                  </View>
                 </View>
               )}
-          </View>
-        </Pressable>
+            </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>
@@ -193,7 +348,7 @@ const styles = StyleSheet.create({
   },
   wineryContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start', // Align items to the top
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
@@ -214,7 +369,7 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingRight: 7 // Align icons to the top
+    paddingRight: 7,
   },
   icon: {
     marginHorizontal: 4,
@@ -242,7 +397,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backButton: {
-    marginRight: 10, // Add some margin for better spacing
+    marginRight: 10,
   },
 });
 
