@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { Key, useEffect, useState } from "react";
 import {
     View,
     Text,
-    StyleSheet,
     ScrollView,
     TouchableOpacity,
     Image,
@@ -15,6 +14,7 @@ import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DiscoverWines from "./Feature/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
@@ -22,18 +22,16 @@ import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
-
+const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
     debug: true,
     maxDPR: 3,
 });
-const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 interface Memory {
     id: string;
     name: string;
-    thumbnail?: string;
     user_id: string;
     description: string;
     handle?: string;
@@ -49,6 +47,7 @@ interface Memory {
     location_long: number;
     address: string;
     memoryId: string;
+    is_thumbnail:boolean;
 }
 
 const formatDate = (dateString: string) => {
@@ -185,8 +184,16 @@ const MemoriesDetails: React.FC = () => {
     const [memories, setMemories] = useState<Memory[]>([]);
     const [expandedMemory, setExpandedMemory] = useState<string | null>(null); // State to track expanded description
     const [isLoading, setIsLoading] = useState(true);
+    const [checkedImages, setCheckedImages] = useState<{ [key: string]: boolean }>({});
+
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
+    };
+    const handleImagePress = (imageId: string) => {
+        setCheckedImages(prev => ({
+            ...prev,
+            [imageId]: !prev[imageId],
+        }));
     };
     useEffect(() => {
         const fetchMemories = async () => {
@@ -213,7 +220,10 @@ const MemoriesDetails: React.FC = () => {
                             return memory;
                         }
 
-                        memory.thumbnails = gallery ? gallery.map(g => `${imagePrefix}${g.file}?twic=v1&resize=60x60`) : [];
+                        memory.thumbnails = gallery ? gallery.map(g => ({
+                            url: `${imagePrefix}${g.file}?twic=v1&resize=60x60`,
+                            is_thumbnail: g.is_thumbnail
+                        })) : [];
                         let restaurantORWinesORLocation = memory.location_name;
 
                         if (memory.restaurant_id) {
@@ -230,7 +240,6 @@ const MemoriesDetails: React.FC = () => {
                             }
                         }
 
-                        // Check if winery_id is present
                         if (memory.winery_id) {
                             const { data: winery, error: wineryError } = await supabase
                                 .from("bottleshock_wineries")
@@ -263,18 +272,15 @@ const MemoriesDetails: React.FC = () => {
         return <SkeletonLoader />;
     }
 
-
     return (
         <ScrollView style={styles.container}>
             {memories.map((memory) => (
                 <View key={memory.id} style={styles.imageContainer}>
-                    {/* Only render Header Image if there are no thumbnails */}
                     {!memory.thumbnails || memory.thumbnails.length === 0 ? (
                         <Image source={HeaderImg} style={styles.image} />
                     ) : (
-                        <TwicImg src={memory.thumbnails[0]} style={styles.image} />
+                        <TwicImg src={memory.thumbnails[0].url} style={styles.image} />
                     )}
-
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>{memory.name}</Text>
                         <Text style={styles.subtext} numberOfLines={1}>{memory.short_description}</Text>
@@ -292,7 +298,6 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-
             {memories.map((memory) => (
                 <View key={memory.id} style={styles.descriptionContainer}>
                     <View style={styles.descriptionIconsContainer}>
@@ -320,7 +325,6 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-
             {memories.map((memory) => (
                 <View key={memory.id} style={styles.datecontainer}>
                     <View style={styles.descriptionIconsContainer}>
@@ -336,7 +340,6 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-
             {memories.map((memory) => (
                 <View style={styles.picandvideoContainer} key={memory.id}>
                     <View style={styles.picandvideoHeaderContainer}>
@@ -350,7 +353,6 @@ const MemoriesDetails: React.FC = () => {
                             </Pressable>
                         </View>
                     </View>
-                    {/* Check if thumbnails exist before rendering */}
                     {memory.thumbnails && memory.thumbnails.length > 0 && (
                         <View style={styles.picandvideoMainContainer}>
                             <ScrollView
@@ -360,16 +362,20 @@ const MemoriesDetails: React.FC = () => {
                             >
                                 {memory.thumbnails.map((thumbnail, index) => (
                                     <View key={index} style={styles.imageContainer}>
-                                        <TwicImg src={thumbnail} style={styles.picandvideoImage} />
-                                        <Pressable style={styles.circle}>
-                                            <Entypo name="circle" size={18} color="#FFFFFF"  />
+                                        <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                                        <Pressable onPress={() => handleImagePress(thumbnail.url)} style={styles.circle}>
+                                            {thumbnail.is_thumbnail ? (
+                                                <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
+                                            ) : (
+                                                <Entypo name="circle" size={18} color="#FFFFFF" />
+                                            )}
                                         </Pressable>
-
                                     </View>
                                 ))}
                             </ScrollView>
                         </View>
                     )}
+
                 </View>
             ))}
             {memories.map((memory) => (
@@ -435,8 +441,6 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-
-
             <DiscoverWines />
             <View style={styles.bottom}></View>
         </ScrollView>
