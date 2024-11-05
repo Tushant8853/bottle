@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
@@ -47,7 +48,7 @@ interface Memory {
     location_lat: number;
     location_long: number;
     address: string;
-    memoryId:string;
+    memoryId: string;
 }
 
 const formatDate = (dateString: string) => {
@@ -114,7 +115,7 @@ const SkeletonLoader: React.FC = () => {
                 </View>
             </View>
 
-            <View style={styles.descriptionContainer}>
+            <View style={styles.skeletondescriptionContainer}>
                 <View style={styles.descriptionIconSkeleton}>
                     <Animated.View style={[styles.shimmer, shimmerStyle]} />
                 </View>
@@ -204,7 +205,7 @@ const MemoriesDetails: React.FC = () => {
                     memoriesData.map(async (memory: any) => {
                         const { data: gallery, error: galleryError } = await supabase
                             .from("bottleshock_memory_gallery")
-                            .select("file")
+                            .select("file , is_thumbnail")
                             .eq("memory_id", memory.id);
 
                         if (galleryError) {
@@ -358,7 +359,13 @@ const MemoriesDetails: React.FC = () => {
                                 contentContainerStyle={styles.picandvideo}
                             >
                                 {memory.thumbnails.map((thumbnail, index) => (
-                                    <TwicImg key={index} src={thumbnail} style={styles.picandvideoImage} />
+                                    <View key={index} style={styles.imageContainer}>
+                                        <TwicImg src={thumbnail} style={styles.picandvideoImage} />
+                                        <Pressable style={styles.circle}>
+                                            <Entypo name="circle" size={18} color="#FFFFFF"  />
+                                        </Pressable>
+
+                                    </View>
                                 ))}
                             </ScrollView>
                         </View>

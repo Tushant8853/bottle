@@ -159,6 +159,11 @@ const styles = StyleSheet.create({
     imageContainer: {
         position: "relative",
     },
+    circle: {
+        position: 'absolute',
+        top: 7,
+        left: 75,
+    },
     image: {
         height: 320,
         width: "100%",
@@ -204,8 +209,16 @@ const styles = StyleSheet.create({
     textContainer: {
     },
     //////////////////////////////////////////descriptionContainer//////////////////////
+    skeletondescriptionContainer:{
+        height:110,
+        borderWidth: 1,
+        marginHorizontal: 16,
+        marginTop: 8,
+        borderRadius: 4,
+        borderColor: "#E1E9EE",
+        flexDirection: "row",
+    },
     descriptionContainer: {
-        height: 110,
         borderWidth: 1,
         marginHorizontal: 16,
         marginTop: 8,
