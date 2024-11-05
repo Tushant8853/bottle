@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
@@ -104,6 +105,8 @@ const MyMemories: React.FC = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -115,7 +118,8 @@ const MyMemories: React.FC = () => {
           setIsLoading(false);
           return;
         }
-        const { data: memories, error } = await supabase
+
+        const { data: memoriesData, error } = await supabase
           .from("bottleshock_memories")
           .select("id, user_id, name, description")
           .eq("user_id", UID);
@@ -125,8 +129,9 @@ const MyMemories: React.FC = () => {
           setIsLoading(false);
           return;
         }
+
         const updatedMemories = await Promise.all(
-          memories.map(async (memory: Memory) => {
+          memoriesData.map(async (memory: Memory) => {
             const { data: gallery, error: galleryError } = await supabase
               .from("bottleshock_memory_gallery")
               .select("file")
@@ -136,9 +141,11 @@ const MyMemories: React.FC = () => {
               console.error("Error fetching gallery:", galleryError.message);
               return memory;
             }
+
             if (gallery && gallery.length > 0) {
               memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
             }
+
             const { data: user, error: userError } = await supabase
               .from("bottleshock_users")
               .select("handle")
@@ -149,6 +156,7 @@ const MyMemories: React.FC = () => {
               console.error("Error fetching user handle:", userError.message);
               return memory;
             }
+
             if (user) {
               memory.handle = user.handle;
             }
@@ -159,6 +167,8 @@ const MyMemories: React.FC = () => {
 
         setMemories(updatedMemories);
         setIsLoading(false);
+        await checkSavedMemories(updatedMemories);
+        await checkFavoriteMemories(updatedMemories);
       } catch (err) {
         console.error("Error fetching memories:", err);
         setIsLoading(false);
@@ -168,7 +178,144 @@ const MyMemories: React.FC = () => {
     fetchMemories();
   }, []);
 
-  const renderMemoryItem = ({ item: memory }: { item: Memory }) => (
+  const checkSavedMemories = async (fetchedMemories: Memory[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: savedMemories, error } = await supabase
+        .from('bottleshock_saved_memories')
+        .select('memory_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching saved memories:', error.message);
+        return;
+      }
+
+      const savedIds = savedMemories?.map((memory) => memory.memory_id);
+      const updatedSavedStatus = fetchedMemories.map((memory) =>
+        savedIds.includes(memory.id)
+      );
+
+      setSavedStatus(updatedSavedStatus);
+    } catch (error) {
+      console.error('Error in checkSavedMemories:', error);
+    }
+  };
+
+  const checkFavoriteMemories = async (fetchedMemories: Memory[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: favoriteMemories, error } = await supabase
+        .from('bottleshock_fav_memories')
+        .select('memory_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching favorite memories:', error.message);
+        return;
+      }
+
+      const favoriteIds = favoriteMemories?.map((memory) => memory.memory_id);
+      const updatedFavoriteStatus = fetchedMemories.map((memory) =>
+        favoriteIds.includes(memory.id)
+      );
+
+      setFavoriteStatus(updatedFavoriteStatus);
+    } catch (error) {
+      console.error('Error in checkFavoriteMemories:', error);
+    }
+  };
+
+  const handleSavePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const memory = memories[index];
+      const isSaved = savedStatus[index];
+
+      if (isSaved) {
+        const { error } = await supabase
+          .from('bottleshock_saved_memories')
+          .delete()
+          .match({ user_id: UID, memory_id: memory.id });
+
+        if (error) {
+          console.error('Error removing memory:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_memories')
+          .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving memory:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...savedStatus];
+      newStatus[index] = !newStatus[index];
+      setSavedStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
+
+  const handleFavoritePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const memory = memories[index];
+      const isFavorited = favoriteStatus[index];
+
+      if (isFavorited) {
+        const { error } = await supabase
+          .from('bottleshock_fav_memories')
+          .delete()
+          .match({ user_id: UID, memory_id: memory.id });
+
+        if (error) {
+          console.error('Error removing favorite memory:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_memories')
+          .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting memory:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...favoriteStatus];
+      newStatus[index] = !newStatus[index];
+      setFavoriteStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
+  const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
         <View style={styles.titleMainContainer}>
@@ -178,22 +325,30 @@ const MyMemories: React.FC = () => {
             </Text>
           </View>
           <View style={styles.actionIcons}>
-            <TouchableOpacity>
-              <Ionicons
-                style={styles.Icons}
-                name="pencil-outline"
-                size={16}
-                color="grey"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                style={styles.Icons}
-                name="heart-outline"
-                size={16}
-                color="grey"
-              />
-            </TouchableOpacity>
+          <TouchableOpacity 
+                  onPress={() => handleSavePress(index)}
+                  accessibilityLabel={`Link to ${memory.name}`} 
+                  accessibilityRole="button"
+                >
+                  <Feather
+                    name="paperclip"
+                    size={16}
+                    color={savedStatus[index] ? '#522F60' : 'gray'}
+                    style={styles.Icons}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => handleFavoritePress(index)}
+                  accessibilityLabel={`Favorite ${memory.name}`} 
+                  accessibilityRole="button"
+                >
+                  <FontAwesome
+                    name={favoriteStatus[index] ? "heart" : "heart-o"}
+                    size={16}
+                    color='gray'
+                    style={styles.Icons}
+                  />
+                </TouchableOpacity>
             <TouchableOpacity>
               <Ionicons
                 style={styles.Icons}
@@ -254,7 +409,7 @@ const MyMemories: React.FC = () => {
       <FlatList
         data={[1, 2, 3, 4, 5]} // Show 5 skeleton items
         renderItem={() => <SkeletonLoader />}
-        keyExtractor={(item) => item.toString()}
+        keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.scrollContainer}
       />
     );
