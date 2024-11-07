@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   Image,
   Pressable,
+  Animated,
 } from "react-native";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/AntDesign";
@@ -95,28 +96,31 @@ const Stories: React.FC = () => {
       console.error("Error in handleSavePress:", err);
     }
   };
-
   useEffect(() => {
-    const fetchStoriesListForDashBoard = async () => {
-      try {
-        const { data: heroMemoriesData, error } = await supabase
-          .from("bottleshock_stories")
-          .select("id,thumbnail_image");
-
-        if (error) {
-          console.error("Error fetching memories:", error.message);
-          return;
-        }
-
-        setMemories(heroMemoriesData?.slice(0, 4) || []);
-      } catch (err) {
-        console.error("Error fetching memories:", err);
-      }
-    };
-
     fetchStoriesListForDashBoard();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchStoriesListForDashBoard();
+    }, [])
+  );
+  const fetchStoriesListForDashBoard = async () => {
+    try {
+      const { data: heroMemoriesData, error } = await supabase
+        .from("bottleshock_stories")
+        .select("id,thumbnail_image");
+
+      if (error) {
+        console.error("Error fetching memories:", error.message);
+        return;
+      }
+
+      setMemories(heroMemoriesData?.slice(0, 4) || []);
+    } catch (err) {
+      console.error("Error fetching memories:", err);
+    }
+  };
   useEffect(() => {
     // Once memories are fetched, check if they are already saved
     if (memories.length > 0) {
