@@ -15,6 +15,7 @@ import MeDashboard from '../screens/HomeMe/MeDashboard';
 import WineDashboard from '../screens/HomeWine/WineDashboard';
 import WineriesList from '../screens/HomeScreens/Wineries/WineriesList/WineriesList';
 import MemoriesDetails from '../screens/HomeScreens/Memories/MemoriesDetails/MemoriesDetails';
+import Thumbnail from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/GalleryView/Thumbnail';
 import RestaurantsList from '../screens/HomeScreens/Restaurants/RestaurantsList/RestaurantsList';
 import RestaurantsDetails from '../screens/HomeScreens/Restaurants/RestaurantsDetails/RestaurantsDetails';
 import WineriesDetails from '../screens/HomeScreens/Wineries/WineriesDetails/WineriesDetails';
@@ -74,6 +75,11 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="WineriesDetails"
                     component={WineriesDetails}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Thumbnail"
+                    component={Thumbnail}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen

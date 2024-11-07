@@ -9,13 +9,13 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 
-// Configure TwicPics
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
   debug: true,
@@ -37,11 +37,9 @@ const Restaurants: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
   useEffect(() => {
-    // Fetch restaurant data from Supabase
     const fetchRestaurants = async () => {
       const { data, error } = await supabase
         .from('bottleshock_restaurants')
@@ -57,7 +55,6 @@ const Restaurants: React.FC = () => {
         banner: restaurant.banner ? `${imagePrefix}${restaurant.banner}` : null,
       }));
 
-      // Limit the displayed restaurants to 4 (2 rows with 2 items each)
       setRestaurants(fetchedRestaurants.slice(0, 4));
       setLikedStatus(new Array(fetchedRestaurants.length).fill(false));
     };
@@ -65,22 +62,69 @@ const Restaurants: React.FC = () => {
     fetchRestaurants();
   }, []);
 
-  const handleSavePress = (index: number): void => {
+  useEffect(() => {
+    const checkSavedRestaurants = async () => {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found");
+        return;
+      }
+
+      const { data: savedRestaurants, error } = await supabase
+        .from('bottleshock_saved_restaurants')
+        .select('restaurant_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching saved restaurants:', error.message);
+        return;
+      }
+
+      const savedIds = savedRestaurants?.map((item) => item.restaurant_id) || [];
+      const initialLikedStatus = restaurants.map((restaurant) =>
+        savedIds.includes(restaurant.Restaurants_id)
+      );
+      setLikedStatus(initialLikedStatus);
+    };
+
+    if (restaurants.length > 0) {
+      checkSavedRestaurants();
+    }
+  }, [restaurants]);
+
+  const handleSavePress = async (index: number): void => {
     const newStatus = [...likedStatus];
     newStatus[index] = !newStatus[index];
     setLikedStatus(newStatus);
+
+    const UID = await AsyncStorage.getItem("UID");
+    const restaurantId = restaurants[index].Restaurants_id;
+
+    if (newStatus[index]) {
+      const { error } = await supabase
+        .from('bottleshock_saved_restaurants')
+        .insert([{ user_id: UID, restaurant_id: restaurantId }]);
+      if (error) {
+        console.error('Error saving restaurant:', error.message);
+      }
+    } else {
+      const { error } = await supabase
+        .from('bottleshock_saved_restaurants')
+        .delete()
+        .eq('user_id', UID)
+        .eq('restaurant_id', restaurantId);
+      if (error) {
+        console.error('Error unsaving restaurant:', error.message);
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
-          <Icons
-            name="restaurant"
-            size={19}
-            color="#522F60"
-          />
-          <Text style={styles.text}>featured restaurants</Text>
+          <Icons name="restaurant" size={19} color="#522F60" />
+          <Text style={styles.text}>Featured Restaurants</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('RestaurantsList')}>
           <Icon name="chevron-right" size={16} color="#522F60" />
@@ -92,35 +136,34 @@ const Restaurants: React.FC = () => {
           {restaurants.map((restaurant, index) => (
             <View key={restaurant.Restaurants_id} style={styles.gridItem}>
               <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })}>
-              <View style={styles.ComponentContainer}>
-                <View style={styles.imageWrapper}>
-                  {restaurant.banner && (
-                    <TwicImg
-                      src={restaurant.banner}
-                      style={styles.component}
-                      //resizeMode="cover"
-                    />
-                  )}
-                  <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
-                    <Icon
-                      name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
-                      size={20}
-                      color="#30425F"
-                    />
-                  </Pressable>
+                <View style={styles.ComponentContainer}>
+                  <View style={styles.imageWrapper}>
+                    {restaurant.banner && (
+                      <TwicImg
+                        src={restaurant.banner}
+                        style={styles.component}
+                      />
+                    )}
+                    <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
+                      <Icon
+                        name={likedStatus[index] ? 'bookmark' : 'bookmark-o'}
+                        size={20}
+                        color="#30425F"
+                      />
+                    </Pressable>
+                  </View>
+                  <View>
+                    <View style={styles.componentTitle}>
+                      <Text style={styles.componentText} numberOfLines={1}>
+                        {restaurant.restro_name}{' '}
+                      </Text>
+                      <Text style={styles.componentText1}>
+                        {restaurant.verified && <Icons name="verified" size={14} color="#522F60" />}
+                      </Text>
+                    </View>
+                    <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
+                  </View>
                 </View>
-                <View>
-                <View style={styles.componentTitle}>
-                <Text style={styles.componentText} numberOfLines={1}>
-                  {restaurant.restro_name}{' '}               
-                </Text>
-                <Text style={styles.componentText1}>
-                  {restaurant.verified && <Icons name="verified" size={14} color="#522F60"/>}
-                </Text> 
-                </View>
-                <Text style={styles.subcomponentText} numberOfLines={2}>{restaurant.hashtags}</Text>
-                </View>
-              </View>
               </Pressable>
             </View>
           ))}
@@ -163,13 +206,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   gridItem: {
-    width: '48%', // Two items per row with some space between
+    width: '48%',
     marginBottom: 20,
   },
   imageWrapper: {
     height: 'auto',
     position: 'relative',
-   paddingBottom: 1,
+    paddingBottom: 1,
   },
   ComponentContainer: {
     borderRadius: 10,
@@ -218,5 +261,5 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
-  hashtags:{},
+  hashtags: {},
 });

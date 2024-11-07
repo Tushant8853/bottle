@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   Dimensions,
   TouchableOpacity,
   Pressable,
@@ -13,6 +12,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
@@ -32,7 +32,7 @@ interface WineryData {
   verified: boolean;
   address: string;
   winery_name: string;
-  wineries_id:number;
+  wineries_id: number;
 }
 
 const Wineries: React.FC = () => {
@@ -53,27 +53,87 @@ const Wineries: React.FC = () => {
         return;
       }
 
-      const fetchedWineries = data.map((WineryData) => ({
-        ...WineryData,
-        banner: WineryData.banner ? `${imagePrefix}${WineryData.banner}` : null,
+      const fetchedWineries = data.map((winery: WineryData) => ({...winery,
+        banner: winery.banner ? `${imagePrefix}${winery.banner}` : null,
       }));
 
       setWineries(fetchedWineries.slice(0, 4));
       setLikedStatus(new Array(fetchedWineries.length).fill(false));
+      
+      await checkSavedWineries(fetchedWineries);
     };
 
     fetchWineries();
   }, []);
 
+  const checkSavedWineries = async (fetchedWineries: WineryData[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
 
-  const handleSavePress = (index: number): void => {
-    const newStatus = [...likedStatus];
-    newStatus[index] = !newStatus[index];
-    setLikedStatus(newStatus);
+      const { data: savedWineries, error } = await supabase
+        .from('bottleshock_saved_wineries')
+        .select('winery_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching saved wineries:', error.message);
+        return;
+      }
+
+      const savedIds = savedWineries?.map((winery) => winery.winery_id);
+      const updatedLikedStatus = fetchedWineries.map((winery) =>
+        savedIds.includes(winery.wineries_id)
+      );
+
+      setLikedStatus(updatedLikedStatus);
+    } catch (error) {
+      console.error('Error in checkSavedWineries:', error);
+    }
   };
 
-  // Calculate dynamic gaps
-  const rowGap = width * 0.05; // 5% of screen width
+  const handleSavePress = async (index: number): Promise<void> => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const winery = wineries[index];
+      const isLiked = likedStatus[index];
+
+      if (isLiked) {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .delete()
+          .match({ user_id: UID, winery_id: winery.wineries_id });
+
+        if (error) {
+          console.error('Error removing winery:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .insert([{ user_id: UID, winery_id: winery.wineries_id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error saving winery:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...likedStatus];
+      newStatus[index] = !newStatus[index];
+      setLikedStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling save press:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -98,7 +158,6 @@ const Wineries: React.FC = () => {
                       <TwicImg
                         src={winery.banner}
                         style={styles.component}
-                      //resizeMode="cover"
                       />
                     )}
                     <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
@@ -124,7 +183,6 @@ const Wineries: React.FC = () => {
               </Pressable>
             </View>
           ))}
-
         </View>
       </ScrollView>
     </View>
@@ -140,13 +198,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     padding: 10,
     paddingBottom: 3,
-  },
-  bannerImage: {
-    width: 13,
-    height: 32,
-    borderRadius: 1,
-    resizeMode: "contain",
-    marginRight: 4,
   },
   TitleContainer: {
     flexDirection: 'row',

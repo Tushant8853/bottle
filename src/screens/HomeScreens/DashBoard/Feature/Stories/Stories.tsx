@@ -10,6 +10,7 @@ import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/AntDesign";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from './index.style';
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
@@ -26,10 +27,73 @@ const Stories: React.FC = () => {
   const [memories, setMemories] = useState<any[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
-  const handleSavePress = (index: number) => {
+  const checkIfSaved = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found");
+        return;
+      }
+
+      // Fetch saved stories for the current user
+      const { data: savedStories, error } = await supabase
+        .from("bottleshock_saved_stories")
+        .select("story_id")
+        .eq("user_id", UID);
+
+      if (error) {
+        console.error("Error fetching saved stories:", error.message);
+        return;
+      }
+
+      const savedStoryIds = savedStories?.map((saved) => saved.story_id) || [];
+
+      // Update likedStatus based on whether the story is saved
+      const initialLikedStatus = memories.map((memory) =>
+        savedStoryIds.includes(memory.id)
+      );
+      setLikedStatus(initialLikedStatus);
+    } catch (err) {
+      console.error("Error checking saved stories:", err);
+    }
+  };
+
+  const handleSavePress = async (index: number) => {
     const newStatus = [...likedStatus];
     newStatus[index] = !newStatus[index];
     setLikedStatus(newStatus);
+
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found");
+        return;
+      }
+
+      const storyId = memories[index].id;
+
+      if (newStatus[index]) {
+        const { error } = await supabase
+          .from("bottleshock_saved_stories")
+          .insert([{ user_id: UID, story_id: storyId }]);
+
+        if (error) {
+          console.error("Error saving story:", error.message);
+        }
+      } else {
+        const { error } = await supabase
+          .from("bottleshock_saved_stories")
+          .delete()
+          .eq("user_id", UID)
+          .eq("story_id", storyId);
+
+        if (error) {
+          console.error("Error unsaving story:", error.message);
+        }
+      }
+    } catch (err) {
+      console.error("Error in handleSavePress:", err);
+    }
   };
 
   useEffect(() => {
@@ -45,7 +109,6 @@ const Stories: React.FC = () => {
         }
 
         setMemories(heroMemoriesData?.slice(0, 4) || []);
-        console.log("Number of memories:", (heroMemoriesData || []).length);
       } catch (err) {
         console.error("Error fetching memories:", err);
       }
@@ -53,6 +116,13 @@ const Stories: React.FC = () => {
 
     fetchStoriesListForDashBoard();
   }, []);
+
+  useEffect(() => {
+    // Once memories are fetched, check if they are already saved
+    if (memories.length > 0) {
+      checkIfSaved();
+    }
+  }, [memories]);
 
   return (
     <View style={styles.container}>

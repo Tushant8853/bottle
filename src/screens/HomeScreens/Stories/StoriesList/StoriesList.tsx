@@ -15,6 +15,7 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -36,6 +37,7 @@ const StoriesList: React.FC = () => {
 
   const [search, setSearch] = useState<string>("");
   const [storiesList, setStoriesList] = useState<Story[]>([]);
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
 
   const updateSearch = (searchValue: string) => {
     setSearch(searchValue);
@@ -53,10 +55,7 @@ const StoriesList: React.FC = () => {
       }
 
       const updatedStories = storiesData.map((story: any) => {
-        // Use the existing thumbnail_image field for the story image
         const image = story.thumbnail_image ? imagePrefix + story.thumbnail_image : null;
-
-        // Extract text after the heading
         const content = story.content;
         const textAfterHeading = extractTextAfterHeading(content);
 
@@ -64,38 +63,100 @@ const StoriesList: React.FC = () => {
           id: story.id,
           name: story.heading,
           short_description: story.sub_heading,
-          image, // This is the thumbnail_image
+          image,
           description: textAfterHeading,
         };
       });
 
       setStoriesList(updatedStories);
+      await checkFavoriteStories(updatedStories); // Check favorite status
     };
 
     fetchStories();
   }, []);
 
+  const checkFavoriteStories = async (fetchedStories: Story[]) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const { data: favoriteStories, error } = await supabase
+        .from('bottleshock_fav_stories')
+        .select('story_id')
+        .eq('user_id', UID);
+
+      if (error) {
+        console.error('Error fetching favorite stories:', error.message);
+        return;
+      }
+
+      const favoriteIds = favoriteStories?.map((story) => story.story_id);
+      const updatedFavoriteStatus = fetchedStories.map((story) =>
+        favoriteIds.includes(story.id)
+      );
+
+      setFavoriteStatus(updatedFavoriteStatus);
+    } catch (error) {
+      console.error('Error in checkFavoriteStories:', error);
+    }
+  };
+
+  const handleFavoritePress = async (index: number) => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found.");
+        return;
+      }
+
+      const story = storiesList[index];
+      const isFavorited = favoriteStatus[index];
+
+      if (isFavorited) {
+        const { error } = await supabase
+          .from('bottleshock_fav_stories')
+          .delete()
+          .match({ user_id: UID, story_id: story.id });
+
+        if (error) {
+          console.error('Error removing favorite story:', error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from('bottleshock_fav_stories')
+          .insert([{ user_id: UID, story_id: story.id, created_at: new Date().toISOString() }]);
+
+        if (error) {
+          console.error('Error favoriting story:', error.message);
+          return;
+        }
+      }
+
+      const newStatus = [...favoriteStatus];
+      newStatus[index] = !newStatus[index];
+      setFavoriteStatus(newStatus);
+    } catch (error) {
+      console.error('Error handling favorite press:', error);
+    }
+  };
+
   // Function to extract text after the heading
   const extractTextAfterHeading = (content: string) => {
-    // Regular expression to match the heading (assuming it's marked with a leading #)
     const headingPattern = /# (.*)/;
-    const imagePattern = /!\[.*?\]\(.*?\)/g; // Matches markdown image syntax
+    const imagePattern = /!\[.*?\]\(.*?\)/g;
 
-    // Remove all images from content
     const contentWithoutImages = content.replace(imagePattern, "");
-
-    // Find the heading in the content
     const headingMatch = contentWithoutImages.match(headingPattern);
 
     if (headingMatch) {
-      // Get the index of the end of the heading match
       const indexAfterHeading = contentWithoutImages.indexOf(headingMatch[0]) + headingMatch[0].length;
-
-      // Extract the text after the heading
       return contentWithoutImages.substring(indexAfterHeading).trim();
     }
 
-    // If no heading is found, return the original content
     return contentWithoutImages.trim();
   };
 
@@ -138,7 +199,7 @@ const StoriesList: React.FC = () => {
               <View style={styles.Stories}>
                 <View style={styles.StoriesImgContainer}>
                   <TwicImg
-                    src={story.image} // This will now refer to the thumbnail_image
+                    src={story.image}
                     style={styles.StoriesImage}
                   />
                 </View>
@@ -150,12 +211,14 @@ const StoriesList: React.FC = () => {
                       </Text>
                     </View>
                     <View style={styles.StoriesTitleIMG}>
-                      <Icon
-                        name="heart-o"
-                        size={16}
-                        color="#808080"
-                        marginRight={8}
-                      />
+                      <TouchableOpacity onPress={() => handleFavoritePress(index)}>
+                        <Icon
+                          name={favoriteStatus[index] ? "heart" : "heart-o"}
+                          size={16}
+                          color="#808080"
+                          marginRight={8}
+                        />
+                      </TouchableOpacity>
                       <Icons name="share-outline" size={17} color="#808080" />
                     </View>
                   </View>
@@ -164,7 +227,6 @@ const StoriesList: React.FC = () => {
                       {story.short_description}
                     </Text>
                   </View>
-                  {/* Display the new description without the heading or image */}
                   <Text style={styles.StoriesDescription} numberOfLines={3}>
                     {story.description}
                   </Text>
@@ -181,11 +243,25 @@ const StoriesList: React.FC = () => {
 export default StoriesList;
 
 const styles = StyleSheet.create({
-  StoriesListContainer: {
-    height: "100%",
-    width: "100%",
-    display: "flex",
+  container: {
+    flex: 1,
     backgroundColor: "white",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    paddingBottom: 1,
+    paddingTop: 55,
+    backgroundColor: "white",
+    width: "100%",
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#333",
+    flex: 1,
   },
   searchContainer: {
     flexDirection: "row",
@@ -206,94 +282,64 @@ const styles = StyleSheet.create({
     elevation: 3,
     height: 40,
   },
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    paddingBottom: 1,
-    paddingTop: 55,
-    backgroundColor: "white",
-    width: "100%",
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    textAlignVertical: "center",
-    width: "100%",
-    paddingRight: 40,
-    color: "#333",
-    textAlign: "center",
-    alignItems: "center",
-  },
   searchIcon: {
     marginRight: 7,
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
-    color: "black",
+    height: 40,
+  },
+  StoriesListMain: {
+    flex: 1,
   },
   ListOfStoriesContainer: {
-    borderTopWidth: 1.1,
-    borderColor: "#808080",
-    paddingHorizontal: 16,
+    flexGrow: 1,
   },
   Stories: {
     flexDirection: "row",
-    marginBottom: 4,
-    marginTop: 4,
-    height: 108,
-  },
-  StoriesListMain: {
-    marginTop: 8,
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
   StoriesImgContainer: {
-    justifyContent: "center",
-    marginRight: 16,
-    marginTop: 4,
-    marginBottom: 4,
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    overflow: "hidden",
   },
   StoriesImage: {
-    width: 100,
-    height: 100,
+    width: "100%",
+    height: "100%",
     borderRadius: 8,
   },
   StoriesText: {
     flex: 1,
-    height: 60,
+    marginLeft: 10,
   },
   StoriesTitle: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  StoriesTitleTextContainer: {
+    flex: 1,
+  },
   StoriesTitleText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "black",
-    paddingTop: 5,
-  },
-  StoriesSubtitle: {
-    fontSize: 11,
-    color: "gray",
-  },
-  StoriesDescription: {
-    fontSize: 11,
-    color: "#522F60",
-    lineHeight: 16.5,
-    paddingTop: 5,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   StoriesTitleIMG: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 5,
   },
-  StoriesTitleTextContainer: {
-    width: "75%",
+  StoriesSubtitle: {
+    fontSize: 14,
+    color: "#808080",
+  },
+  StoriesDescription: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 4,
   },
 });
-
