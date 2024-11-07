@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, Text, Image, Pressable, FlatList } from "react-native";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from "./index.style";
@@ -26,52 +26,53 @@ const OtherMemories: React.FC = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
 
-  // Fetch memories from Supabase
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const UID = await AsyncStorage.getItem("UID");
-        if (!UID) {
-          console.error("User ID not found");
-          return;
-        }
-
-        const { data: memories, error } = await supabase
-          .from("bottleshock_memories")
-          .select("*")
-          .eq("is_public", true)
-          .neq("user_id", UID);
-
-        if (error) {
-          console.error("Error fetching memories:", error.message);
-          return;
-        }
-
-        const updatedMemories = await Promise.all(
-          memories.map(async (memory: Memory) => {
-            const { data: gallery, error: galleryError } = await supabase
-              .from("bottleshock_memory_gallery")
-              .select("file")
-              .eq("memory_id", memory.id)
-              .eq("is_thumbnail", true);
-
-            if (galleryError) {
-              console.error("Error fetching gallery:", galleryError);
-            } else if (gallery && gallery.length > 0) {
-              memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=800x600`;
-            }
-            return memory;
-          })
-        );
-
-        setMemories(updatedMemories);
-      } catch (err) {
-        console.error("Error fetching memories:", err);
+  useFocusEffect(
+    useCallback(() => {
+      // Reload data whenever this component gains focus
+      fetchMemories();
+    }, [])
+  );
+  const fetchMemories = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) {
+        console.error("User ID not found");
+        return;
       }
-    };
 
-    fetchMemories();
-  }, []);
+      const { data: memories, error } = await supabase
+        .from("bottleshock_memories")
+        .select("*")
+        .eq("is_public", true)
+        .neq("user_id", UID);
+
+      if (error) {
+        console.error("Error fetching memories:", error.message);
+        return;
+      }
+
+      const updatedMemories = await Promise.all(
+        memories.map(async (memory: Memory) => {
+          const { data: gallery, error: galleryError } = await supabase
+            .from("bottleshock_memory_gallery")
+            .select("file")
+            .eq("memory_id", memory.id)
+            .eq("is_thumbnail", true);
+
+          if (galleryError) {
+            console.error("Error fetching gallery:", galleryError);
+          } else if (gallery && gallery.length > 0) {
+            memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=800x600`;
+          }
+          return memory;
+        })
+      );
+
+      setMemories(updatedMemories);
+    } catch (err) {
+      console.error("Error fetching memories:", err);
+    }
+  };
 
   const handleNavigation = () => {
     navigation.navigate("MemoriesList", { memoryType: "Public" } as never);
@@ -98,12 +99,12 @@ const OtherMemories: React.FC = () => {
       <View style={styles.bannerContainer}>
         <Pressable onPress={handleNavigation}>
           <View style={styles.headingContainer}>
-          <Bannericon width={13} height={32} color="#522F60"/>
+            <Bannericon width={13} height={32} color="#522F60" />
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerTitle}>Memories from Others</Text>
             </View>
             <View style={styles.bannerarrow} >
-            <Icon name="chevron-right" size={16} color="#522F60" />
+              <Icon name="chevron-right" size={16} color="#522F60" />
             </View>
           </View>
         </Pressable>

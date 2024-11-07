@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   Pressable,
   ScrollView,
+  Animated,
 } from 'react-native';
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
@@ -34,37 +35,95 @@ interface WineryData {
   winery_name: string;
   wineries_id: number;
 }
+const SkeletonItem: React.FC = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+  return (
+    <View style={styles.gridItem}>
+      <View style={styles.ComponentContainer}>
+        <Animated.View style={[styles.skeletonImage, { opacity }]} />
+        <View style={styles.skeletonContent}>
+          <Animated.View style={[styles.skeletonTitle, { opacity }]} />
+          <Animated.View style={[styles.skeletonAddress, { opacity }]} />
+        </View>
+      </View>
+    </View>
+  );
+};
+const SkeletonLoader: React.FC = () => {
+  return (
+    <View style={styles.gridContainer}>
+      {[1, 2, 3, 4].map((item) => (
+        <SkeletonItem key={item} />
+      ))}
+    </View>
+  );
+};
 
 const Wineries: React.FC = () => {
   const [likedStatus, setLikedStatus] = useState<boolean[]>([]);
   const [wineries, setWineries] = useState<WineryData[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
   useEffect(() => {
-    const fetchWineries = async () => {
-      const { data, error } = await supabase
-        .from('bottleshock_wineries')
-        .select('wineries_id, winery_name, address, verified, banner');
-
-      if (error) {
-        console.error('Error fetching wineries:', error.message);
-        return;
-      }
-
-      const fetchedWineries = data.map((winery: WineryData) => ({...winery,
-        banner: winery.banner ? `${imagePrefix}${winery.banner}` : null,
-      }));
-
-      setWineries(fetchedWineries.slice(0, 4));
-      setLikedStatus(new Array(fetchedWineries.length).fill(false));
-      
-      await checkSavedWineries(fetchedWineries);
-    };
-
     fetchWineries();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchWineries();
+    }, [])
+  );
+
+  const fetchWineries = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('bottleshock_wineries')
+      .select('wineries_id, winery_name, address, verified, banner');
+
+    if (error) {
+      console.error('Error fetching wineries:', error.message);
+      return;
+    }
+
+    const fetchedWineries = data.map((winery: WineryData) => ({
+      ...winery,
+      banner: winery.banner ? `${imagePrefix}${winery.banner}` : null,
+    }));
+
+    setWineries(fetchedWineries.slice(0, 4));
+    setLikedStatus(new Array(fetchedWineries.length).fill(false));
+
+    await checkSavedWineries(fetchedWineries);
+    setIsLoading(false);
+  };
 
   const checkSavedWineries = async (fetchedWineries: WineryData[]) => {
     try {
@@ -148,6 +207,9 @@ const Wineries: React.FC = () => {
       </View>
 
       <ScrollView>
+      {isLoading ? (
+          <SkeletonLoader />
+        ) : (
         <View style={styles.gridContainer}>
           {wineries.map((winery, index) => (
             <View key={winery.wineries_id} style={styles.gridItem}>
@@ -184,6 +246,7 @@ const Wineries: React.FC = () => {
             </View>
           ))}
         </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -276,5 +339,27 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     width: 32,
     height: 32,
+  },
+  skeletonImage: {
+    width: '100%',
+    height: 150,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 10,
+  },
+  skeletonContent: {
+    marginTop: 8,
+  },
+  skeletonTitle: {
+    width: '80%',
+    height: 20,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  skeletonAddress: {
+    width: '60%',
+    height: 16,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
   },
 });

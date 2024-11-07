@@ -67,9 +67,8 @@ const StoriesList: React.FC = () => {
           description: textAfterHeading,
         };
       });
-
-      setStoriesList(updatedStories);
       await checkFavoriteStories(updatedStories); // Check favorite status
+      setStoriesList(updatedStories);
     };
 
     fetchStories();

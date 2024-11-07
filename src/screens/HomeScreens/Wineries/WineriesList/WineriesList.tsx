@@ -48,10 +48,10 @@ const WineriesList = () => {
         logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
         verified: winery.verified,
       }));
-
-      setWineries(formattedWineries);
       await checkSavedWineries(formattedWineries);
       await checkFavoriteWineries(formattedWineries);
+      setWineries(formattedWineries);
+      
     };
 
     fetchWineries();
