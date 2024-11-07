@@ -265,7 +265,7 @@ const MemoriesDetails: React.FC = () => {
                 );
                 setMemories(updatedMemories);
                 console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
-                
+
                 await checkSavedMemories(updatedMemories);
                 await checkFavoriteMemories(updatedMemories);
                 setIsLoading(false);
@@ -576,9 +576,14 @@ const MemoriesDetails: React.FC = () => {
                             >
                                 {memory.thumbnails.map((thumbnail, thumbnailIndex) => (
                                     <View key={thumbnail.id} style={styles.imageContainer}>
-                                        <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
                                         <Pressable
                                             onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+                                            style={styles.picandvideoImage} // Ensure that image is still styled correctly
+                                        >
+                                            <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                                        </Pressable>
+                                        <Pressable
+                                            onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)} // Clicking the circle still triggers the same function
                                             style={styles.circle}
                                         >
                                             {thumbnail.is_thumbnail ? (

@@ -3,7 +3,9 @@ import { StyleSheet, View, FlatList, Modal, TouchableOpacity, Text } from 'react
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
-
+import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 // Install TwicPics with the appropriate configuration
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
@@ -16,12 +18,15 @@ type Memory = {
 };
 
 const Thumbnail: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const route = useRoute<RouteProp<{ params: { memoryId: string } }, 'params'>>();
   const { memoryId } = route.params;
+  const groupedMemories = [];
+  const totalImages = memories.length;
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -92,10 +97,6 @@ const Thumbnail: React.FC = () => {
     </View>
   );
 
-  // Group memories into pairs of three, with handling for empty spaces
-  const groupedMemories = [];
-  const totalImages = memories.length;
-  
   for (let i = 0; i < totalImages; i += 3) {
     // Create a new group with 3 images or fill with nulls for empty spaces
     const group = [
@@ -107,44 +108,77 @@ const Thumbnail: React.FC = () => {
   }
 
   return (
-    <View style={styles.Maincontainer}>
-      <View style={styles.container}>
-        <FlatList
-          data={groupedMemories}
-          renderItem={renderPair}
-          keyExtractor={(item, index) => index.toString()}
-        />
+    <View style={styles.ContainerThu}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <FontAwesome name="angle-left" size={20} color="black" />
+        </TouchableOpacity>
       </View>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.closeButtonText}>✖️</Text>
-          </TouchableOpacity>
-          {selectedImage && (
-            <TwicImg
-              src={selectedImage}
-              style={styles.modalImage}
-            />
-          )}
+      <View style={styles.Maincontainer}>
+        <View style={styles.container}>
+          <FlatList
+            data={groupedMemories}
+            renderItem={renderPair}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
-      </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>✖️</Text>
+            </TouchableOpacity>
+            {selectedImage && (
+              <TwicImg
+                src={selectedImage}
+                style={styles.modalImage}
+              />
+            )}
+          </View>
+        </Modal>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  ContainerThu:{
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  header: {
+    marginHorizontal: 16,
+    marginTop: 40,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center', // Align items in a row
+    justifyContent: 'space-between', // Ensure there's space between back button and error message
+  },
+  backButtonText:{
+    marginLeft:10,
+    color: 'blue',
+    textDecorationLine: 'underline',
+    fontSize: 16,
+  },
+  backButton: {
+    marginLeft:0,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   Maincontainer: {
     flex: 1,
     backgroundColor: 'white',
   },
   container: {
-    marginTop: 40,
+    
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -171,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     padding: 10,
   },
   modalImage: {
