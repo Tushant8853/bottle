@@ -266,7 +266,8 @@ const MemoriesDetails: React.FC = () => {
                 setMemories(updatedMemories);
                 console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
                 setIsLoading(false);
-
+                await checkSavedMemories(updatedMemories);
+                await checkFavoriteMemories(updatedMemories);
             } catch (err) {
                 console.error("Error fetching memories:", err);
             }
