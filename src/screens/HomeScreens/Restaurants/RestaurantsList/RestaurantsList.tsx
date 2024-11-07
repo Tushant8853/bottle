@@ -49,10 +49,9 @@ const RestaurantsList = () => {
         verified: restaurant.verified,
         hashtags: restaurant.hashtags,
       }));
-
-      setRestaurants(formattedRestaurants);
       await checkSavedRestaurants(formattedRestaurants);
       await checkFavoriteRestaurants(formattedRestaurants);
+      setRestaurants(formattedRestaurants);
     };
 
     fetchRestaurants();

@@ -164,11 +164,10 @@ const MyMemories: React.FC = () => {
             return memory;
           })
         );
-
         setMemories(updatedMemories);
-        setIsLoading(false);
         await checkSavedMemories(updatedMemories);
         await checkFavoriteMemories(updatedMemories);
+        setIsLoading(false);
       } catch (err) {
         console.error("Error fetching memories:", err);
         setIsLoading(false);
