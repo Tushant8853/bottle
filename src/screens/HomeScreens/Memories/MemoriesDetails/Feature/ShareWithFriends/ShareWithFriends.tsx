@@ -1,24 +1,79 @@
 import { View, Text, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
+import { useRoute, RouteProp } from "@react-navigation/native";
+import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
+
+interface Wine {
+    likes: number;
+    tags: string;
+    comments: number;
+    shared_with: string;
+    star_ratings: number;
+    is_public: boolean;
+    shared_with_friends: boolean;
+}
+
 const ShareWithFriends: React.FC = () => {
-    const totalStars = 5; // Total number of stars
-    const filledStars = 4; // Number of filled stars (for 4.5 rating, for example)
+    const [memoryData, setMemoryData] = useState<Wine[]>([]);
+    const totalStars = 5;
+    const filledStars = memoryData.length > 0 ? memoryData[0].star_ratings : 0;
+    const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
+    const { id } = route.params;
+    console.log(id)
+
+    useEffect(() => {
+        const fetchMemories = async () => {
+            try {
+                const { data: memoriesData, error } = await supabase
+                    .from("bottleshock_memories")
+                    .select("likes, tags, comments, shared_with, star_ratings,is_public,shared_with_friends")
+                    .eq("id", id);
+
+                if (error) {
+                    console.error("Error fetching memories:", error.message);
+                    return;
+                }
+                if (memoriesData && memoriesData.length > 0) {
+                    console.log("------")
+                    console.log(memoriesData);
+                    setMemoryData(memoriesData);
+                } else {
+                    console.log("No memories found with the given id.");
+                }
+            } catch (error) {
+                console.error("Error in fetchMemories:");
+            }
+        };
+
+        fetchMemories();
+    }, [id]);
+
+    const backgroundColor = memoryData.length > 0
+        ? memoryData[0].is_public
+            ? 'red'
+            : memoryData[0].shared_with_friends
+                ? '#522F60'
+                : 'white'
+        : 'white';
+
+    const textColor = backgroundColor === 'white' ? 'black' : 'white';
 
     return (
+
         <View style={styles.Container}>
             {/* Share to Friends Section */}
-            <View style={styles.ShareContainer}>
+            <View style={[styles.ShareContainer, { backgroundColor }]}>
                 <View style={styles.ShareWithFriendsContainer}>
                     <View style={styles.IconWrapper}>
                         <Ionicons name="share-outline" size={16} style={styles.ShareIcon} />
                     </View>
-                    <Text style={styles.ShareWithFriendsText}>Shared to Friends</Text>
+                    <Text style={[styles.ShareWithFriendsText, { color: textColor }]}>Shared to Friends</Text>
                     <View style={styles.IconWrapper}>
                         <Feather name="chevron-down" size={16} style={styles.ArrowIcon} />
                     </View>
@@ -26,46 +81,53 @@ const ShareWithFriends: React.FC = () => {
             </View>
 
             {/* User Information Section */}
-            <View style={styles.UserInfoContainer}>
-                <View style={styles.UserInfoContent}>
-                    <View style={styles.UserIconContainer}>
-                        <MaterialIcons
-                            name="supervisor-account"
-                            size={17}
-                            color="#522F60"
-                        />
-                    </View>
-                    <View style={styles.UserLocationTextContainer}>
-                        <Text style={styles.locationHeaderText}>
-                            @Jay  <AntDesign
-                                name="checkcircle"
-                                size={14}
+            {memoryData.map((wine, index) => (
+                <View key={index} style={styles.UserInfoContainer}>
+                    <View style={styles.UserInfoContent}>
+                        <View style={styles.UserIconContainer}>
+                            <MaterialIcons
+                                name="supervisor-account"
+                                size={17}
                                 color="#522F60"
-                                style={styles.CheckCircleIcon}
                             />
-                        </Text>
+                        </View>
+                        <View style={styles.UserLocationTextContainer}>
+                            <Text style={styles.locationHeaderText}>
+                                @{wine.shared_with} {/* Accessing shared_with field here */}
+                                <AntDesign
+                                    name="checkcircle"
+                                    size={14}
+                                    color="#522F60"
+                                    style={styles.CheckCircleIcon}
+                                />
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            ))}
+
 
             {/* Hashtags Section */}
-            <View style={styles.HashtagContainer}>
-                <View style={styles.HashtagContent}>
-                    <View style={styles.HashtagIconContainer}>
-                        <Feather
-                            name="tag"
-                            size={17}
-                            color="#522F60"
-                            style={{ transform: [{ rotate: '90deg' }] }}
-                        />
-                    </View>
-                    <View style={styles.HashtagTextContainer}>
-                        <Text style={styles.HashtagText} numberOfLines={1}>
-                            # tushant # gupta # hello
-                        </Text>
+            {memoryData.map((wine, index) => (
+                <View style={styles.HashtagContainer}>
+                    <View style={styles.HashtagContent}>
+                        <View style={styles.HashtagIconContainer}>
+                            <Feather
+                                name="tag"
+                                size={17}
+                                color="#522F60"
+                                style={{ transform: [{ rotate: '90deg' }] }}
+                            />
+                        </View>
+                        <View style={styles.HashtagTextContainer}>
+                            <Text style={styles.HashtagText} numberOfLines={1}>
+                                {wine.tags}  {/* here bottleshock_memories.tags*/}
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            ))}
+
 
             {/* Rating Section with 5 Stars in the Same Row */}
             <View style={styles.StartLikeCommentContainer}>
@@ -104,36 +166,42 @@ const ShareWithFriends: React.FC = () => {
                     </View>
                 </View>
                 {/* Like */}
-                <View style={styles.RatingContainer}>
-                    <View style={styles.StartContent}>
-                        <View style={styles.StarIconContainer}>
-                            <AntDesign
-                                name="like2"
-                                size={16}
-                                color="#522F60"
-                                style={styles.CheckCircleIcon}
-                            />
-                        </View>
-                        <View style={styles.RatingContent}>
-                            <Text style={styles.LikeText}>40293</Text>
+                {memoryData.map((wine, index) => (
+                    <View style={styles.RatingContainer}>
+                        <View style={styles.StartContent}>
+                            <View style={styles.StarIconContainer}>
+                                <AntDesign
+                                    name="like2"
+                                    size={16}
+                                    color="#522F60"
+                                    style={styles.CheckCircleIcon}
+                                />
+                            </View>
+                            <View style={styles.RatingContent}>
+                                <Text style={styles.LikeText}>{wine.likes} {/* here bottleshock_memories.likes*/}</Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                ))}
+
                 {/* Comment */}
-                <View style={styles.RatingContainer}>
-                    <View style={styles.StartContent}>
-                        <View style={styles.StarIconContainer}>
-                            <Octicons
-                                name="comment-discussion"
-                                size={16}
-                                color="#522F60" // Outline color for stars
-                            />
-                        </View>
-                        <View style={styles.RatingContent}>
-                            <Text style={styles.LikeText}>392</Text>
+                {memoryData.map((wine, index) => (
+                    <View style={styles.RatingContainer}>
+                        <View style={styles.StartContent}>
+                            <View style={styles.StarIconContainer}>
+                                <Octicons
+                                    name="comment-discussion"
+                                    size={16}
+                                    color="#522F60" // Outline color for stars
+                                />
+                            </View>
+                            <View style={styles.RatingContent}>
+                                <Text style={styles.LikeText}>{wine.comments}  {/* here bottleshock_memories.comments*/} </Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                ))}
+
             </View>
 
             <View style={styles.DeleteBoxContainer}>
@@ -147,6 +215,7 @@ export default ShareWithFriends;
 
 const styles = StyleSheet.create({
     Container: {
+        marginTop: 20,
         marginHorizontal: 16,
         flex: 1,
         backgroundColor: 'white',
@@ -283,12 +352,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         marginLeft: 4,
     },
-    LikeText:{
-        marginLeft:5,
+    LikeText: {
+        marginLeft: 5,
     },
     ////////////////////////////////////////////////////////////////////
-    DeleteBoxContainer:{
-        marginTop:10,
+    DeleteBoxContainer: {
+        marginTop: 10,
     },
     DeleteText: {
         fontFamily: 'SF Pro',
