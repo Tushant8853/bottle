@@ -24,7 +24,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
-
+import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
     debug: true,
@@ -671,6 +671,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             
             <DiscoverWines id={id}/>
+            <ShareWithFriends/>
             <View style={styles.bottom}></View>
         </ScrollView >
     );

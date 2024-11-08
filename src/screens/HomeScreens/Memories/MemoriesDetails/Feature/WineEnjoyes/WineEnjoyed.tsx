@@ -1,5 +1,5 @@
-import { View, Text, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, Image, Animated } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from './index.style';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useRoute, RouteProp } from "@react-navigation/native";
@@ -16,12 +16,88 @@ interface Wine {
     wines_id: number;
 }
 
+const SkeletonLoader = () => {
+    const animatedValue = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const startAnimation = () => {
+            Animated.sequence([
+                Animated.timing(animatedValue, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(animatedValue, {
+                    toValue: 0,
+                    duration: 1000,
+                    useNativeDriver: true,
+                })
+            ]).start(() => startAnimation());
+        };
+
+        startAnimation();
+    }, []);
+
+    const opacity = animatedValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.3, 0.7],
+    });
+
+    return Array(3).fill(null).map((_, index) => (
+        <View key={index} style={styles.ListOfStoriesContainer}>
+            <View style={styles.Stories}>
+                <Animated.View style={[styles.StoriesImgContainer, { opacity }]}>
+                    <View style={{ width: '100%', height: '90%', backgroundColor: '#E0E0E0' }} />
+                </Animated.View>
+                <View style={styles.StoriesText}>
+                    <View style={styles.StoriesTitle}>
+                        <Animated.View style={[{
+                            width: '60%',
+                            height: 12,
+                            backgroundColor: '#E0E0E0',
+                            borderRadius: 4,
+                            opacity
+                        }]} />
+                    </View>
+                    <Animated.View style={[{
+                        width: '80%',
+                        height: 14,
+                        backgroundColor: '#E0E0E0',
+                        borderRadius: 4,
+                        marginTop: 8,
+                        opacity
+                    }]} />
+                    <View style={styles.StoriesDescriptionConatiner}>
+                        <Animated.View style={[{
+                            width: '30%',
+                            height: 12,
+                            backgroundColor: '#E0E0E0',
+                            borderRadius: 4,
+                            marginTop: 8,
+                            opacity
+                        }]} />
+                        <Animated.View style={[{
+                            width: '40%',
+                            height: 12,
+                            backgroundColor: '#E0E0E0',
+                            borderRadius: 4,
+                            marginTop: 8,
+                            opacity
+                        }]} />
+                    </View>
+                </View>
+            </View>
+        </View>
+    ));
+};
+
 const DiscoverWines: React.FC = () => {
     const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
     const [wines, setWines] = useState<Wine[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { id } = route.params;
-    console.log("memory id ---",id)
+
     useEffect(() => {
         const fetchWines = async () => {
             try {
@@ -94,9 +170,11 @@ const DiscoverWines: React.FC = () => {
 
                     const winesData = bottleshockWinesDetails.filter((wine) => wine !== null);
                     setWines(winesData);
+                    setIsLoading(false);
                 }
             } catch (error) {
                 console.error("An unexpected error occurred:", error);
+                setIsLoading(false);
             }
         };
 
@@ -114,35 +192,39 @@ const DiscoverWines: React.FC = () => {
                     <AntDesign name="arrowright" size={20} color="#522F60" />
                 </View>
 
-                {wines.map((wine, index) => (
-                    <View key={wine.wines_id || index} style={styles.ListOfStoriesContainer}>
-                        <View style={styles.Stories}>
-                            <View style={styles.StoriesImgContainer}>
-                                <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
-                            </View>
-                            <View style={styles.StoriesText}>
-                                <View style={styles.StoriesTitle}>
-                                    <View style={styles.StoriesTitleTextContainer}>
-                                        <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                            {wine.winery_name || 'Unknown Winery'}
+                {isLoading ? (
+                    <SkeletonLoader />
+                ) : (
+                    wines.map((wine, index) => (
+                        <View key={wine.wines_id || index} style={styles.ListOfStoriesContainer}>
+                            <View style={styles.Stories}>
+                                <View style={styles.StoriesImgContainer}>
+                                    <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
+                                </View>
+                                <View style={styles.StoriesText}>
+                                    <View style={styles.StoriesTitle}>
+                                        <View style={styles.StoriesTitleTextContainer}>
+                                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                                {wine.winery_name || 'Unknown Winery'}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                                        {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
+                                    </Text>
+                                    <View style={styles.StoriesDescriptionConatiner}>
+                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                            {wine.year}
+                                        </Text>
+                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                            bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
                                         </Text>
                                     </View>
                                 </View>
-                                <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                    {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
-                                </Text>
-                                <View style={styles.StoriesDescriptionConatiner}>
-                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                        {wine.year}
-                                    </Text>
-                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                        bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
-                                    </Text>
-                                </View>
                             </View>
                         </View>
-                    </View>
-                ))}
+                    ))
+                )}
             </View>
         </View>
     );
