@@ -24,6 +24,7 @@ interface Memory {
   user_id: string;
   description: string;
   handle?: string;
+  star_ratings: number;
 }
 
 installTwicPics({
@@ -120,7 +121,7 @@ const PublicMemories: React.FC = () => {
         }
         const { data: memories, error } = await supabase
           .from("bottleshock_memories")
-          .select("id, user_id, name, description");
+          .select("id, user_id, name, description,star_ratings");
 
         if (error) {
           console.error("Error fetching memories:", error.message);
@@ -304,6 +305,59 @@ const PublicMemories: React.FC = () => {
       console.error('Error handling favorite press:', error);
     }
   };
+  const renderStars = (rating: number) => {
+    const totalStars = 5; // Total number of stars
+    const fullStars = Math.floor(rating); // Number of full stars
+    const hasHalfStar = rating % 1 >= 0.5; // Check if there's a half star
+    const starFillWidth = `${(rating / totalStars) * 100}%`; // Percentage width for the filled stars
+  
+    return (
+      <View style={styles.starRating}>
+        {/* Render 5 outlined stars as the background */}
+        {Array(totalStars)
+          .fill(null)
+          .map((_, index) => (
+            <FontAwesome
+              key={`outline-${index}`}
+              name="star-o"
+              size={11}
+              color="grey" // Outline color for stars
+            />
+          ))}
+  
+        {/* Render filled stars based on rating */}
+        <View style={[styles.starFillContainer, { width: starFillWidth }]}>
+          {Array(totalStars)
+            .fill(null)
+            .map((_, index) => {
+              // If the index is less than the number of full stars, render full star
+              if (index < fullStars) {
+                return (
+                  <FontAwesome
+                    key={`filled-${index}`}
+                    name="star"
+                    size={11}
+                    color="grey" // Filled star color
+                  />
+                );
+              }
+              // If we have a half star
+              else if (index === fullStars && hasHalfStar) {
+                return (
+                  <FontAwesome
+                    key={`half-${index}`}
+                    name="star-half-full"
+                    size={11}
+                    color="grey"
+                  />
+                );
+              }
+              return null; // Empty star, not rendered
+            })}
+        </View>
+      </View>
+    );
+  };
 
   const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => (
     <View key={memory.id} style={styles.container}>
@@ -361,14 +415,7 @@ const PublicMemories: React.FC = () => {
               color="grey"
             />
           </View>
-          <View style={styles.starRating}>
-            {Array(4)
-              .fill(null)
-              .map((_, index) => (
-                <FontAwesome key={index} name="star" size={11} color="grey" />
-              ))}
-            <FontAwesome name="star-half-full" size={11} color="grey" />
-          </View>
+          {renderStars(memory.star_ratings)}
         </View>
         <View style={styles.descriptionContainer}>
           <Text style={styles.StoriesDescription} numberOfLines={2}>
@@ -511,6 +558,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
+    position: "relative", // To set a reference for the absolute positioning in starFillContainer
+  },
+  starFillContainer: {
+    flexDirection: "row",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    alignItems: "center",
+    justifyContent: "space-around", // Space out stars equally within the container
+    width: "100%", // Ensures the filled stars cover the full width
+    height: "100%", // Ensures the filled stars cover the full height of the container
   },
   username: {
     fontSize: 11,

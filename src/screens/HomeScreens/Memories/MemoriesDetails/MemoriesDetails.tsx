@@ -204,7 +204,7 @@ const MemoriesDetails: React.FC = () => {
             try {
                 const { data: memoriesData, error } = await supabase
                     .from("bottleshock_memories")
-                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, location_name, location_lat, location_long, address")
+                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, location_name, location_lat, location_long, address, winery_id")
                     .eq("id", id);
 
                 if (error) {
@@ -250,7 +250,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: winery, error: wineryError } = await supabase
                                 .from("bottleshock_wineries")
                                 .select("winery_name")
-                                .eq("id", memory.winery_id)
+                                .eq("wineries_id", memory.winery_id)
                                 .single();
 
                             if (wineryError) {
@@ -621,12 +621,16 @@ const MemoriesDetails: React.FC = () => {
                             </View>
                         </View>
                         <View style={styles.actionHeaderContainer}>
-                            <View style={styles.twoContent}>
-                                <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
-                            </View>
-                            <View style={styles.threeContent}>
-                                <Ionicons name="heart-outline" size={14} />
-                            </View>
+                        {memory.restaurant_id || memory.winery_id ? ( // Check if either restaurant_id or winery_id is present
+                          <>
+                         <View style={styles.twoContent}>
+                         <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
+                        </View>
+                           <View style={styles.threeContent}>
+                           <Ionicons name="heart-outline" size={14} />
+                           </View>
+                          </>
+                         ) : null}  
                             <View style={styles.fourContent}>
                                 <Ionicons name="share-outline" size={14} />
                             </View>
@@ -671,7 +675,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             
             <DiscoverWines id={id}/>
-            <ShareWithFriends/>
+            <ShareWithFriends id={id}/>
             <View style={styles.bottom}></View>
         </ScrollView >
     );
