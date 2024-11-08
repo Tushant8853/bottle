@@ -16,7 +16,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DiscoverWines from "./Feature/WineEnjoyed";
+import DiscoverWines from "./Feature/WineEnjoyes/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
@@ -264,7 +264,7 @@ const MemoriesDetails: React.FC = () => {
                     })
                 );
                 setMemories(updatedMemories);
-                console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
+                //console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
 
                 await checkSavedMemories(updatedMemories);
                 await checkFavoriteMemories(updatedMemories);
@@ -669,7 +669,8 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-            <DiscoverWines />
+            
+            <DiscoverWines id={id}/>
             <View style={styles.bottom}></View>
         </ScrollView >
     );
