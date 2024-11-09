@@ -727,7 +727,7 @@ const MemoriesDetails: React.FC = () => {
             {memories.map((memory, index) => {
                 const thumbnailImage = memory.thumbnails?.find(thumbnail => thumbnail.is_thumbnail === true);
                 return (
-                    <View key={memory.id} style={styles.imageContainer}>
+                    <View key={`memory-header-${memory.id}`} style={styles.imageContainer}>
                         {thumbnailImage ? (
                             <TwicImg src={thumbnailImage.url} style={styles.image} />
                         ) : (
@@ -767,7 +767,7 @@ const MemoriesDetails: React.FC = () => {
             })}
             {/* DESC */}
             {memories.map((memory) => (
-                <View key={memory.id} style={styles.descriptionContainer}>
+                <View key={`memory-desc-${memory.id}`} style={styles.descriptionContainer}>
                     <View style={styles.descriptionIconsContainer}>
                         <Feather
                             style={styles.descriptionIcons}
@@ -795,7 +795,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             {/* DATE */}
             {memories.map((memory) => (
-                <View key={memory.id} style={styles.datecontainer}>
+                <View key={`memory-date-${memory.id}`} style={styles.datecontainer}>
                     <View style={styles.descriptionIconsContainer}>
                         <Ionicons
                             name="calendar-outline"
@@ -811,7 +811,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             {/* PICANDVIDEO */}
             {memories.map((memory, memoryIndex) => (
-                <View style={styles.picandvideoContainer} key={memory.id}>
+                <View style={styles.picandvideoContainer} key={`memory-pics-${memory.id}`} >
                     <View style={styles.picandvideoHeaderContainer}>
                         <View style={styles.leftContent}>
                             <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
@@ -832,7 +832,7 @@ const MemoriesDetails: React.FC = () => {
                                 contentContainerStyle={styles.picandvideo}
                             >
                                 {memory.thumbnails.map((thumbnail, thumbnailIndex) => (
-                                    <View key={thumbnail.id} style={styles.imageContainer}>
+                                    <View key={`thumbnail-${thumbnail.id}`} style={styles.imageContainer}>
                                         <Pressable
                                             onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
                                             style={styles.picandvideoImage} // Ensure that image is still styled correctly
@@ -858,7 +858,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             {/* MAP */}
             {memories.map((memory, index) => (
-                <View style={styles.MapContainer} key={memory.id}>
+                <View style={styles.MapContainer} key={`memory-map-${memory.id}`}>
                     <View style={styles.MapContainerHeader}>
                         <View style={styles.locationHeaderContainer}>
                             <View style={styles.oneContent}>
