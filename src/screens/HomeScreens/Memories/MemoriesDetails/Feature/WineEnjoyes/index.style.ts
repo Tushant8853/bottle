@@ -1,29 +1,8 @@
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
-// Define the types for each style object
-interface Styles {
-    container: ViewStyle;
-    TitleContainer: ViewStyle;
-    leftContainer: ViewStyle;
-    MemoriesImg: ImageStyle;
-    text: TextStyle;
-    ListOfStoriesContainer: ViewStyle;
-    Stories: ViewStyle;
-    StoriesImgContainer: ViewStyle;
-    StoriesImage: ImageStyle;
-    StoriesText: ViewStyle;
-    StoriesTitle: ViewStyle;
-    StoriesTitleText: TextStyle;
-    StoriesSubtitle: TextStyle;
-    StoriesDescription: TextStyle;
-    StoriesTitleIMG: ViewStyle;
-    StoriesDescriptionConatiner: ViewStyle;
-    boldText: TextStyle;
-    StoriesTitleTextContainer:ViewStyle;
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
     container: {
+        //borderWidth:1,
         height: 'auto',
         width: '100%',
         marginBottom: 5,
@@ -34,7 +13,7 @@ const styles = StyleSheet.create<Styles>({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginHorizontal:16,
+        marginHorizontal:4,
     },
     leftContainer: {
         flexDirection: 'row',
@@ -55,7 +34,7 @@ const styles = StyleSheet.create<Styles>({
         marginBottom: 2,
     },
     ListOfStoriesContainer: {
-        marginHorizontal:16,
+        marginHorizontal:4,
         marginTop: 6,
         backgroundColor: '#522F600D',
         height: 88,

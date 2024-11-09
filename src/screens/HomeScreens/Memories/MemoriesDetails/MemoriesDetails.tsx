@@ -16,7 +16,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DiscoverWines from "./Feature/WineEnjoyed";
+import DiscoverWines from "./Feature/WineEnjoyes/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
@@ -24,7 +24,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
-
+import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
     debug: true,
@@ -189,7 +189,10 @@ const MemoriesDetails: React.FC = () => {
     const [checkedImages, setCheckedImages] = useState<{ [key: string]: boolean }>({});
     const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
     const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
-
+    const [savedItemsStatus, setSavedItemsStatus] = useState([]);
+    const [favoriteItemsStatus, setFavoriteItemsStatus] = useState([]); 
+    const [UID, setUID] = useState(null);
+    
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
     };
@@ -199,12 +202,265 @@ const MemoriesDetails: React.FC = () => {
             [imageId]: !prev[imageId],
         }));
     };
+     // Use state for UID
+  
+    // Fetch UID from AsyncStorage when the component mounts
+    useEffect(() => {
+      const fetchUID = async () => {
+        try {
+          const userId = await AsyncStorage.getItem('UID');
+          setUID(userId); // Save UID to state
+        } catch (error) {
+          console.error('Error fetching UID from AsyncStorage:', error);
+        }
+      };
+      
+      fetchUID();
+    }, []); // This effect runs once when the component mounts
+  
+    useEffect(() => {
+        if (UID) {
+          const fetchSavedItemsStatus = async () => {
+            try {
+              const savedWineriesResponse = await supabase
+                .from('bottleshock_saved_wineries')
+                .select('winery_id')
+                .eq('user_id', UID);
+    
+              const savedRestaurantsResponse = await supabase
+                .from('bottleshock_saved_restaurants')
+                .select('restaurant_id')
+                .eq('user_id', UID);
+    
+              const savedWineries = savedWineriesResponse.data.map(row => row.winery_id);
+              const savedRestaurants = savedRestaurantsResponse.data.map(row => row.restaurant_id);
+    
+              const status = memories.map((memory) => {
+                if (memory.winery_id) {
+                  return savedWineries.includes(memory.winery_id);
+                }
+                if (memory.restaurant_id) {
+                  return savedRestaurants.includes(memory.restaurant_id);
+                }
+                return false;
+              });
+    
+              setSavedItemsStatus(status);
+            } catch (error) {
+              console.error('Error fetching saved items status from Supabase:', error);
+            }
+          };
+    
+          const fetchFavoriteItemsStatus = async () => {
+            try {
+              const favoriteWineriesResponse = await supabase
+                .from('bottleshock_fav_wineries')
+                .select('winery_id')
+                .eq('user_id', UID);
+    
+              const favoriteRestaurantsResponse = await supabase
+                .from('bottleshock_fav_restaurants')
+                .select('restaurant_id')
+                .eq('user_id', UID);
+    
+              const favoriteWineries = favoriteWineriesResponse.data.map(row => row.winery_id);
+              const favoriteRestaurants = favoriteRestaurantsResponse.data.map(row => row.restaurant_id);
+    
+              const favoriteStatus = memories.map((memory) => {
+                if (memory.winery_id) {
+                  return favoriteWineries.includes(memory.winery_id);
+                }
+                if (memory.restaurant_id) {
+                  return favoriteRestaurants.includes(memory.restaurant_id);
+                }
+                return false;
+              });
+    
+              setFavoriteItemsStatus(favoriteStatus);
+            } catch (error) {
+              console.error('Error fetching favorite items status from Supabase:', error);
+            }
+          };
+    
+          fetchSavedItemsStatus();
+          fetchFavoriteItemsStatus();
+        }
+      }, [UID, memories]); // This effect runs when UID or memories change
+    
+  
+    // Handle saving or unsaving winery
+    const handleSavePresswr = async (index) => {
+      const memory = memories[index];
+      const isSaved = savedItemsStatus[index];
+      
+      try {
+        if (memory.winery_id) {
+          if (isSaved) {
+            await deleteWinery(UID, memory.winery_id); // Delete from saved wineries
+            savedItemsStatus[index] = false; // Update local status
+          } else {
+            await saveWinery(UID, memory.winery_id); // Save to saved wineries
+            savedItemsStatus[index] = true; // Update local status
+          }
+        } else if (memory.restaurant_id) {
+          if (isSaved) {
+            await deleteRestaurant(UID, memory.restaurant_id); // Delete from saved restaurants
+            savedItemsStatus[index] = false; // Update local status
+          } else {
+            await saveRestaurant(UID, memory.restaurant_id); // Save to saved restaurants
+            savedItemsStatus[index] = true; // Update local status
+          }
+        }
+        setSavedItemsStatus([...savedItemsStatus]); // Trigger re-render
+      } catch (error) {
+        console.error('Error toggling saved status:', error);
+      }
+    };
+    const handleFavoritePresswr = async (index) => {
+        const memory = memories[index];
+        const isFavorite = favoriteItemsStatus[index];
+    
+        try {
+          if (memory.winery_id) {
+            if (isFavorite) {
+              await deleteFavoriteWinery(UID, memory.winery_id); // Delete from favorite wineries
+              favoriteItemsStatus[index] = false; // Update local status
+            } else {
+              await addFavoriteWinery(UID, memory.winery_id); // Add to favorite wineries
+              favoriteItemsStatus[index] = true; // Update local status
+            }
+          } else if (memory.restaurant_id) {
+            if (isFavorite) {
+              await deleteFavoriteRestaurant(UID, memory.restaurant_id); // Delete from favorite restaurants
+              favoriteItemsStatus[index] = false; // Update local status
+            } else {
+              await addFavoriteRestaurant(UID, memory.restaurant_id); // Add to favorite restaurants
+              favoriteItemsStatus[index] = true; // Update local status
+            }
+          }
+          setFavoriteItemsStatus([...favoriteItemsStatus]); // Trigger re-render
+        } catch (error) {
+          console.error('Error toggling favorite status:', error);
+        }
+      };
+  
+    // Save Winery to Supabase
+    const saveWinery = async (UID, wineryId) => {
+      try {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .insert([
+            { created_at: new Date(), user_id: UID, winery_id: wineryId }
+          ]);
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error saving winery to Supabase:', error);
+      }
+    };
+    const addFavoriteWinery = async (UID, wineryId) => {
+        try {
+          const { error } = await supabase
+            .from('bottleshock_fav_wineries')
+            .insert([
+              { created_at: new Date(), user_id: UID, winery_id: wineryId }
+            ]);
+          if (error) throw error;
+        } catch (error) {
+          console.error('Error adding winery to favorites:', error);
+        }
+      };
+    
+      // Delete Winery from Favorites
+      const deleteFavoriteWinery = async (UID, wineryId) => {
+        try {
+          const { error } = await supabase
+            .from('bottleshock_fav_wineries')
+            .delete()
+            .eq('user_id', UID)
+            .eq('winery_id', wineryId);
+          if (error) throw error;
+        } catch (error) {
+          console.error('Error deleting winery from favorites:', error);
+        }
+      };
+    
+      // Add Restaurant to Favorites
+      const addFavoriteRestaurant = async (UID, restaurantId) => {
+        try {
+          const { error } = await supabase
+            .from('bottleshock_fav_restaurants')
+            .insert([
+              { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
+            ]);
+          if (error) throw error;
+        } catch (error) {
+          console.error('Error adding restaurant to favorites:', error);
+        }
+      };
+    
+      // Delete Restaurant from Favorites
+      const deleteFavoriteRestaurant = async (UID, restaurantId) => {
+        try {
+          const { error } = await supabase
+            .from('bottleshock_fav_restaurants')
+            .delete()
+            .eq('user_id', UID)
+            .eq('restaurant_id', restaurantId);
+          if (error) throw error;
+        } catch (error) {
+          console.error('Error deleting restaurant from favorites:', error);
+        }
+      };
+  
+    // Delete Winery from Supabase
+    const deleteWinery = async (UID, wineryId) => {
+      try {
+        const { error } = await supabase
+          .from('bottleshock_saved_wineries')
+          .delete()
+          .eq('user_id', UID)
+          .eq('winery_id', wineryId);
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error deleting winery from Supabase:', error);
+      }
+    };
+  
+    // Save Restaurant to Supabase
+    const saveRestaurant = async (UID, restaurantId) => {
+      try {
+        const { error } = await supabase
+          .from('bottleshock_saved_restaurants')
+          .insert([
+            { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
+          ]);
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error saving restaurant to Supabase:', error);
+      }
+    };
+  
+    // Delete Restaurant from Supabase
+    const deleteRestaurant = async (UID, restaurantId) => {
+      try {
+        const { error } = await supabase
+          .from('bottleshock_saved_restaurants')
+          .delete()
+          .eq('user_id', UID)
+          .eq('restaurant_id', restaurantId);
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error deleting restaurant from Supabase:', error);
+      }
+    };
+  
+    
     useEffect(() => {
         const fetchMemories = async () => {
             try {
                 const { data: memoriesData, error } = await supabase
                     .from("bottleshock_memories")
-                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, location_name, location_lat, location_long, address")
+                    .select("id, user_id, name, description, short_description, created_at, restaurant_id, location_name, location_lat, location_long, address, winery_id")
                     .eq("id", id);
 
                 if (error) {
@@ -250,7 +506,7 @@ const MemoriesDetails: React.FC = () => {
                             const { data: winery, error: wineryError } = await supabase
                                 .from("bottleshock_wineries")
                                 .select("winery_name")
-                                .eq("id", memory.winery_id)
+                                .eq("wineries_id", memory.winery_id)
                                 .single();
 
                             if (wineryError) {
@@ -264,8 +520,8 @@ const MemoriesDetails: React.FC = () => {
                     })
                 );
                 setMemories(updatedMemories);
-                console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
-                
+                //console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
+
                 await checkSavedMemories(updatedMemories);
                 await checkFavoriteMemories(updatedMemories);
                 setIsLoading(false);
@@ -464,6 +720,7 @@ const MemoriesDetails: React.FC = () => {
     if (isLoading) {
         return <SkeletonLoader />;
     }
+    
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -576,9 +833,14 @@ const MemoriesDetails: React.FC = () => {
                             >
                                 {memory.thumbnails.map((thumbnail, thumbnailIndex) => (
                                     <View key={thumbnail.id} style={styles.imageContainer}>
-                                        <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
                                         <Pressable
                                             onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+                                            style={styles.picandvideoImage} // Ensure that image is still styled correctly
+                                        >
+                                            <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                                        </Pressable>
+                                        <Pressable
+                                            onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)} // Clicking the circle still triggers the same function
                                             style={styles.circle}
                                         >
                                             {thumbnail.is_thumbnail ? (
@@ -595,7 +857,7 @@ const MemoriesDetails: React.FC = () => {
                 </View>
             ))}
             {/* MAP */}
-            {memories.map((memory) => (
+            {memories.map((memory, index) => (
                 <View style={styles.MapContainer} key={memory.id}>
                     <View style={styles.MapContainerHeader}>
                         <View style={styles.locationHeaderContainer}>
@@ -616,14 +878,31 @@ const MemoriesDetails: React.FC = () => {
                             </View>
                         </View>
                         <View style={styles.actionHeaderContainer}>
-                            <View style={styles.twoContent}>
-                                <Ionicons name="attach" size={14} style={styles.rotatedIcon} />
-                            </View>
-                            <View style={styles.threeContent}>
-                                <Ionicons name="heart-outline" size={14} />
-                            </View>
+                        {memory.restaurant_id || memory.winery_id ? ( // Check if either restaurant_id or winery_id is present
+                          <>
+                         <View style={styles.twoContent}>
+                         <TouchableOpacity onPress={() => handleSavePresswr(index)}>
+                         <Ionicons
+                          name="attach"
+                          size={18}
+                          color={savedItemsStatus[index] ? '#522F60' : 'gray'}
+                          style={styles.rotatedIcon}
+                          />
+                         </TouchableOpacity>                       
+                         </View>
+                           <View style={styles.threeContent}>
+                           <TouchableOpacity onPress={() => handleFavoritePresswr(index)}>
+                             <Ionicons
+                               name={favoriteItemsStatus[index] ? 'heart' : 'heart-outline'}
+                               size={18}
+                               color='gray'
+                              />
+                            </TouchableOpacity>
+                           </View>
+                          </>
+                         ) : null}  
                             <View style={styles.fourContent}>
-                                <Ionicons name="share-outline" size={14} />
+                                <Ionicons name="share-outline" size={18} />
                             </View>
                         </View>
                     </View>
@@ -664,7 +943,9 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-            <DiscoverWines />
+            
+            <DiscoverWines id={id}/>
+            <ShareWithFriends id={id}/>
             <View style={styles.bottom}></View>
         </ScrollView >
     );
