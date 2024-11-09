@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity, Pressable, Linking, Alert, Dimensions } from 'react-native';
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -11,6 +11,8 @@ import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { width } = Dimensions.get("window");
 
 type WineriesDetailsRouteProp = RouteProp<RootStackParamList, 'WineriesDetails'>;
 
@@ -289,7 +291,11 @@ const WineriesDetails = () => {
                 </Pressable>
               ))
             ) : (
-              <Text>No memories available</Text>
+              <View style={styles.memoriesHeadertex}>
+                <Text style={styles.memoriesHeaderte}>
+                  No memories available
+                </Text>
+              </View>
             )}
           </ScrollView>
         </View>
@@ -526,6 +532,22 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         letterSpacing: 0.02,
         color: "#522F60",
+    },
+    memoriesHeadertex: {
+      color: "grey",
+      left: (width/2)-90,
+      height: 100,
+      flex: 1,
+      justifyContent: "center", // Centers vertically
+      alignItems: "center",
+    },
+    memoriesHeaderte: {
+      fontFamily: "Hiragino Sans",
+      fontSize: 13,
+      fontWeight: "600",
+      lineHeight: 22,
+      letterSpacing: 0.02,
+      color: "grey",
     },
     memoriesMainContainer: {
         marginTop: 4,
