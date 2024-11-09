@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   backButton: {
+    width:20,
     marginLeft:0,
     flexDirection: 'row',
     alignItems: 'center',
