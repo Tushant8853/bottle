@@ -114,7 +114,7 @@ const Thumbnail: React.FC = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <FontAwesome name="chevron-left" size={18} color="black" />
+          <FontAwesome name="chevron-left" size={18} color="black" left={5} />
         </TouchableOpacity>
       </View>
       <View style={styles.Maincontainer}>
@@ -155,12 +155,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    marginHorizontal: 16,
     marginTop: 40,
-    marginBottom: 20,
     flexDirection: 'row',
     alignItems: 'center', // Align items in a row
-    justifyContent: 'space-between', // Ensure there's space between back button and error message
+    justifyContent: 'space-between',
+    height: 35 // Ensure there's space between back button and error message
   },
   backButtonText:{
     marginLeft:10,
@@ -170,10 +169,12 @@ const styles = StyleSheet.create({
   },
   backButton: {
     width:60,
-    height: 20,
-    marginLeft:1,
+    height: '100%',
+    marginLeft:11,
     flexDirection: 'row',
     alignItems: 'center',
+
+    alignContent: 'center'
   },
   Maincontainer: {
     flex: 1,
