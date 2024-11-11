@@ -365,11 +365,10 @@ const styles = StyleSheet.create({
   DeleteText: {
     fontFamily: 'SF Pro',
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: '300',
     lineHeight: 19.09,
     textAlign: 'left',
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
-
   },
 });
