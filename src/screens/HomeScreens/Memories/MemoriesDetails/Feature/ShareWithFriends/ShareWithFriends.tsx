@@ -112,8 +112,7 @@ const ShareWithFriends: React.FC = () => {
             </View>
             <View style={styles.UserLocationTextContainer}>
               <Text style={styles.locationHeaderText}>
-                @{wine.shared_with}
-                <AntDesign name="checkcircle" size={14} color="#522F60" style={styles.CheckCircleIcon} />
+                @{wine.shared_with} <AntDesign name="checkcircle" size={14} color="#522F60" style={styles.CheckCircleIcon} />
               </Text>
             </View>
           </View>
