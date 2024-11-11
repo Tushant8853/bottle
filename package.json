@@ -16,7 +16,7 @@
     "@reduxjs/toolkit": "^2.3.0",
     "@supabase/supabase-js": "^2.45.4",
     "@twicpics/components": "^0.30.0",
-    "expo": "~51.0.38",
+    "expo": "~51.0.39",
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.27",
     "react": "18.2.0",

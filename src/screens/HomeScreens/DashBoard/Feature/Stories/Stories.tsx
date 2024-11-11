@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  Image,
   Pressable,
   Animated,
+  Dimensions,
 } from "react-native";
 import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
@@ -22,10 +22,61 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonPlaceholder: React.FC<{ width: number | string, height: number }> = ({ width, height }) => {
+  const opacity = React.useRef(new Animated.Value(0.3)).current;
+
+  React.useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0.7,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.3,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        width,
+        height,
+        backgroundColor: '#E1E1E1',
+        opacity,
+        borderRadius: 8,
+      }}
+    />
+  );
+};
+
+const StorySkeleton: React.FC = () => {
+  const { width } = Dimensions.get("window");
+  const imageWidth = width / 2 - 22;
+
+  return (
+    <View style={styles.ComponentContainer}>
+      <View style={styles.imageWrapper}>
+        <SkeletonPlaceholder width={imageWidth} height={170} />
+      </View>
+    </View>
+  );
+};
+
 const Stories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [likedStatus, setLikedStatus] = useState<boolean[]>([false, false, false, false]);
   const [memories, setMemories] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   const checkIfSaved = async () => {
@@ -36,7 +87,6 @@ const Stories: React.FC = () => {
         return;
       }
 
-      // Fetch saved stories for the current user
       const { data: savedStories, error } = await supabase
         .from("bottleshock_saved_stories")
         .select("story_id")
@@ -48,8 +98,6 @@ const Stories: React.FC = () => {
       }
 
       const savedStoryIds = savedStories?.map((saved) => saved.story_id) || [];
-
-      // Update likedStatus based on whether the story is saved
       const initialLikedStatus = memories.map((memory) =>
         savedStoryIds.includes(memory.id)
       );
@@ -96,16 +144,9 @@ const Stories: React.FC = () => {
       console.error("Error in handleSavePress:", err);
     }
   };
-  useEffect(() => {
-    fetchStoriesListForDashBoard();
-  }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchStoriesListForDashBoard();
-    }, [])
-  );
   const fetchStoriesListForDashBoard = async () => {
+    setIsLoading(true);
     try {
       const { data: heroMemoriesData, error } = await supabase
         .from("bottleshock_stories")
@@ -119,10 +160,22 @@ const Stories: React.FC = () => {
       setMemories(heroMemoriesData?.slice(0, 4) || []);
     } catch (err) {
       console.error("Error fetching memories:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
+
   useEffect(() => {
-    // Once memories are fetched, check if they are already saved
+    fetchStoriesListForDashBoard();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStoriesListForDashBoard();
+    }, [])
+  );
+
+  useEffect(() => {
     if (memories.length > 0) {
       checkIfSaved();
     }
@@ -145,40 +198,51 @@ const Stories: React.FC = () => {
         </View>
       </View>
       <View style={styles.containerf}>
-        {memories.reduce<JSX.Element[][]>((rows, memory, index) => {
-          if (index % 2 === 0) {
-            rows.push([]);
-          }
-          rows[rows.length - 1].push(
-            <View key={index} style={styles.ComponentContainer}>
-              <View style={styles.imageWrapper}>
-                <Pressable
-                  key={memory.id}
-                  onPress={() =>
-                    navigation.navigate("StoriesDetail", { memoryId: memory.id })
-                  }
-                >
-                  <TwicImg
-                    src={`${imagePrefix}${memory.thumbnail_image}`}
-                    style={styles.componentIMGStyle}
-                  />
-                </Pressable>
-                <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
-                  <Icon
-                    name={likedStatus[index] ? "bookmark" : "bookmark-o"}
-                    size={20}
-                    color="#30425F"
-                  />
-                </Pressable>
-              </View>
+        {isLoading ? (
+          // Skeleton loading layout
+          [...Array(2)].map((_, rowIndex) => (
+            <View key={`skeleton-row-${rowIndex}`} style={styles.row}>
+              <StorySkeleton />
+              <StorySkeleton />
             </View>
-          );
-          return rows;
-        }, []).map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.row}>
-            {row}
-          </View>
-        ))}
+          ))
+        ) : (
+          // Actual content
+          memories.reduce<JSX.Element[][]>((rows, memory, index) => {
+            if (index % 2 === 0) {
+              rows.push([]);
+            }
+            rows[rows.length - 1].push(
+              <View key={index} style={styles.ComponentContainer}>
+                <View style={styles.imageWrapper}>
+                  <Pressable
+                    key={memory.id}
+                    onPress={() =>
+                      navigation.navigate("StoriesDetail", { memoryId: memory.id })
+                    }
+                  >
+                    <TwicImg
+                      src={`${imagePrefix}${memory.thumbnail_image}`}
+                      style={styles.componentIMGStyle}
+                    />
+                  </Pressable>
+                  <Pressable onPress={() => handleSavePress(index)} style={styles.saveButton}>
+                    <Icon
+                      name={likedStatus[index] ? "bookmark" : "bookmark-o"}
+                      size={20}
+                      color="#30425F"
+                    />
+                  </Pressable>
+                </View>
+              </View>
+            );
+            return rows;
+          }, []).map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.row}>
+              {row}
+            </View>
+          ))
+        )}
       </View>
     </View>
   );

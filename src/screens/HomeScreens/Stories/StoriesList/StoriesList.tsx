@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Pressable,
+  Animated,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/Ionicons";
@@ -30,6 +31,55 @@ interface Story {
   image?: string | null;
   description: string;
 }
+const SkeletonLoader = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <View style={styles.Stories}>
+      <Animated.View style={[styles.SkeletonImage, { opacity }]} />
+      <View style={styles.StoriesText}>
+        <View style={styles.StoriesTitle}>
+          <View style={styles.StoriesTitleTextContainer}>
+            <Animated.View style={[styles.SkeletonTitle, { opacity }]} />
+          </View>
+          <View style={styles.StoriesTitleIMG}>
+            <Animated.View style={[styles.SkeletonIcon, { opacity }]} />
+            <Animated.View style={[styles.SkeletonIcon, { opacity }]} />
+          </View>
+        </View>
+        <Animated.View style={[styles.SkeletonSubtitle, { opacity }]} />
+        <Animated.View style={[styles.SkeletonDescription, { opacity }]} />
+        <Animated.View style={[styles.SkeletonDescription, { opacity, width: '60%' }]} />
+      </View>
+    </View>
+  );
+};
 
 const StoriesList: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -38,6 +88,7 @@ const StoriesList: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [storiesList, setStoriesList] = useState<Story[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const updateSearch = (searchValue: string) => {
     setSearch(searchValue);
@@ -69,6 +120,7 @@ const StoriesList: React.FC = () => {
       });
       await checkFavoriteStories(updatedStories); // Check favorite status
       setStoriesList(updatedStories);
+      setIsLoading(false);
     };
 
     fetchStories();
@@ -188,51 +240,58 @@ const StoriesList: React.FC = () => {
       {/* Stories List */}
       <View style={styles.StoriesListMain}>
         <ScrollView style={styles.ListOfStoriesContainer}>
-          {storiesList.map((story, index) => (
-            <Pressable
-              key={index}
-              onPress={() =>
-                navigation.navigate("StoriesDetail", { memoryId: story.id })
-              }
-            >
-              <View style={styles.Stories}>
-                <View style={styles.StoriesImgContainer}>
-                  <TwicImg
-                    src={story.image}
-                    style={styles.StoriesImage}
-                  />
-                </View>
-                <View style={styles.StoriesText}>
-                  <View style={styles.StoriesTitle}>
-                    <View style={styles.StoriesTitleTextContainer}>
-                      <Text style={styles.StoriesTitleText} numberOfLines={1}>
-                        {story.name}
+          {isLoading ? (
+            // Show multiple skeleton loaders while loading
+            [...Array(5)].map((_, index) => (
+              <SkeletonLoader key={`skeleton-${index}`} />
+            ))
+          ) : (
+            storiesList.map((story, index) => (
+              <Pressable
+                key={index}
+                onPress={() =>
+                  navigation.navigate("StoriesDetail", { memoryId: story.id })
+                }
+              >
+                <View style={styles.Stories}>
+                  <View style={styles.StoriesImgContainer}>
+                    <TwicImg
+                      src={story.image}
+                      style={styles.StoriesImage}
+                    />
+                  </View>
+                  <View style={styles.StoriesText}>
+                    <View style={styles.StoriesTitle}>
+                      <View style={styles.StoriesTitleTextContainer}>
+                        <Text style={styles.StoriesTitleText} numberOfLines={1}>
+                          {story.name}
+                        </Text>
+                      </View>
+                      <View style={styles.StoriesTitleIMG}>
+                        <TouchableOpacity onPress={() => handleFavoritePress(index)}>
+                          <Icon
+                            style={styles.IconMarginRight}
+                            name={favoriteStatus[index] ? "heart" : "heart-o"}
+                            size={16}
+                            color="#808080"
+                          />
+                        </TouchableOpacity>
+                        <Icons name="share-outline" size={17} color="#808080" />
+                      </View>
+                    </View>
+                    <View>
+                      <Text style={styles.StoriesSubtitle}>
+                        {story.short_description}
                       </Text>
                     </View>
-                    <View style={styles.StoriesTitleIMG}>
-                      <TouchableOpacity onPress={() => handleFavoritePress(index)}>
-                        <Icon
-                          name={favoriteStatus[index] ? "heart" : "heart-o"}
-                          size={16}
-                          color="#808080"
-                          marginRight={8}
-                        />
-                      </TouchableOpacity>
-                      <Icons name="share-outline" size={17} color="#808080" />
-                    </View>
-                  </View>
-                  <View>
-                    <Text style={styles.StoriesSubtitle}>
-                      {story.short_description}
+                    <Text style={styles.StoriesDescription} numberOfLines={3}>
+                      {story.description}
                     </Text>
                   </View>
-                  <Text style={styles.StoriesDescription} numberOfLines={3}>
-                    {story.description}
-                  </Text>
                 </View>
-              </View>
-            </Pressable>
-          ))}
+              </Pressable>
+            ))
+          )}
         </ScrollView>
       </View>
     </View>
@@ -340,5 +399,44 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#333",
     marginTop: 4,
+  },
+  Backbotton: {},
+  IconMarginRight: {
+    marginRight: 8,
+  },
+  // New skeleton styles
+  SkeletonImage: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 8,
+  },
+  SkeletonTitle: {
+    height: 20,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 4,
+    width: '80%',
+    marginBottom: 8,
+  },
+  SkeletonSubtitle: {
+    height: 16,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 4,
+    width: '60%',
+    marginVertical: 8,
+  },
+  SkeletonDescription: {
+    height: 12,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 4,
+    width: '90%',
+    marginVertical: 4,
+  },
+  SkeletonIcon: {
+    width: 16,
+    height: 16,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 8,
+    marginHorizontal: 4,
   },
 });

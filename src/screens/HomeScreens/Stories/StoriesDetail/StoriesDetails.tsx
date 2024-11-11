@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Pressable ,Animated} from "react-native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { useRoute } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
@@ -16,6 +16,63 @@ installTwicPics({
 interface RouteParams {
   memoryId: number;
 }
+const SkeletonLoader = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Animated.View style={[styles.skeletonImage, { opacity }]} />
+        <View style={styles.buttonContainer}>
+          {[1, 2, 3].map((_, index) => (
+            <Animated.View
+              key={index}
+              style={[styles.button, styles.skeletonButton, { opacity }]}
+            />
+          ))}
+        </View>
+      </View>
+      <View style={styles.content}>
+        <Animated.View style={[styles.skeletonHeading, { opacity }]} />
+        {[1, 2, 3, 4].map((_, index) => (
+          <Animated.View
+            key={index}
+            style={[
+              styles.skeletonParagraph,
+              { opacity, width: `${Math.random() * 20 + 80}%` }
+            ]}
+          />
+        ))}
+      </View>
+    </ScrollView>
+  );
+};
 
 const StoriesDetail: React.FC = () => {
   const route = useRoute();
@@ -162,7 +219,7 @@ const StoriesDetail: React.FC = () => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#522F60" style={styles.loader} />;
+    return <SkeletonLoader />;
   }
 
   if (!story) {
@@ -232,12 +289,29 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   rotatedIcon: {
-    transform: [{ rotate: '45deg' }], // Rotate the icon 45 degrees
+    transform: [{ rotate: '45deg' }],
   },
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  // New skeleton styles
+  skeletonImage: {
+    width: "100%",
+    height: 330,
+    backgroundColor: '#E1E1E1',
+  },
+  skeletonButton: {
+    backgroundColor: '#E1E1E1',
+  },
+  skeletonHeading: {
+    height: 32,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 4,
+    marginBottom: 20,
+    width: '90%',
+  },
+  skeletonParagraph: {
+    height: 16,
+    backgroundColor: '#E1E1E1',
+    borderRadius: 4,
+    marginVertical: 8,
   },
 });
 
