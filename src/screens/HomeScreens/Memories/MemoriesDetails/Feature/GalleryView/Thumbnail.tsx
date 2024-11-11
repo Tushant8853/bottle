@@ -113,7 +113,7 @@ const Thumbnail: React.FC = () => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}>
           <View style={styles.backButton}>
-          <FontAwesome name="angle-left" size={20} color="black" />
+          <FontAwesome name="long-arrow-left" size={20} color="black" />
           </View>
         </TouchableOpacity>
       </View>
@@ -169,8 +169,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   backButton: {
-    width:20,
-    marginLeft:0,
+    width:60,
+    height: 20,
+    marginLeft:1,
     flexDirection: 'row',
     alignItems: 'center',
   },
