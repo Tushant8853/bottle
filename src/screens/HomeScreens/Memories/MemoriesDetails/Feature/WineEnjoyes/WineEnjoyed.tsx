@@ -193,38 +193,43 @@ const DiscoverWines: React.FC = () => {
                 </View>
 
                 {isLoading ? (
-                    <SkeletonLoader />
-                ) : (
-                    wines.map((wine, index) => (
-                        <View key={wine.wines_id || index} style={styles.ListOfStoriesContainer}>
-                            <View style={styles.Stories}>
-                                <View style={styles.StoriesImgContainer}>
-                                    <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
-                                </View>
-                                <View style={styles.StoriesText}>
-                                    <View style={styles.StoriesTitle}>
-                                        <View style={styles.StoriesTitleTextContainer}>
-                                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                                {wine.winery_name || 'Unknown Winery'}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                        {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
-                                    </Text>
-                                    <View style={styles.StoriesDescriptionConatiner}>
-                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            {wine.year}
-                                        </Text>
-                                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                            bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
+    <SkeletonLoader />
+) : wines.length > 0 ? (
+    wines.map((wine, index) => (
+        <View key={wine.wines_id || index} style={styles.ListOfStoriesContainer}>
+            <View style={styles.Stories}>
+                <View style={styles.StoriesImgContainer}>
+                    <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
+                </View>
+                <View style={styles.StoriesText}>
+                    <View style={styles.StoriesTitle}>
+                        <View style={styles.StoriesTitleTextContainer}>
+                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                {wine.winery_name || 'Unknown Winery'}
+                            </Text>
                         </View>
-                    ))
-                )}
+                    </View>
+                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                        {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
+                    </Text>
+                    <View style={styles.StoriesDescriptionConatiner}>
+                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                            {wine.year}
+                        </Text>
+                        <Text style={styles.StoriesDescription} numberOfLines={1}>
+                            bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
+                        </Text>
+                    </View>
+                </View>
+            </View>
+        </View>
+    ))
+) : (
+    <View style={styles.noDataContainer}>
+        <Text style={styles.noDataText}>No Data Available</Text>
+    </View>
+)}
+
             </View>
         </View>
     );

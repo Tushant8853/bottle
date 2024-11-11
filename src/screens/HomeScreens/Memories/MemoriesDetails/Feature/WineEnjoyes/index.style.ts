@@ -109,6 +109,16 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         color: '#834B99',
     },
+noDataContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+},
+noDataText: {
+    fontSize: 16,
+    color: '#888',
+},
+
     StoriesTitleTextContainer:{
 
     },
