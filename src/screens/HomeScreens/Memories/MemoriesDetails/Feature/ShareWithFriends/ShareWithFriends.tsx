@@ -55,25 +55,47 @@ const ShareWithFriends: React.FC = () => {
       ? memoryData[0].is_public
         ? 'red'
         : memoryData[0].shared_with_friends
-        ? '#522F60'
-        : 'white'
+          ? '#522F60'
+          : 'white'
       : 'white';
 
-  const textColor = backgroundColor === 'white' ? 'black' : 'white';
+  const textColor = backgroundColor === 'white' ? '#522F60' : 'white';
+  const iconColor = backgroundColor === 'white' ? '#522F60' : 'white'; // Add this for icon color
+
+  const statusText =
+    backgroundColor === 'red'
+      ? 'Public'
+      : backgroundColor === '#522F60'
+        ? 'Shared with Friends'
+        : 'Not shared';
 
   return (
     <View style={styles.Container}>
+      {/* item below not public */}
+      <View style={styles.ItemNotPublic}>
+  <View style={styles.Line} />
+  <Text style={styles.ItemNotPublicText}>Items below will not be public</Text>
+  <View style={styles.Line} />
+</View>
       {/* Share to Friends Section */}
       <View style={[styles.ShareContainer, { backgroundColor }]}>
         <View style={styles.ShareWithFriendsContainer}>
           <View style={styles.IconWrapper}>
-            <Ionicons name="share-outline" size={16} style={styles.ShareIcon} />
+            <Ionicons
+              name="share-outline"
+              size={16}
+              style={[styles.ShareIcon, { color: iconColor }]} // Apply icon color here
+            />
           </View>
           <Text style={[styles.ShareWithFriendsText, { color: textColor }]}>
-            Shared to Friends
+            {statusText}
           </Text>
           <View style={styles.IconWrapper}>
-            <Feather name="chevron-down" size={16} style={styles.ArrowIcon} />
+            <Feather
+              name="chevron-down"
+              size={16}
+              style={[styles.ArrowIcon, { color: iconColor }]} // Apply icon color here
+            />
           </View>
         </View>
       </View>
@@ -90,8 +112,7 @@ const ShareWithFriends: React.FC = () => {
             </View>
             <View style={styles.UserLocationTextContainer}>
               <Text style={styles.locationHeaderText}>
-                @{wine.shared_with}
-                <AntDesign name="checkcircle" size={14} color="#522F60" style={styles.CheckCircleIcon} />
+                @{wine.shared_with} <AntDesign name="checkcircle" size={14} color="#522F60" style={styles.CheckCircleIcon} />
               </Text>
             </View>
           </View>
@@ -175,159 +196,178 @@ const ShareWithFriends: React.FC = () => {
 
 export default ShareWithFriends;
 const styles = StyleSheet.create({
-    Container: {
-        marginTop: 20,
-        marginHorizontal: 16,
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    ShareContainer: {
-        borderWidth: 1,
-        borderRadius: 4,
-        marginTop: 10,
-        height: 30,
-        borderColor: "#522F60",
-        justifyContent: 'center',
-        backgroundColor: "#522F60",
-    },
-    BoxContainer: {
-        borderWidth: 1,
-        borderRadius: 4,
-        marginTop: 10,
-        height: 30,
-        borderColor: "#522F60",
-    },
-    /////////////////////////////////////////////////////////////
-    ShareWithFriendsContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    IconWrapper: {
-        width: 32,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    ShareIcon: {
-        color: "#FFFFFF",
-    },
-    ShareWithFriendsText: {
-        fontFamily: 'SF Pro',
-        fontSize: 16,
-        fontWeight: '600',
-        lineHeight: 19,
-        color: "#FFFFFF",
-        textAlign: 'center',
-        flex: 2,
-    },
-    ArrowIcon: {
-        color: "#FFFFFF",
-    },
-    ///////////////////////////////////////////////////////////
-    UserInfoContainer: {
-        borderWidth: 1,
-        borderRadius: 4,
-        marginTop: 10,
-        borderColor: "#522F60",
-    },
-    UserInfoContent: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    UserLocationTextContainer: {
-        marginLeft: 10,
-    },
-    locationHeaderText: {
-        width: 'auto',
-        fontFamily: 'SF Pro',
-        fontSize: 14,
-        fontWeight: '400',
-        lineHeight: 16.71,
-    },
-    UserIconContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRightWidth: 1,
-        height: 29,
-        width: 32,
-        borderColor: "#522F6080",
-    },
-    CheckCircleIcon: {},
-    //////////////////////////////////////////////////////////////
-    HashtagContainer: {
-        borderWidth: 1,
-        borderRadius: 4,
-        marginTop: 10,
-        height: 30,
-        borderColor: "#522F60",
-    },
-    HashtagContent: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    HashtagIconContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRightWidth: 1,
-        height: 29,
-        width: 32,
-        borderColor: "#522F6080",
-    },
-    HashtagTextContainer: {
-        marginLeft: 10,
-    },
-    HashtagText: {
-        width: 'auto',
-        fontFamily: 'SF Pro',
-        fontSize: 14,
-        fontWeight: '400',
-        lineHeight: 16.71,
-    },
-    //////////////////////////////////////////////////////////////////////
-    StartLikeCommentContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    RatingContainer: {
-        width: 110,
-        borderWidth: 1,
-        borderRadius: 4,
-        marginTop: 10,
-        height: 30,
-        borderColor: "#522F60",
-    },
-    StartContent: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    StarIconContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-        borderRightWidth: 1,
-        height: 29,
-        width: 24,
-        borderColor: "#522F6080",
-    },
-    RatingContent: {
-        flexDirection: "row",
-        marginLeft: 4,
-    },
-    LikeText: {
-        marginLeft: 5,
-    },
-    ////////////////////////////////////////////////////////////////////
-    DeleteBoxContainer: {
-        marginTop: 10,
-    },
-    DeleteText: {
-        fontFamily: 'SF Pro',
-        fontSize: 16,
-        fontWeight: '400',
-        lineHeight: 19.09,
-        textAlign: 'left',
-        textDecorationLine: 'underline',
-        textDecorationStyle: 'solid',
-
-    },
+  Container: {
+    marginTop: 20,
+    marginHorizontal: 16,
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  ItemNotPublic: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+  },
+  Line: {
+    borderBottomWidth: 1,
+    flex: 1,
+    marginHorizontal: 6,
+    borderColor: '#522F60',
+  },
+  ItemNotPublicText: {
+    fontFamily: 'SF Pro',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 16.71,
+    color:'#522F60'
+  },
+  
+  ShareContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 10,
+    height: 30,
+    borderColor: "#522F60",
+    justifyContent: 'center',
+    backgroundColor: "#522F60",
+  },
+  BoxContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 10,
+    height: 30,
+    borderColor: "#522F60",
+  },
+  /////////////////////////////////////////////////////////////
+  ShareWithFriendsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  IconWrapper: {
+    width: 32,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ShareIcon: {
+    color: "#FFFFFF",
+  },
+  ShareWithFriendsText: {
+    fontFamily: 'SF Pro',
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 19,
+    color: "#FFFFFF",
+    textAlign: 'center',
+    flex: 2,
+  },
+  ArrowIcon: {
+    color: "#FFFFFF",
+  },
+  ///////////////////////////////////////////////////////////
+  UserInfoContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 10,
+    borderColor: "#522F60",
+  },
+  UserInfoContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  UserLocationTextContainer: {
+    marginLeft: 10,
+  },
+  locationHeaderText: {
+    width: 'auto',
+    fontFamily: 'SF Pro',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 16.71,
+  },
+  UserIconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRightWidth: 1,
+    height: 29,
+    width: 32,
+    borderColor: "#522F6080",
+  },
+  CheckCircleIcon: {},
+  //////////////////////////////////////////////////////////////
+  HashtagContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 10,
+    height: 30,
+    borderColor: "#522F60",
+  },
+  HashtagContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  HashtagIconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRightWidth: 1,
+    height: 29,
+    width: 32,
+    borderColor: "#522F6080",
+  },
+  HashtagTextContainer: {
+    marginLeft: 10,
+  },
+  HashtagText: {
+    width: 'auto',
+    fontFamily: 'SF Pro',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 16.71,
+  },
+  //////////////////////////////////////////////////////////////////////
+  StartLikeCommentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  RatingContainer: {
+    width: 110,
+    borderWidth: 1,
+    borderRadius: 4,
+    marginTop: 10,
+    height: 30,
+    borderColor: "#522F60",
+  },
+  StartContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  StarIconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRightWidth: 1,
+    height: 29,
+    width: 24,
+    borderColor: "#522F6080",
+  },
+  RatingContent: {
+    flexDirection: "row",
+    marginLeft: 4,
+  },
+  LikeText: {
+    marginLeft: 5,
+  },
+  ////////////////////////////////////////////////////////////////////
+  DeleteBoxContainer: {
+    marginTop: 10,
+  },
+  DeleteText: {
+    fontFamily: 'SF Pro',
+    fontSize: 16,
+    fontWeight: '300',
+    lineHeight: 19.09,
+    textAlign: 'left',
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'solid',
+  },
 });
