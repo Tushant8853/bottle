@@ -110,11 +110,11 @@ const Thumbnail: React.FC = () => {
   return (
     <View style={styles.ContainerThu}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}>
-          <View style={styles.backButton}>
-          <FontAwesome name="long-arrow-left" size={20} color="black" />
-          </View>
+      <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <FontAwesome name="chevron-left" size={18} color="black" />
         </TouchableOpacity>
       </View>
       <View style={styles.Maincontainer}>
