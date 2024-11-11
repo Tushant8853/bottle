@@ -1,19 +1,14 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-// Get device screen width
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    //borderWidth: 1,
   },
   containerf: {
-    //borderWidth: 1,
     paddingVertical: 16,
   },
   bannerContainer: {
-    //borderWidth: 1,
-   // marginBottom: 5,
     marginTop: 15,
     padding: 10,
     flexDirection: "row",
@@ -47,7 +42,6 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginLeft: 2,
   },
-  ///////////////////////////////////////Storeies ////////////////////////////////////////
   row: {
     flexDirection: "row",
     marginHorizontal: 16,
@@ -57,14 +51,14 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 4,
     marginTop: 4,
-
+    overflow: 'hidden', // Added to ensure skeleton stays within bounds
   },
   imageWrapper: {
     width: width / 2 - 22,
   },
   componentIMGStyle: {
     width: "100%",
-    height:170,
+    height: 170,
   },
   saveButton: {
     position: "absolute",

@@ -10,7 +10,8 @@ import {
   Pressable,
   Linking,
   Alert,
-  Dimensions
+  Dimensions,
+  Animated
 } from "react-native";
 import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "react-native-vector-icons/Feather";
@@ -51,6 +52,98 @@ interface MemoryData {
   id: string;
   file: string;
 }
+
+const SkeletonComponent = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <ScrollView style={styles.container}>
+      <Animated.View style={[styles.skeletonImage, { opacity }]} />
+      <View style={styles.buttonContainer}>
+        {[1, 2, 3].map((i) => (
+          <Animated.View
+            key={i}
+            style={[styles.skeletonButton, { opacity }]}
+          />
+        ))}
+      </View>
+
+      <View style={styles.memoriesContainer}>
+        <View style={styles.memoriesHeaderContainer}>
+          <Animated.View
+            style={[styles.skeletonMemoriesHeader, { opacity }]}
+          />
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.memories}
+        >
+          {[1, 2, 3, 4].map((i) => (
+            <Animated.View
+              key={i}
+              style={[styles.skeletonMemoryImage, { opacity }]}
+            />
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.descriptionContainer}>
+        {[1, 2, 3].map((i) => (
+          <Animated.View
+            key={i}
+            style={[styles.skeletonDescription, { opacity }]}
+          />
+        ))}
+      </View>
+
+      <Animated.View style={[styles.skeletonMap, { opacity }]} />
+      
+      <View style={styles.InfoContainer}>
+        {[1, 2, 3, 4].map((i) => (
+          <View key={i} style={styles.contactRow}>
+            <Animated.View
+              style={[styles.skeletonInfoItem, { opacity }]}
+            />
+            {i === 1 && (
+              <Animated.View
+                style={[styles.skeletonContactButton, { opacity }]}
+              />
+            )}
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
+};
 
 const RestaurantsDetails = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -268,9 +361,7 @@ const RestaurantsDetails = () => {
   };
 
   if (loading) {
-    return (
-      <ActivityIndicator size="large" color="#522F60" style={styles.loading} />
-    );
+    return <SkeletonComponent />;
   }
 
   if (!Restaurant) {
@@ -794,4 +885,56 @@ const styles = StyleSheet.create({
   icon: {},
   errorText: {},
   loading: {},
+  skeletonImage: {
+    height: 320,
+    width: "100%",
+    backgroundColor: "#E1E9EE",
+  },
+  skeletonButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#E1E9EE",
+    borderRadius: 5,
+  },
+  skeletonMemoriesHeader: {
+    height: 22,
+    width: 100,
+    backgroundColor: "#E1E9EE",
+    borderRadius: 4,
+  },
+  skeletonMemoryImage: {
+    width: 100,
+    height: 100,
+    backgroundColor: "#E1E9EE",
+    marginHorizontal: 1,
+    borderRadius: 4,
+  },
+  skeletonDescription: {
+    height: 16,
+    backgroundColor: "#E1E9EE",
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 4,
+  },
+  skeletonMap: {
+    height: 140,
+    marginHorizontal: 16,
+    backgroundColor: "#E1E9EE",
+    borderRadius: 8,
+    marginVertical: 16,
+  },
+  skeletonInfoItem: {
+    height: 30,
+    flex: 1,
+    backgroundColor: "#E1E9EE",
+    borderRadius: 4,
+    marginVertical: 4,
+    marginRight: 4,
+  },
+  skeletonContactButton: {
+    width: 30,
+    height: 30,
+    backgroundColor: "#E1E9EE",
+    borderRadius: 4,
+  },
 });

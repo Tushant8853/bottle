@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Pressable,
+  Animated
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
@@ -22,36 +23,93 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonLoader = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  return (
+    <View style={styles.skeletonContainer}>
+      <View style={styles.wineryContainer}>
+        <View style={styles.wineryInfo}>
+          <Animated.View style={[styles.skeletonText, { opacity }]} />
+          <Animated.View style={[styles.skeletonSubText, { opacity }]} />
+        </View>
+        <View style={styles.iconsContainer}>
+          {[1, 2, 3].map((_, index) => (
+            <Animated.View
+              key={index}
+              style={[styles.skeletonIcon, { opacity }]}
+            />
+          ))}
+        </View>
+        <Animated.View style={[styles.skeletonLogo, { opacity }]} />
+      </View>
+    </View>
+  );
+};
+
+
 const WineriesList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const [wineries, setWineries] = useState<any[]>([]);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   useEffect(() => {
     const fetchWineries = async () => {
-      const { data, error } = await supabase
-        .from("bottleshock_wineries")
-        .select("wineries_id, winery_name, address, verified, banner, logo");
+      try {
+        const { data, error } = await supabase
+          .from("bottleshock_wineries")
+          .select("wineries_id, winery_name, address, verified, banner, logo");
 
-      if (error) {
-        console.error("Error fetching wineries:", error.message);
-        return;
+        if (error) {
+          console.error("Error fetching wineries:", error.message);
+          return;
+        }
+
+        const formattedWineries = data.map((winery: any) => ({
+          id: winery.wineries_id,
+          name: winery.winery_name,
+          address: winery.address,
+          logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
+          verified: winery.verified,
+        }));
+        await checkSavedWineries(formattedWineries);
+        await checkFavoriteWineries(formattedWineries);
+        setWineries(formattedWineries);
+      } catch (error) {
+        console.error("Error in fetchWineries:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      const formattedWineries = data.map((winery: any) => ({
-        id: winery.wineries_id,
-        name: winery.winery_name,
-        address: winery.address,
-        logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
-        verified: winery.verified,
-      }));
-      await checkSavedWineries(formattedWineries);
-      await checkFavoriteWineries(formattedWineries);
-      setWineries(formattedWineries);
-      
     };
 
     fetchWineries();
@@ -227,73 +285,80 @@ const WineriesList = () => {
 
       {/* List of Wineries */}
       <ScrollView>
-        {filteredWineries.map((winery, index) => (
-          <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
-            <View style={styles.wineryContainer}>
-              {/* Winery Info */}
-              <View style={styles.wineryInfo}>
-                <Text style={styles.wineryName}>
-                  {winery.name} {winery.verified && (
-                    <MaterialIcons
-                      name="verified"
-                      size={13}
-                      color="#522F60"
-                    />
-                  )}
-                </Text>
-                <Text style={styles.wineryLocation}>{winery.address}</Text>
-              </View>
-
-              {/* Action Icons */}
-              <View style={styles.iconsContainer}>
-                <TouchableOpacity 
-                  onPress={() => handleSavePress(index)}
-                  accessibilityLabel={`Link to ${winery.name}`} 
-                  accessibilityRole="button"
-                >
-                  <Feather
-                    name="paperclip"
-                    size={16}
-                    color={savedStatus[index] ? '#522F60' : 'gray'}
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => handleFavoritePress(index)}
-                  accessibilityLabel={`Favorite ${winery.name}`} 
-                  accessibilityRole="button"
-                >
-                  <FontAwesome
-                    name={favoriteStatus[index] ? "heart" : "heart-o"}
-                    size={16}
-                    color='gray'
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  accessibilityLabel={`Share ${winery.name}`} 
-                  accessibilityRole="button"
-                >
-                  <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
-                </TouchableOpacity>
-              </View>
-
-              {/* Winery Logo */}
-              {winery.logo ? (
-                <TwicImg 
-                  src={winery.logo} 
-                  style={styles.logo} 
-                />
-              ) : (
-                <View style={styles.logo}>
-                  <View style={styles.initialsPlaceholder}>
-                    <Text style={styles.initialsText}>{winery.name.slice(0, 2).toUpperCase()}</Text>
-                  </View>
+        {isLoading ? (
+          // Show skeleton loaders while loading
+          [...Array(5)].map((_, index) => (
+            <SkeletonLoader key={index} />
+          ))
+        ) : (
+          filteredWineries.map((winery, index) => (
+            <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
+              <View style={styles.wineryContainer}>
+                {/* Winery Info */}
+                <View style={styles.wineryInfo}>
+                  <Text style={styles.wineryName}>
+                    {winery.name} {winery.verified && (
+                      <MaterialIcons
+                        name="verified"
+                        size={13}
+                        color="#522F60"
+                      />
+                    )}
+                  </Text>
+                  <Text style={styles.wineryLocation}>{winery.address}</Text>
                 </View>
-              )}
-            </View>
-          </Pressable>
-        ))}
+
+                {/* Action Icons */}
+                <View style={styles.iconsContainer}>
+                  <TouchableOpacity 
+                    onPress={() => handleSavePress(index)}
+                    accessibilityLabel={`Link to ${winery.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <Feather
+                      name="paperclip"
+                      size={16}
+                      color={savedStatus[index] ? '#522F60' : 'gray'}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    onPress={() => handleFavoritePress(index)}
+                    accessibilityLabel={`Favorite ${winery.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <FontAwesome
+                      name={favoriteStatus[index] ? "heart" : "heart-o"}
+                      size={16}
+                      color='gray'
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    accessibilityLabel={`Share ${winery.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Winery Logo */}
+                {winery.logo ? (
+                  <TwicImg 
+                    src={winery.logo} 
+                    style={styles.logo} 
+                  />
+                ) : (
+                  <View style={styles.logo}>
+                    <View style={styles.initialsPlaceholder}>
+                      <Text style={styles.initialsText}>{winery.name.slice(0, 2).toUpperCase()}</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </Pressable>
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -398,6 +463,37 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 10,
+  },
+  skeletonContainer: {
+    paddingHorizontal: 16,
+  },
+  skeletonText: {
+    height: 14,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '60%',
+    marginBottom: 8,
+  },
+  skeletonSubText: {
+    height: 12,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    width: '40%',
+  },
+  skeletonIcon: {
+    width: 16,
+    height: 16,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  skeletonLogo: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E1E9EE',
   },
 });
 

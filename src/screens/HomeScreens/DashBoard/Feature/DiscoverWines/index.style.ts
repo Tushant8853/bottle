@@ -1,4 +1,4 @@
-import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
         marginRight: 16,
         borderRadius: 8,
         justifyContent: 'center',
+        overflow: 'hidden',  // Added to ensure skeleton animation stays within bounds
     },
     StoriesImage: {
         borderRadius: 10,
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 68,
         justifyContent: 'center',
-        // justifyContent: 'space-evenly',
     },
     StoriesTitle: {
         flexDirection: 'row',
@@ -107,9 +107,10 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         color: '#834B99',
     },
-    StoriesTitleTextContainer:{
-
+    StoriesTitleTextContainer: {
+        flex: 1,
     },
+    
 });
 
 export default styles;

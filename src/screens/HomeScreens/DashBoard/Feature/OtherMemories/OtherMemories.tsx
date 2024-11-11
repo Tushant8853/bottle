@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, Image, Pressable, FlatList } from "react-native";
+import { View, Text, Pressable, FlatList, Animated } from "react-native";
 import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
@@ -21,18 +21,88 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonLoader = () => {
+  const animatedValue = new Animated.Value(0);
+
+  React.useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, []);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
+  });
+
+  const renderSkeletonItem = () => (
+    <View style={styles.cardContainer}>
+      <Animated.View
+        style={[
+          styles.cardIcon,
+          {
+            backgroundColor: '#E1E9EE',
+            opacity,
+          },
+        ]}
+      />
+      <Animated.View
+        style={[
+          {
+            height: 20,
+            width: 140,
+            backgroundColor: '#E1E9EE',
+            marginLeft: 10,
+            marginTop: 10,
+            borderRadius: 4,
+            opacity,
+          },
+        ]}
+      />
+    </View>
+  );
+
+  return (
+    <FlatList
+      data={[1, 2, 3]} // Show 3 skeleton items
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyExtractor={(item) => item.toString()}
+      renderItem={renderSkeletonItem}
+      style={styles.cardsContainer}
+    />
+  );
+};
+
 const OtherMemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      // Reload data whenever this component gains focus
       fetchMemories();
     }, [])
   );
+
   const fetchMemories = async () => {
+    setIsLoading(true);
     try {
       const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
@@ -71,6 +141,8 @@ const OtherMemories: React.FC = () => {
       setMemories(updatedMemories);
     } catch (err) {
       console.error("Error fetching memories:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +151,10 @@ const OtherMemories: React.FC = () => {
   };
 
   const renderItem = ({ item }: { item: Memory }) => (
-    <Pressable key={item.id} onPress={() => navigation.navigate("MemoriesDetails", { id: item.id })}>
+    <Pressable
+      key={item.id}
+      onPress={() => navigation.navigate("MemoriesDetails", { id: item.id, from: "OtherMemories" })}
+    >
       <TwicImg
         src={item.thumbnail || ""}
         style={styles.cardIcon}
@@ -95,7 +170,6 @@ const OtherMemories: React.FC = () => {
 
   return (
     <View>
-      {/* Banner Section */}
       <View style={styles.bannerContainer}>
         <Pressable onPress={handleNavigation}>
           <View style={styles.headingContainer}>
@@ -103,23 +177,26 @@ const OtherMemories: React.FC = () => {
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerTitle}>Memories from Others</Text>
             </View>
-            <View style={styles.bannerarrow} >
+            <View style={styles.bannerarrow}>
               <Icon name="chevron-right" size={16} color="#522F60" />
             </View>
           </View>
         </Pressable>
       </View>
 
-      {/* Cards Section */}
       <View style={styles.card}>
-        <FlatList
-          data={memories}
-          horizontal
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          showsHorizontalScrollIndicator={false}
-          style={styles.cardsContainer}
-        />
+        {isLoading ? (
+          <SkeletonLoader />
+        ) : (
+          <FlatList
+            data={memories}
+            horizontal
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            showsHorizontalScrollIndicator={false}
+            style={styles.cardsContainer}
+          />
+        )}
       </View>
     </View>
   );

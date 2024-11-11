@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Pressable,
+  Animated
 } from 'react-native';
 import { Ionicons, Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
@@ -22,36 +23,130 @@ installTwicPics({
   maxDPR: 3,
 });
 
+const SkeletonLoader = () => {
+  const animatedValue = new Animated.Value(0);
+
+  useEffect(() => {
+    const shimmer = () => {
+      Animated.sequence([
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => shimmer());
+    };
+
+    shimmer();
+  }, []);
+
+  const translateX = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-350, 350],
+  });
+
+  const RestaurantSkeleton = () => (
+    <View style={styles.restaurantContainer}>
+      <View style={styles.restaurantInfo}>
+        <View style={styles.skeletonNameContainer}>
+          <Animated.View
+            style={[
+              styles.shimmer,
+              {
+                transform: [{ translateX }],
+              },
+            ]}
+          />
+        </View>
+        <View style={styles.skeletonLocationContainer}>
+          <Animated.View
+            style={[
+              styles.shimmer,
+              {
+                transform: [{ translateX }],
+              },
+            ]}
+          />
+        </View>
+      </View>
+      <View style={styles.iconsContainer}>
+        {[1, 2, 3].map((_, index) => (
+          <View key={index} style={styles.skeletonIcon}>
+            <Animated.View
+              style={[
+                styles.shimmer,
+                {
+                  transform: [{ translateX }],
+                },
+              ]}
+            />
+          </View>
+        ))}
+      </View>
+      <View style={styles.skeletonLogo}>
+        <Animated.View
+          style={[
+            styles.shimmer,
+            {
+              transform: [{ translateX }],
+            },
+          ]}
+        />
+      </View>
+    </View>
+  );
+
+  return (
+    <>
+      {[1, 2, 3, 4, 5].map((_, index) => (
+        <RestaurantSkeleton key={index} />
+      ))}
+    </>
+  );
+};
 const RestaurantsList = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState('');
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
 
   useEffect(() => {
     const fetchRestaurants = async () => {
-      const { data, error } = await supabase
-        .from("bottleshock_restaurants")
-        .select("*");
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from("bottleshock_restaurants")
+          .select("*");
 
-      if (error) {
-        console.error("Error fetching restaurants:", error.message);
-        return;
+        if (error) {
+          console.error("Error fetching restaurants:", error.message);
+          return;
+        }
+
+        const formattedRestaurants = data.map((restaurant: any) => ({
+          Restaurants_id: restaurant.Restaurants_id,
+          name: restaurant.restro_name,
+          location: restaurant.location,
+          logo: restaurant.logo ? `${imagePrefix}${restaurant.logo}` : null,
+          verified: restaurant.verified,
+          hashtags: restaurant.hashtags,
+        }));
+        await checkSavedRestaurants(formattedRestaurants);
+        await checkFavoriteRestaurants(formattedRestaurants);
+        setRestaurants(formattedRestaurants);
+      } catch (error) {
+        console.error("Error in fetchRestaurants:", error);
+      } finally {
+        setIsLoading(false);
       }
-
-      const formattedRestaurants = data.map((restaurant: any) => ({
-        Restaurants_id: restaurant.Restaurants_id,
-        name: restaurant.restro_name,
-        location: restaurant.location,
-        logo: restaurant.logo ? `${imagePrefix}${restaurant.logo}` : null,
-        verified: restaurant.verified,
-        hashtags: restaurant.hashtags,
-      }));
-      await checkSavedRestaurants(formattedRestaurants);
-      await checkFavoriteRestaurants(formattedRestaurants);
-      setRestaurants(formattedRestaurants);
     };
 
     fetchRestaurants();
@@ -224,70 +319,74 @@ const RestaurantsList = () => {
       </View>
 
       <ScrollView>
-        {filteredRestaurants.map((restaurant, index) => (
-          <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
-            <View style={styles.restaurantContainer}>
-              <View style={styles.restaurantInfo}>
-                <Text style={styles.restaurantName}>
-                  {restaurant.name}  {restaurant.verified && (
-                    <MaterialIcons
-                      name="verified"
-                      size={13}
-                      color="#522F60"
-                    />
-                  )}
-                </Text>
-                <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
-              </View>
-
-              <View style={styles.iconsContainer}>
-                <TouchableOpacity 
-                  onPress={() => handleSavePress(index)}
-                  accessibilityLabel={`Link to ${restaurant.name}`} 
-                  accessibilityRole="button"
-                >
-                  <Feather
-                    name="paperclip"
-                    size={16}
-                    color={savedStatus[index] ? '#522F60' : 'gray'}
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => handleFavoritePress(index)}
-                  accessibilityLabel={`Favorite ${restaurant.name}`} 
-                  accessibilityRole="button"
-                >
-                  <FontAwesome
-                    name={favoriteStatus[index] ? "heart" : "heart-o"}
-                    size={16}
-                    color='gray'
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  accessibilityLabel={`Share ${restaurant.name}`} 
-                  accessibilityRole="button"
-                >
-                  <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
-                </TouchableOpacity>
-              </View>
-
-              {restaurant.logo ? (
-                <TwicImg 
-                  src={restaurant.logo} 
-                  style={styles.logo} 
-                />
-              ) : (
-                <View style={styles.logo} >
-                  <View style={styles.initialsPlaceholder}>
-                    <Text style={styles.initialsText}>{restaurant.name.slice(0, 2).toUpperCase()}</Text>
-                  </View>
+        {isLoading ? (
+          <SkeletonLoader />
+        ) : (
+          filteredRestaurants.map((restaurant, index) => (
+            <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
+              <View style={styles.restaurantContainer}>
+                <View style={styles.restaurantInfo}>
+                  <Text style={styles.restaurantName}>
+                    {restaurant.name}  {restaurant.verified && (
+                      <MaterialIcons
+                        name="verified"
+                        size={13}
+                        color="#522F60"
+                      />
+                    )}
+                  </Text>
+                  <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
-              )}
-            </View>
-          </Pressable>
-        ))}
+
+                <View style={styles.iconsContainer}>
+                  <TouchableOpacity 
+                    onPress={() => handleSavePress(index)}
+                    accessibilityLabel={`Link to ${restaurant.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <Feather
+                      name="paperclip"
+                      size={16}
+                      color={savedStatus[index] ? '#522F60' : 'gray'}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    onPress={() => handleFavoritePress(index)}
+                    accessibilityLabel={`Favorite ${restaurant.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <FontAwesome
+                      name={favoriteStatus[index] ? "heart" : "heart-o"}
+                      size={16}
+                      color='gray'
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    accessibilityLabel={`Share ${restaurant.name}`} 
+                    accessibilityRole="button"
+                  >
+                    <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+
+                {restaurant.logo ? (
+                  <TwicImg 
+                    src={restaurant.logo} 
+                    style={styles.logo} 
+                  />
+                ) : (
+                  <View style={styles.logo} >
+                    <View style={styles.initialsPlaceholder}>
+                      <Text style={styles.initialsText}>{restaurant.name.slice(0, 2).toUpperCase()}</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </Pressable>
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -298,6 +397,42 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     backgroundColor: '#fff',
+  },
+  skeletonNameContainer: {
+    height: 16,
+    width: '60%',
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  skeletonLocationContainer: {
+    height: 16,
+    width: '80%',
+    backgroundColor: '#E1E9EE',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  skeletonIcon: {
+    width: 16,
+    height: 16,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+    marginHorizontal: 4,
+    overflow: 'hidden',
+  },
+  skeletonLogo: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#E1E9EE',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  shimmer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#F5F5F5',
+    opacity: 0.3,
   },
   header: {
     flexDirection: "row",

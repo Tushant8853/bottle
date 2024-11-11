@@ -43,6 +43,9 @@ const styles = StyleSheet.create({
     height: 170,
     alignItems: "center",
   },
+  cardContainer: {
+    marginRight: 10,
+  },
   cardIcon: {
     width: 160,
     height: 100,
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   errorText: {
-
+    // Your error text styles here
   },
 });
 

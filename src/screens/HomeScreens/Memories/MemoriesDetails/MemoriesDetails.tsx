@@ -181,7 +181,7 @@ const SkeletonLoader: React.FC = () => {
 const MemoriesDetails: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
-    const { id } = route.params;
+    const { id, from } = route.params;
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const [memories, setMemories] = useState<Memory[]>([]);
     const [expandedMemory, setExpandedMemory] = useState<string | null>(null); // State to track expanded description
@@ -945,7 +945,7 @@ const MemoriesDetails: React.FC = () => {
             ))}
             
             <DiscoverWines id={id}/>
-            <ShareWithFriends id={id}/>
+            {from === "MyMemories" && <ShareWithFriends id={id} />}
             <View style={styles.bottom}></View>
         </ScrollView >
     );
