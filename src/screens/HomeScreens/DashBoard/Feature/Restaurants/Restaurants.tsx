@@ -16,6 +16,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../../../../../../backend/supabase/supabaseClient';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
+import { useTranslation } from 'react-i18next';
+
 
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
@@ -108,6 +110,8 @@ const Restaurants: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     fetchRestaurants();
@@ -201,13 +205,13 @@ const Restaurants: React.FC = () => {
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
           <Icons name="restaurant" size={19} color="#522F60" />
-          <Text style={styles.text}>Featured Restaurants</Text>
+          <Text style={styles.text}>{t('featuredrestaurants')}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('RestaurantsList')}>
           <Icon name="chevron-right" size={16} color="#522F60" />
         </TouchableOpacity>
       </View>
-
+      
       <ScrollView>
         {isLoading ? (
           <SkeletonLoader />

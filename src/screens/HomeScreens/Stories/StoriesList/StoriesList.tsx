@@ -17,6 +17,8 @@ import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -89,6 +91,8 @@ const StoriesList: React.FC = () => {
   const [storiesList, setStoriesList] = useState<Story[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+
 
   const updateSearch = (searchValue: string) => {
     setSearch(searchValue);
@@ -221,7 +225,7 @@ const StoriesList: React.FC = () => {
         >
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Stories</Text>
+        <Text style={styles.headerTitle}>{t('Stories')}</Text>
       </View>
 
       {/* Search Bar */}
@@ -229,7 +233,7 @@ const StoriesList: React.FC = () => {
         <Icon name="search" size={16} color="#989999" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="search"
+          placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
           value={search}
           onChangeText={updateSearch}

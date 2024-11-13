@@ -12,12 +12,15 @@ import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navig
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import MyMemories from "./Feature/MyMemories/MyMemories";
 import PublicMemories from "./Feature/PublicMemories/PublicMemories";
+import { useTranslation } from 'react-i18next';
 type MemorieListRouteProp = RouteProp<RootStackParamList, 'MemoriesList'>;
 
 const MemorieList: React.FC = () => {
   const route = useRoute<MemorieListRouteProp>();
   const [selectedMemory, setSelectedMemory] = useState<"Public" | "My">("My"); // Set "My" as default
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (route.params?.memoryType) {
       setSelectedMemory(route.params.memoryType);
@@ -33,7 +36,7 @@ const MemorieList: React.FC = () => {
         >
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Memories</Text>
+        <Text style={styles.headerTitle}>{t('Memories')}</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -45,7 +48,7 @@ const MemorieList: React.FC = () => {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="search"
+          placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
         />
         <Icon name="microphone" size={16} color="#989999" />
@@ -67,7 +70,7 @@ const MemorieList: React.FC = () => {
                   selectedMemory === "Public" && styles.selectedText,
                 ]}
               >
-                Public Memories
+                {t('PublicMemories')}
               </Text>
             </Pressable>
           </View>
@@ -86,7 +89,7 @@ const MemorieList: React.FC = () => {
                   selectedMemory === "My" && styles.selectedText,
                 ]}
               >
-                My Memories
+                {t('mymemories')}
               </Text>
             </Pressable>
           </View>

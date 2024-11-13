@@ -11,6 +11,8 @@ import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 const { width } = Dimensions.get("window");
 
@@ -139,6 +141,7 @@ const WineriesDetails = () => {
   const [expandedwinery, setExpandedwinery] = useState<string | null>(null);
   const [favoriteStatus, setFavoriteStatus] = useState(false);
   const [savedStatus, setSavedStatus] = useState(false);
+  const { t } = useTranslation();
 
   const handleToggleDescription = (id: string) => {
     setExpandedwinery(prev => (prev === id ? null : id));
@@ -365,7 +368,7 @@ const WineriesDetails = () => {
         <View style={styles.memoriesHeaderContainer}>
           <View style={styles.leftContent}>
             <FontAwesome style={styles.memoriesIcons} name="image" size={16} color="#522F60" />
-            <Text style={styles.memoriesHeadertext}> Memories</Text>
+            <Text style={styles.memoriesHeadertext}> {t('Memories')}</Text>
           </View>
           <View style={styles.rightContent}>
             <AntDesign style={styles.memoriesArrowIcons} name="arrowright" size={20} color="#522F60" />
@@ -384,7 +387,7 @@ const WineriesDetails = () => {
             ) : (
               <View style={styles.memoriesHeadertex}>
                 <Text style={styles.memoriesHeaderte}>
-                  No memories available
+                {t('nomemoriesavailable')}
                 </Text>
               </View>
             )}

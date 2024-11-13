@@ -4,6 +4,8 @@ import styles from './index.style';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
+
 
 interface Wine {
     image: string;
@@ -97,6 +99,8 @@ const DiscoverWines: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { id } = route.params;
+    const { t } = useTranslation();
+
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -187,7 +191,7 @@ const DiscoverWines: React.FC = () => {
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
                         <Image source={require('../../../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
-                        <Text style={styles.text}>  Wines Enjoyed</Text>
+                        <Text style={styles.text}>{t('winesenjoyed')}</Text>
                     </View>
                     <AntDesign name="arrowright" size={20} color="#522F60" />
                 </View>
@@ -226,7 +230,7 @@ const DiscoverWines: React.FC = () => {
     ))
 ) : (
     <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>No Data Available</Text>
+        <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
     </View>
 )}
 

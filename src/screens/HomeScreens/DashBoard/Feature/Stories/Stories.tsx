@@ -15,6 +15,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from './index.style';
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
+import { useTranslation } from 'react-i18next';
+
 
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -78,6 +80,8 @@ const Stories: React.FC = () => {
   const [memories, setMemories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
+  const { t } = useTranslation();
+
 
   const checkIfSaved = async () => {
     try {
@@ -186,7 +190,7 @@ const Stories: React.FC = () => {
       <View style={styles.bannerContainer}>
         <Bannericon width={13} height={32} color="#522F60" />
         <View style={styles.bannerTextContainer}>
-          <Text style={styles.bannerTitle}>Featured Stories</Text>
+          <Text style={styles.bannerTitle}>{t('featuredstories')}</Text>
         </View>
         <View>
           <Pressable

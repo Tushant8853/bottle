@@ -8,6 +8,8 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useTranslation } from 'react-i18next';
+
 
 interface Memory {
   id: string;
@@ -94,6 +96,7 @@ const OtherMemories: React.FC = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useFocusEffect(
     useCallback(() => {
@@ -175,7 +178,7 @@ const OtherMemories: React.FC = () => {
           <View style={styles.headingContainer}>
             <Bannericon width={13} height={32} color="#522F60" />
             <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerTitle}>Memories from Others</Text>
+              <Text style={styles.bannerTitle}>{t('othermemories')}</Text>
             </View>
             <View style={styles.bannerarrow}>
               <Icon name="chevron-right" size={16} color="#522F60" />
