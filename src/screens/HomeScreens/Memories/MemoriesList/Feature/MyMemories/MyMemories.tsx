@@ -439,7 +439,7 @@ const MyMemories: React.FC = () => {
       </View>
 
       <View style={styles.rightContent}>
-        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
+        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id , from: "MyMemories" })}>
           {memory.thumbnail ? (
             <TwicImg
               src={memory.thumbnail}
