@@ -70,6 +70,11 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginRight: 7,
   },
+  comingSoonText: {
+    color: '#522F60',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   searchInput: {
     flex: 1,
     fontSize: 14,

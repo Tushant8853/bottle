@@ -13,6 +13,8 @@ import Icons from "react-native-vector-icons/MaterialIcons";
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
+import { useTranslation } from 'react-i18next';
+
 
 const { width } = Dimensions.get("window");
 
@@ -27,6 +29,13 @@ const DashBoard: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [memories, setMemories] = useState<any[]>([]);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
+  const [showText, setShowText] = useState(false);
+  const { t } = useTranslation();
+
+
+  const handlePress = () => {
+    setShowText(!showText);
+  };
 
   useEffect(() => {
     const fetchStoriesListForDashBoard = async () => {
@@ -94,19 +103,19 @@ const DashBoard: React.FC = () => {
                 );
               })
             ) : (
-              <Text style={styles.noMemoriesText}>No memories available.</Text>
+              <Text style={styles.noMemoriesText}>{t('nomemoriesavailable')}</Text>
             )}
           </View>
         </ScrollView>
 
         <View style={styles.searchContainer}>
-          <Icon
-            name="magnifying-glass"
-            size={16}
-            color="#522F60"
-            style={styles.searchIcon}
-          />
-          {/* Add TextInput here if needed */}
+        <Pressable onPress={handlePress} style={styles.searchIcon}>
+        {showText ? (
+          <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
+        ) : (
+          <Icon name="magnifying-glass" size={16} color="#522F60" style={styles.searchIcon} />
+        )}
+      </Pressable>
         </View>
 
         <View style={styles.MyMemoriesDashboardContainer}>
