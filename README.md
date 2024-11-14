@@ -43,3 +43,12 @@ Once the Expo developer tools are running:
 
 Press i to build and launch the app in the iOS Simulator.
 Press r to rebuild the project (useful after making code changes).
+
+
+## Mac OS Instructions
+
+1. Install Xcode
+2. Add/download iOS component
+3. Add/download latest iOS simulator.
+4. Start Simulator.
+5. Run "npx expo start". Expo will detect simulator and open the App
