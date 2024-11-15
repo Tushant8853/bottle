@@ -1,28 +1,27 @@
-// reducer.ts
-import { GET_LOGINUSERID } from './actionType';
+// redux/reducer.ts
+import { SET_LOGIN_USER_ID, CLEAR_USER_ID } from './actions';
 
-interface State {
-    userId: string;
+export interface UserState {
+  userId: string;
 }
 
-interface Action {
-    type: string;
-    payload?: string;
-}
-
-const initialState: State = {
-    userId: '',
+const initialState: UserState = {
+  userId: '', // Default to empty string
 };
 
-export const ApiResponse = (state = initialState, action: Action): State => {
-    switch (action.type) {
-        case GET_LOGINUSERID:
-            return {
-                ...state,
-                userId: action.payload || '',
-            };
-
-        default:
-            return state;
-    }
+export const userReducer = (state = initialState, action: any): UserState => {
+  switch (action.type) {
+    case SET_LOGIN_USER_ID:
+      return {
+        ...state,
+        userId: action.payload,
+      };
+    case CLEAR_USER_ID:
+      return {
+        ...state,
+        userId: '',
+      };
+    default:
+      return state;
+  }
 };

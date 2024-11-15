@@ -1,5 +1,13 @@
-// store.ts
-import { createStore } from 'redux';
-import { ApiResponse } from './reducer';
+import { createStore, combineReducers } from 'redux';
+import { userReducer } from './reducer';
 
-export const store = createStore(ApiResponse);
+// Combine reducers
+const rootReducer = combineReducers({
+  user: userReducer,
+});
+
+// Create the Redux store
+export const store = createStore(rootReducer);
+
+// Export RootState type from here
+export type RootState = ReturnType<typeof rootReducer>;
