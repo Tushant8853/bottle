@@ -6,6 +6,9 @@ import React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
+import { Linking } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+
 
 import Dashboard from '../screens/HomeScreens/DashBoard/DashBoard';
 import StoriesList from '../screens/HomeScreens/Stories/StoriesList/StoriesList';
@@ -23,11 +26,23 @@ import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/Discove
 import WineListVarietal from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVarietal/WineListVarietal';
 import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVintage/WineListVintage';
 import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
+import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
+
+import Language from '../screens/HomeWine/Settings/Language';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const linking = {
+    prefixes: ['bottleshock://'], // Your app's deep link prefix
+    config: {
+      screens: {
+        StoriesList: '',
+        StoriesDetail: 'story/:id', // Handle the deep link like `bottleshock://story/2`
+      },
+    },
+  };
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -41,6 +56,7 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
+
         );
     };
 
@@ -120,6 +136,7 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
+
         );
     };
 
@@ -131,7 +148,18 @@ const TabNavigation: React.FC = () => {
                     component={WineDashboard}
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+                <Stack.Screen
+                    name="Language"
+                    component={Language}
+                    options={{ headerShown: false }}
+                />
             </Stack.Navigator>
+
         );
     };
 

@@ -26,6 +26,7 @@ interface Wine {
     varietal_name: string;
     winery_name: string;
     bottleshock_rating: number;
+    wines_id:number;
 }
 
 const WineSkeletonLoader = () => {
@@ -107,7 +108,7 @@ const WineSkeletonLoader = () => {
 
 const WineListVintage: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-    const route = useRoute<RouteProp<{ params: { winery_id: number, winery_varietals_id: number } }, 'params'>>();
+    const route = useRoute<RouteProp<{ params: { winery_id: number, winery_varietals_id: number, } }, 'params'>>();
     const { winery_id, winery_varietals_id } = route.params;
 
     const [searchText, setSearchText] = useState('');
@@ -163,7 +164,8 @@ const WineListVintage: React.FC = () => {
                                         image: `${imagePrefix}${wine.image}`,
                                         winery_name: winery.winery_name,
                                         varietal_name: varietal.varietal_name,
-                                        brand_name: varietal.brand_name
+                                        brand_name: varietal.brand_name,
+                                        wines_id : wine.wines_id
                                     }));
                                 })
                             );
@@ -216,7 +218,7 @@ const WineListVintage: React.FC = () => {
                     </>
                 ) : (
                     wines.map((wine, index) => (
-                        <Pressable key={index} onPress={() => navigation.navigate("WineDetails")}>
+                        <Pressable key={index} onPress={() => navigation.navigate("WineDetails", { winery_id, winery_varietals_id , wine_id: wine.wines_id})}>
                             <View style={styles.ListOfStoriesContainer}>
                                 <View style={styles.Stories}>
                                     <View style={styles.StoriesImgContainer}>
