@@ -26,6 +26,7 @@ import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/Discove
 import WineListVarietal from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVarietal/WineListVarietal';
 import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVintage/WineListVintage';
 import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
+import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 
@@ -147,6 +148,11 @@ const TabNavigation: React.FC = () => {
                     component={WineDashboard}
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
                 <Stack.Screen
                     name="Language"
                     component={Language}

@@ -13,10 +13,37 @@ import Icons from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../TabNavigation/navigationTypes";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setLoginUserId } from '../../../redux/actions';
 
 
 const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      // Clear authentication data (e.g., tokens) from AsyncStorage
+      await AsyncStorage.removeItem('UID'); // Replace with your actual token key
+      // Optionally, clear any other data you might have cached
+
+      // Dispatch Redux action to clear user state
+      dispatch(setLoginUserId('')); // Set the userId to empty string to reflect logout in Redux state
+
+      // Reset the navigation stack to LoginScreen
+      // This assumes the AuthNavigation will manage the login screen flow
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LoginScreen' }],
+      });
+
+      console.log('User logged out');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -101,7 +128,7 @@ const SettingsScreen = () => {
           <TouchableOpacity>
             <Text style={styles.loginOption}>Add or switch accounts</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout}>
             <Text style={styles.loginOption}>Log out</Text>
           </TouchableOpacity>
           <TouchableOpacity>

@@ -5,14 +5,9 @@ import { useSelector } from 'react-redux';
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import SignUpScreen from '../screens/AuthScreens/SignUpScren';
 import TabNavigation from '../TabNavigation/index';
-import { RootState } from '../../redux/store'; // Correct import for RootState
+import { RootState } from '../../redux/store';
 
-type AuthStackParamList = {
-  LoginScreen: undefined;
-  SignUpScreen: undefined;
-};
-
-const Stack = createNativeStackNavigator<AuthStackParamList>();
+const Stack = createNativeStackNavigator();
 
 const AuthNavigation: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.userId);
