@@ -3,19 +3,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
+import SignUpScreen from '../screens/AuthScreens/SignUpScren';
 import TabNavigation from '../TabNavigation/index';
-import { RootState } from '../redux/store'; // Adjust this import according to your project structure
+import { RootState } from '../../redux/store'; // Correct import for RootState
 
-// Define the stack type
 type AuthStackParamList = {
   LoginScreen: undefined;
+  SignUpScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthNavigation: React.FC = () => {
-  // Typing the selector using RootState, assuming userId is stored in the global state
-  const userId = useSelector((state: RootState) => state.userId);
+  const userId = useSelector((state: RootState) => state.user.userId);
 
   return (
     <NavigationContainer>
@@ -24,9 +24,12 @@ const AuthNavigation: React.FC = () => {
           <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUpScreen"
+            component={SignUpScreen}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       ) : (

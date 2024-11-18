@@ -9,17 +9,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInputProps,
+  Pressable,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useDispatch } from "react-redux";
-import { getLoginUserId } from "../../../redux/actions";
+import { useDispatch } from 'react-redux';
+import { setLoginUserId } from '../../../redux/actions';
 import { supabase } from "../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginLogo from "../../../src/assets/svg/SvgCodeFile/LoginLogo";
 import Ionicons from "react-native-vector-icons/Ionicons"; // For the eye icon
 
-// Define the type for your navigation prop
 type RootStackParamList = {
   Home: undefined;
   LoginScreen: undefined;
@@ -44,15 +44,13 @@ const LoginScreen: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
-    setLoading(true);
-    const { error, data } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    setLoading(false);
 
     if (error) {
-      Alert.alert("Login Failed", error.message);
+      Alert.alert('Login Failed', error.message);
     } else if (data.user) {
       const UID = data.user.id;
       try {
@@ -61,14 +59,11 @@ const LoginScreen: React.FC = () => {
       } catch (storageError) {
         console.error("Error storing UID:", storageError);
       }
-
-      // Dispatching the action with the correct user ID
       const userId = data.user.id;
-      dispatch(getLoginUserId(userId));
+      dispatch(setLoginUserId(userId));
     }
   };
 
-  // Check if both email and password are filled
   const isButtonDisabled = !(email && password);
 
   return (
@@ -127,6 +122,11 @@ const LoginScreen: React.FC = () => {
             {loading ? "Logging in..." : "Log In"}
           </Text>
         </TouchableOpacity>
+        <Pressable onPress={() =>
+          navigation.navigate("SignUpScreen")
+        }>
+          <Text style={styles.RegisterText}>Register</Text>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
@@ -192,6 +192,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  RegisterText: {
+    color: '#522F60',
+    textDecorationLine: 'underline',
+  }
 });
 
 export default LoginScreen;

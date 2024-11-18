@@ -23,6 +23,8 @@ import DiscoverWinespages from '../screens/HomeScreens/DiscoverWinePages/Discove
 import WineListVarietal from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVarietal/WineListVarietal';
 import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/WineListVintage/WineListVintage';
 import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
+import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
+import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,7 +89,7 @@ const TabNavigation: React.FC = () => {
                     component={MemoriesDetails}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="RestaurantsList"
                     component={RestaurantsList}
                     options={{ headerShown: false }}
@@ -176,16 +178,15 @@ const TabNavigation: React.FC = () => {
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/png/TabiconBottel.png')}
+                            <SVGComponent
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
                                     tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
-                                }}
-                            />
+                                }} />
+
                         </View>
                     ),
                     headerShown: false,

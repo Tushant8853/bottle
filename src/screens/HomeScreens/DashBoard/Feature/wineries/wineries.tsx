@@ -17,6 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+import { useTranslation } from 'react-i18next';
+
 
 installTwicPics({
   domain: 'https://bottleshock.twic.pics/',
@@ -89,6 +91,8 @@ const Wineries: React.FC = () => {
   const [wineries, setWineries] = useState<WineryData[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
 
@@ -199,7 +203,7 @@ const Wineries: React.FC = () => {
       <View style={styles.TitleContainer}>
         <View style={styles.leftContainer}>
           <Bannericon width={13} height={32} color="#522F60" />
-          <Text style={styles.text}>featured wineries</Text>
+          <Text style={styles.text}>{t('featuredwineries')}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('WineriesList')}>
           <Icon name="chevron-right" size={16} color="#522F60" />

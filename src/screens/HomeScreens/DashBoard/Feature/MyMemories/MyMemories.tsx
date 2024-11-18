@@ -8,6 +8,7 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useTranslation } from 'react-i18next';
 
 interface Memory {
   id: string;
@@ -94,6 +95,7 @@ const MyMemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useFocusEffect(
     useCallback(() => {
@@ -175,11 +177,14 @@ const MyMemories: React.FC = () => {
           <View style={styles.headingContainer}>
             <Bannericon width={13} height={32} color="#522F60" />
             <View style={styles.bannerTextContainer}>
-              <Text style={styles.bannerTitle}>my memories</Text>
+              <Text style={styles.bannerTitle}>{t('mymemories')}</Text>
             </View>
-            <View style={styles.bannerarrow}>
-              <Icon name="chevron-right" size={16} color="#522F60" />
-            </View>
+            {/* Conditionally render the arrow icon if there are memories */}
+            {memories.length > 0 && (
+              <View style={styles.bannerarrow}>
+                <Icon name="chevron-right" size={16} color="#522F60" />
+              </View>
+            )}
           </View>
         </Pressable>
       </View>
@@ -187,6 +192,9 @@ const MyMemories: React.FC = () => {
       <View style={styles.card}>
         {isLoading ? (
           <SkeletonLoader />
+        ) : memories.length === 0 ? (
+          // Display message if no memories are available
+          <Text style={styles.noMemoriesText}>{t('No Data')}</Text>
         ) : (
           <FlatList
             data={memories}

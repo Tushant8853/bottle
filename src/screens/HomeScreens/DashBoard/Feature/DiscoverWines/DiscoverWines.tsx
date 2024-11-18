@@ -6,6 +6,7 @@ import Bannericon from '../../../../../assets/svg/SvgCodeFile/bannericon';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
 
 interface Wine {
     image: string;
@@ -84,6 +85,8 @@ const DiscoverWines: React.FC = () => {
     const [wines, setWines] = useState<Wine[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
+    const { t } = useTranslation();
+
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -156,7 +159,7 @@ const DiscoverWines: React.FC = () => {
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
                         <Bannericon width={13} height={32} color="#522F60" />
-                        <Text style={styles.text}>discover wines</Text>
+                        <Text style={styles.text}>{t('discoverwines')}</Text>
                     </View>
                     <Pressable onPress={() => navigation.navigate('DiscoverWinespages')}>
                         <Icon name="chevron-right" size={16} color="#522F60" />

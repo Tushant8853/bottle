@@ -8,6 +8,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { supabase } from '../../../../../../../backend/supabase/supabaseClient';
+import { useTranslation } from 'react-i18next';
+
 interface Wine {
   likes: number;
   tags: string;
@@ -24,6 +26,8 @@ const ShareWithFriends: React.FC = () => {
   const filledStars = memoryData.length > 0 ? memoryData[0].star_ratings : 0;
   const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
   const { id } = route.params;
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -64,17 +68,17 @@ const ShareWithFriends: React.FC = () => {
 
   const statusText =
     backgroundColor === 'red'
-      ? 'Public'
+      ? t('Public')
       : backgroundColor === '#522F60'
-        ? 'Shared with Friends'
-        : 'Not shared';
+        ? t('SharedwithFriends')
+        : t('notshared');
 
   return (
     <View style={styles.Container}>
       {/* item below not public */}
       <View style={styles.ItemNotPublic}>
   <View style={styles.Line} />
-  <Text style={styles.ItemNotPublicText}>Items below will not be public</Text>
+  <Text style={styles.ItemNotPublicText}>{t('featuredrestaurants')}</Text>
   <View style={styles.Line} />
 </View>
       {/* Share to Friends Section */}
@@ -188,7 +192,7 @@ const ShareWithFriends: React.FC = () => {
       </View>
 
       <View style={styles.DeleteBoxContainer}>
-        <Text style={styles.DeleteText}>Delete</Text>
+        <Text style={styles.DeleteText}>{t('Delete')}</Text>
       </View>
     </View>
   );

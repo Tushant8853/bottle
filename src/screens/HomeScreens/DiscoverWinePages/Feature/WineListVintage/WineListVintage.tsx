@@ -15,6 +15,8 @@ import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from './index.style';
 import { useRoute, RouteProp } from "@react-navigation/native";
+import { useTranslation } from 'react-i18next';
+
 
 interface Wine {
     winery_id: number;
@@ -112,6 +114,8 @@ const WineListVintage: React.FC = () => {
     const [wines, setWines] = useState<Wine[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
+    const { t } = useTranslation();
+
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -185,7 +189,7 @@ const WineListVintage: React.FC = () => {
                 <View style={styles.headingContainer}>
                     <Bannericon width={13} height={22} color="#30425F" />
                     <View style={styles.bannerTextContainer}>
-                        <Text style={styles.bannerTitle}>wines: vintage</Text>
+                        <Text style={styles.bannerTitle}>{t('vintage')}</Text>
                     </View>
                 </View>
             </View>
@@ -194,7 +198,7 @@ const WineListVintage: React.FC = () => {
                 <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Search"
+                    placeholder={t('search')}
                     placeholderTextColor={"#e5e8e8"}
                     value={searchText}
                     onChangeText={setSearchText}

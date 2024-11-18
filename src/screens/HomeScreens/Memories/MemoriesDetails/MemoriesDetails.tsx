@@ -25,6 +25,8 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
+import { useTranslation } from 'react-i18next';
+
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
     debug: true,
@@ -192,6 +194,8 @@ const MemoriesDetails: React.FC = () => {
     const [savedItemsStatus, setSavedItemsStatus] = useState([]);
     const [favoriteItemsStatus, setFavoriteItemsStatus] = useState([]); 
     const [UID, setUID] = useState(null);
+    const { t } = useTranslation();
+
     
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
@@ -815,7 +819,7 @@ const MemoriesDetails: React.FC = () => {
                     <View style={styles.picandvideoHeaderContainer}>
                         <View style={styles.leftContent}>
                             <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
-                            <Text style={styles.picandvideoHeadertext}>Pics and Videos</Text>
+                            <Text style={styles.picandvideoHeadertext}> {t('picsandvideos')}</Text>
                         </View>
                         <View style={styles.rightContent}>
                             <Pressable onPress={() => navigation.navigate("Thumbnail", { memoryId: memory.id })}>

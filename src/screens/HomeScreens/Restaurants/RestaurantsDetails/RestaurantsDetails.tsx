@@ -24,6 +24,8 @@ import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker } from "react-native-maps";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from 'react-i18next';
+
 
 const { width } = Dimensions.get("window");
 
@@ -156,6 +158,7 @@ const RestaurantsDetails = () => {
   const [savedStatus, setSavedStatus] = useState(false);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [expandedwinery, setExpandedRestaurant] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleToggleDescription = (id: string) => {
     setExpandedRestaurant((prev) => (prev === id ? null : id));
@@ -412,7 +415,7 @@ const RestaurantsDetails = () => {
               size={16}
               color="#522F60"
             />
-            <Text style={styles.memoriesHeadertext}> Memories</Text>
+            <Text style={styles.memoriesHeadertext}> {t('Memories')}</Text>
           </View>
           <View style={styles.rightContent}>
             <AntDesign
@@ -451,7 +454,7 @@ const RestaurantsDetails = () => {
             ) : (
               <View style={styles.memoriesHeadertex}>
                 <Text style={styles.memoriesHeaderte}>
-                  No memories available
+                {t('nomemoriesavailable')}
                 </Text>
               </View>
             )}

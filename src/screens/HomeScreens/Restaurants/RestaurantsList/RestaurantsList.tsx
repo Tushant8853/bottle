@@ -15,6 +15,8 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 // Configure TwicPics
 installTwicPics({
@@ -117,6 +119,8 @@ const RestaurantsList = () => {
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -303,14 +307,14 @@ const RestaurantsList = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Restaurants</Text>
+        <Text style={styles.headerTitle}>{t('restaurants')}</Text>
       </View>
       
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search"
+          placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
           value={searchText}
           onChangeText={setSearchText}

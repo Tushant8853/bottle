@@ -16,6 +16,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import { useTranslation } from 'react-i18next';
+
 
 interface Memory {
   id: string;
@@ -108,6 +110,8 @@ const MyMemories: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchMemories = async () => {
