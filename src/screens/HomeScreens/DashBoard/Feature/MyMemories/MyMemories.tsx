@@ -179,9 +179,12 @@ const MyMemories: React.FC = () => {
             <View style={styles.bannerTextContainer}>
               <Text style={styles.bannerTitle}>{t('mymemories')}</Text>
             </View>
-            <View style={styles.bannerarrow}>
-              <Icon name="chevron-right" size={16} color="#522F60" />
-            </View>
+            {/* Conditionally render the arrow icon if there are memories */}
+            {memories.length > 0 && (
+              <View style={styles.bannerarrow}>
+                <Icon name="chevron-right" size={16} color="#522F60" />
+              </View>
+            )}
           </View>
         </Pressable>
       </View>
@@ -189,6 +192,9 @@ const MyMemories: React.FC = () => {
       <View style={styles.card}>
         {isLoading ? (
           <SkeletonLoader />
+        ) : memories.length === 0 ? (
+          // Display message if no memories are available
+          <Text style={styles.noMemoriesText}>{t('No Data')}</Text>
         ) : (
           <FlatList
             data={memories}

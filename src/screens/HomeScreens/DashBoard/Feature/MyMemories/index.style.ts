@@ -69,6 +69,12 @@ const styles = StyleSheet.create({
   errorText: {
     // Your error text styles here
   },
+  noMemoriesText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#522F60',
+    marginTop:40,
+  }
 });
 
 export default styles;
