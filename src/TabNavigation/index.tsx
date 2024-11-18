@@ -28,6 +28,8 @@ import WineListVintage from '../screens/HomeScreens/DiscoverWinePages/Feature/Wi
 import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
+
+import Language from '../screens/HomeWine/Settings/Language';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -143,6 +145,11 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="WineDashboardScreen"
                     component={WineDashboard}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Language"
+                    component={Language}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

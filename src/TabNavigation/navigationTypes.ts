@@ -16,4 +16,5 @@ export type RootStackParamList = {
     WineListVarietal: {winery_id:number};
     WineListVintage:{winery_id:number , winery_varietals_id:number};
     WineDetails: { winery_id: number; winery_varietals_id: number,wine_id:number  };
+    Language:undefined;
 };
