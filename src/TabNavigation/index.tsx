@@ -6,6 +6,9 @@ import React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
+import { Linking } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+
 
 import Dashboard from '../screens/HomeScreens/DashBoard/DashBoard';
 import StoriesList from '../screens/HomeScreens/Stories/StoriesList/StoriesList';
@@ -28,6 +31,15 @@ import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const linking = {
+    prefixes: ['bottleshock://'], // Your app's deep link prefix
+    config: {
+      screens: {
+        StoriesList: '',
+        StoriesDetail: 'story/:id', // Handle the deep link like `bottleshock://story/2`
+      },
+    },
+  };
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -41,6 +53,7 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
+
         );
     };
 
@@ -120,6 +133,7 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
+
         );
     };
 
@@ -132,6 +146,7 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
+
         );
     };
 

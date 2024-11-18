@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { FontAwesome} from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { useTranslation } from 'react-i18next';
 import { changeAppLanguage } from '../../../i18n';
@@ -15,14 +16,16 @@ const WineDashboard: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('settings')}</Text>
-      <Text style={styles.label}>{t('change_language')}</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{t('settings')}</Text>
+      </View>
+      <Text style={styles.label}>{'change_language'}</Text>
       <Picker
         selectedValue={language}
         onValueChange={(value) => handleLanguageChange(value)}
         style={styles.picker}
       >
-        <Picker.Item label={t('english')} value="en" />
+        <Picker.Item label={'English'} value="en" />
         <Picker.Item label={t('japanese')} value="ja" />
       </Picker>
     </View>
@@ -32,8 +35,8 @@ const WineDashboard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'white'
   },
   title: {
     fontSize: 24,
@@ -41,11 +44,28 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    marginBottom: 10,
   },
   picker: {
-    width: 200,
-    height: 50,
+    marginTop: 0,
+    width: 150,
+    //height: 10,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingBottom: 1,
+    paddingTop: 55,
+    backgroundColor: "white",
+    width: "100%",
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#333",
+    flex: 1,
+    alignItems: "center",
+    width: '100%'
   },
 });
 

@@ -18,6 +18,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from '../../../../utils/shareUtils';
 
 
 installTwicPics({
@@ -214,6 +215,15 @@ const StoriesList: React.FC = () => {
 
     return contentWithoutImages.trim();
   };
+ 
+  const handleShare = async (index: number) => {
+    const story = storiesList[index];
+    const title = story.name;
+    const message = story.short_description;
+    const route = `/story/${story.id}`;
+
+    await shareDeepLink(title, message, route);
+  };
 
   return (
     <View style={styles.container}>
@@ -280,7 +290,9 @@ const StoriesList: React.FC = () => {
                             color="#808080"
                           />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleShare(index)}>
                         <Icons name="share-outline" size={17} color="#808080" />
+                        </TouchableOpacity>
                       </View>
                     </View>
                     <View>
