@@ -9,6 +9,8 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { supabase } from '../../../../../../../backend/supabase/supabaseClient';
 import { useTranslation } from 'react-i18next';
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 
 interface Wine {
   likes: number;
@@ -27,6 +29,7 @@ const ShareWithFriends: React.FC = () => {
   const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
   const { id } = route.params;
   const { t } = useTranslation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
 
   useEffect(() => {
@@ -193,6 +196,7 @@ const ShareWithFriends: React.FC = () => {
 
       <View style={styles.DeleteBoxContainer}>
         <Text style={styles.DeleteText}>{t('Delete')}</Text>
+        <Text style={styles.DeleteText} onPress={() => navigation.navigate("EditMyMemories")}>Edit</Text>
       </View>
     </View>
   );
@@ -364,6 +368,9 @@ const styles = StyleSheet.create({
   ////////////////////////////////////////////////////////////////////
   DeleteBoxContainer: {
     marginTop: 10,
+    flexDirection:'row',
+    justifyContent:'space-between',
+
   },
   DeleteText: {
     fontFamily: 'SF Pro',
