@@ -29,20 +29,23 @@ import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDe
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
-
+import EditMyMemories from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
+import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMemoryField';
 import Language from '../screens/HomeWine/Settings/Language';
+import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
+import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const linking = {
     prefixes: ['bottleshock://'], // Your app's deep link prefix
     config: {
-      screens: {
-        StoriesList: '',
-        StoriesDetail: 'story/:id', // Handle the deep link like `bottleshock://story/2`
-      },
+        screens: {
+            StoriesList: '',
+            StoriesDetail: 'story/:id', // Handle the deep link like `bottleshock://story/2`
+        },
     },
-  };
+};
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -135,6 +138,16 @@ const TabNavigation: React.FC = () => {
                     component={WineDetails}
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                    name="EditMyMemories"
+                    component={EditMyMemories}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="EditMemoryField"
+                    component={EditMemoryField}
+                    options={{ headerShown: false }}
+                />
             </Stack.Navigator>
 
         );
@@ -149,13 +162,23 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
+                    name="LoginScreen"
+                    component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
                 <Stack.Screen
                     name="Language"
                     component={Language}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedmymemories"
+                    component={Savedmymemories}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedothermemories"
+                    component={Savedothermemories}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

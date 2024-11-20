@@ -9,7 +9,9 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { supabase } from '../../../../../../../backend/supabase/supabaseClient';
 import { useTranslation } from 'react-i18next';
-
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import styles from './index.style';
 interface Wine {
   likes: number;
   tags: string;
@@ -18,6 +20,7 @@ interface Wine {
   star_ratings: number;
   is_public: boolean;
   shared_with_friends: boolean;
+  id:string;
 }
 
 const ShareWithFriends: React.FC = () => {
@@ -27,6 +30,7 @@ const ShareWithFriends: React.FC = () => {
   const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
   const { id } = route.params;
   const { t } = useTranslation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
 
   useEffect(() => {
@@ -77,10 +81,10 @@ const ShareWithFriends: React.FC = () => {
     <View style={styles.Container}>
       {/* item below not public */}
       <View style={styles.ItemNotPublic}>
-  <View style={styles.Line} />
-  <Text style={styles.ItemNotPublicText}>{t('featuredrestaurants')}</Text>
-  <View style={styles.Line} />
-</View>
+        <View style={styles.Line} />
+        <Text style={styles.ItemNotPublicText}>{t('Itemsbelowwillnotbepublic')}</Text>
+        <View style={styles.Line} />
+      </View>
       {/* Share to Friends Section */}
       <View style={[styles.ShareContainer, { backgroundColor }]}>
         <View style={styles.ShareWithFriendsContainer}>
@@ -193,185 +197,12 @@ const ShareWithFriends: React.FC = () => {
 
       <View style={styles.DeleteBoxContainer}>
         <Text style={styles.DeleteText}>{t('Delete')}</Text>
+        <Text style={styles.DeleteText} onPress={() =>
+          navigation.navigate("EditMyMemories", { id })
+        }>Edit</Text>
       </View>
     </View>
   );
 };
 
 export default ShareWithFriends;
-const styles = StyleSheet.create({
-  Container: {
-    marginTop: 20,
-    marginHorizontal: 16,
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  ItemNotPublic: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 20,
-  },
-  Line: {
-    borderBottomWidth: 1,
-    flex: 1,
-    marginHorizontal: 6,
-    borderColor: '#522F60',
-  },
-  ItemNotPublicText: {
-    fontFamily: 'SF Pro',
-    fontSize: 14,
-    fontWeight: '400',
-    lineHeight: 16.71,
-    color:'#522F60'
-  },
-  
-  ShareContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 10,
-    height: 30,
-    borderColor: "#522F60",
-    justifyContent: 'center',
-    backgroundColor: "#522F60",
-  },
-  BoxContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 10,
-    height: 30,
-    borderColor: "#522F60",
-  },
-  /////////////////////////////////////////////////////////////
-  ShareWithFriendsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  IconWrapper: {
-    width: 32,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  ShareIcon: {
-    color: "#FFFFFF",
-  },
-  ShareWithFriendsText: {
-    fontFamily: 'SF Pro',
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 19,
-    color: "#FFFFFF",
-    textAlign: 'center',
-    flex: 2,
-  },
-  ArrowIcon: {
-    color: "#FFFFFF",
-  },
-  ///////////////////////////////////////////////////////////
-  UserInfoContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 10,
-    borderColor: "#522F60",
-  },
-  UserInfoContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  UserLocationTextContainer: {
-    marginLeft: 10,
-  },
-  locationHeaderText: {
-    width: 'auto',
-    fontFamily: 'SF Pro',
-    fontSize: 14,
-    fontWeight: '400',
-    lineHeight: 16.71,
-  },
-  UserIconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRightWidth: 1,
-    height: 29,
-    width: 32,
-    borderColor: "#522F6080",
-  },
-  CheckCircleIcon: {},
-  //////////////////////////////////////////////////////////////
-  HashtagContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 10,
-    height: 30,
-    borderColor: "#522F60",
-  },
-  HashtagContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  HashtagIconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRightWidth: 1,
-    height: 29,
-    width: 32,
-    borderColor: "#522F6080",
-  },
-  HashtagTextContainer: {
-    marginLeft: 10,
-  },
-  HashtagText: {
-    width: 'auto',
-    fontFamily: 'SF Pro',
-    fontSize: 14,
-    fontWeight: '400',
-    lineHeight: 16.71,
-  },
-  //////////////////////////////////////////////////////////////////////
-  StartLikeCommentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  RatingContainer: {
-    width: 110,
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 10,
-    height: 30,
-    borderColor: "#522F60",
-  },
-  StartContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  StarIconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRightWidth: 1,
-    height: 29,
-    width: 24,
-    borderColor: "#522F6080",
-  },
-  RatingContent: {
-    flexDirection: "row",
-    marginLeft: 4,
-  },
-  LikeText: {
-    marginLeft: 5,
-  },
-  ////////////////////////////////////////////////////////////////////
-  DeleteBoxContainer: {
-    marginTop: 10,
-  },
-  DeleteText: {
-    fontFamily: 'SF Pro',
-    fontSize: 16,
-    fontWeight: '300',
-    lineHeight: 19.09,
-    textAlign: 'left',
-    textDecorationLine: 'underline',
-    textDecorationStyle: 'solid',
-  },
-});
