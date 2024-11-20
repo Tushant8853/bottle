@@ -18,4 +18,6 @@ export type RootStackParamList = {
     WineDetails: { winery_id: number; winery_varietals_id: number,wine_id:number  };
     Language:undefined;
     EditMyMemories:undefined;
+    Savedmymemories:undefined;
+    Savedothermemories:undefined;
 };

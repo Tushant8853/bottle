@@ -11,11 +11,13 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
+import { useTranslation } from 'react-i18next';
+
 
 interface Memory {
   id: string;
@@ -101,13 +103,16 @@ const SkeletonLoader: React.FC = () => {
   );
 };
 
-const PublicMemories: React.FC = () => {
+const Savedmymemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
-  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const [isMemorySaved, setIsMemorySaved] = useState<boolean[]>([]);
+  const [isMemoryFavorited, setIsMemoryFavorited] = useState<boolean[]>([]);  
+  const [filteredMemories, setFilteredMemories] = useState<Memory[]>([]);  // New state for filtered memories
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -119,28 +124,34 @@ const PublicMemories: React.FC = () => {
           setIsLoading(false);
           return;
         }
-        const { data: memories, error } = await supabase
+
+        const { data: memoriesData, error } = await supabase
           .from("bottleshock_memories")
-          .select("id, user_id, name, description,star_ratings")
-          .eq("is_public", true);
+          .select("id, user_id, name, description, star_ratings")
+          .eq("user_id", UID);
 
         if (error) {
           console.error("Error fetching memories:", error.message);
+          setIsLoading(false);
           return;
         }
+
         const updatedMemories = await Promise.all(
-          memories.map(async (memory: Memory) => {
+          memoriesData.map(async (memory: Memory) => {
             const { data: gallery, error: galleryError } = await supabase
               .from("bottleshock_memory_gallery")
               .select("file")
               .eq("memory_id", memory.id);
 
             if (galleryError) {
+              console.error("Error fetching gallery:", galleryError.message);
               return memory;
             }
+
             if (gallery && gallery.length > 0) {
               memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
             }
+
             const { data: user, error: userError } = await supabase
               .from("bottleshock_users")
               .select("handle")
@@ -151,9 +162,11 @@ const PublicMemories: React.FC = () => {
               console.error("Error fetching user handle:", userError.message);
               return memory;
             }
+
             if (user) {
               memory.handle = user.handle;
             }
+
             return memory;
           })
         );
@@ -166,6 +179,7 @@ const PublicMemories: React.FC = () => {
         setIsLoading(false);
       }
     };
+
     fetchMemories();
   }, []);
 
@@ -176,28 +190,31 @@ const PublicMemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-
+  
       const { data: savedMemories, error } = await supabase
         .from('bottleshock_saved_memories')
         .select('memory_id')
         .eq('user_id', UID);
-
+  
       if (error) {
         console.error('Error fetching saved memories:', error.message);
         return;
       }
-
-      const savedIds = savedMemories?.map((memory) => memory.memory_id);
+  
+      const savedIds = savedMemories?.map((memory) => String(memory.memory_id));
       const updatedSavedStatus = fetchedMemories.map((memory) =>
-        savedIds.includes(memory.id)
+        savedIds.includes(String(memory.id))
       );
-
-      setSavedStatus(updatedSavedStatus);
+  
+      setIsMemorySaved(updatedSavedStatus);
+      const filtered = fetchedMemories.filter((_, index) => updatedSavedStatus[index]);
+      setFilteredMemories(filtered); 
     } catch (error) {
       console.error('Error in checkSavedMemories:', error);
     }
   };
-
+  
+  
   const checkFavoriteMemories = async (fetchedMemories: Memory[]) => {
     try {
       const UID = await AsyncStorage.getItem("UID");
@@ -205,27 +222,29 @@ const PublicMemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-
+  
       const { data: favoriteMemories, error } = await supabase
         .from('bottleshock_fav_memories')
         .select('memory_id')
         .eq('user_id', UID);
-
+  
       if (error) {
         console.error('Error fetching favorite memories:', error.message);
         return;
       }
-
-      const favoriteIds = favoriteMemories?.map((memory) => memory.memory_id);
+  
+      const favoriteIds = favoriteMemories?.map((memory) => String(memory.memory_id));
       const updatedFavoriteStatus = fetchedMemories.map((memory) =>
-        favoriteIds.includes(memory.id)
+        favoriteIds.includes(String(memory.id))
       );
-
-      setFavoriteStatus(updatedFavoriteStatus);
+  
+      setIsMemoryFavorited(updatedFavoriteStatus);
     } catch (error) {
       console.error('Error in checkFavoriteMemories:', error);
     }
   };
+  
+  
 
   const handleSavePress = async (index: number) => {
     try {
@@ -234,16 +253,16 @@ const PublicMemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-
+  
       const memory = memories[index];
-      const isSaved = savedStatus[index];
-
+      const isSaved = isMemorySaved[index];
+  
       if (isSaved) {
         const { error } = await supabase
           .from('bottleshock_saved_memories')
           .delete()
           .match({ user_id: UID, memory_id: memory.id });
-
+  
         if (error) {
           console.error('Error removing memory:', error.message);
           return;
@@ -252,20 +271,21 @@ const PublicMemories: React.FC = () => {
         const { error } = await supabase
           .from('bottleshock_saved_memories')
           .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
-
+  
         if (error) {
           console.error('Error saving memory:', error.message);
           return;
         }
       }
-
-      const newStatus = [...savedStatus];
+  
+      const newStatus = [...isMemorySaved];
       newStatus[index] = !newStatus[index];
-      setSavedStatus(newStatus);
+      setIsMemorySaved(newStatus);
     } catch (error) {
       console.error('Error handling save press:', error);
     }
   };
+  
 
   const handleFavoritePress = async (index: number) => {
     try {
@@ -274,16 +294,16 @@ const PublicMemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-
+  
       const memory = memories[index];
-      const isFavorited = favoriteStatus[index];
-
+      const isFavorited = isMemoryFavorited[index];
+  
       if (isFavorited) {
         const { error } = await supabase
           .from('bottleshock_fav_memories')
           .delete()
           .match({ user_id: UID, memory_id: memory.id });
-
+  
         if (error) {
           console.error('Error removing favorite memory:', error.message);
           return;
@@ -292,20 +312,22 @@ const PublicMemories: React.FC = () => {
         const { error } = await supabase
           .from('bottleshock_fav_memories')
           .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
-
+  
         if (error) {
           console.error('Error favoriting memory:', error.message);
           return;
         }
       }
-
-      const newStatus = [...favoriteStatus];
+  
+      const newStatus = [...isMemoryFavorited];
       newStatus[index] = !newStatus[index];
-      setFavoriteStatus(newStatus);
+      setIsMemoryFavorited(newStatus);
     } catch (error) {
       console.error('Error handling favorite press:', error);
     }
   };
+  
+
   const renderStars = (rating: number) => {
     const totalStars = 5; // Total number of stars
     const fullStars = Math.floor(rating); // Number of full stars
@@ -359,8 +381,7 @@ const PublicMemories: React.FC = () => {
       </View>
     );
   };
-
-  const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => (
+  const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
         <View style={styles.titleMainContainer}>
@@ -378,7 +399,7 @@ const PublicMemories: React.FC = () => {
                   <Feather
                     name="paperclip"
                     size={16}
-                    color={savedStatus[index] ? '#522F60' : 'gray'}
+                    color={isMemorySaved[index] ? '#522F60' : 'gray'}
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
@@ -388,7 +409,7 @@ const PublicMemories: React.FC = () => {
                   accessibilityRole="button"
                 >
                   <FontAwesome
-                    name={favoriteStatus[index] ? "heart" : "heart-o"}
+                    name={isMemoryFavorited[index] ? "heart" : "heart-o"}
                     size={16}
                     color='gray'
                     style={styles.Icons}
@@ -426,7 +447,7 @@ const PublicMemories: React.FC = () => {
       </View>
 
       <View style={styles.rightContent}>
-        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
+        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id , from: "MyMemories" })}>
           {memory.thumbnail ? (
             <TwicImg
               src={memory.thumbnail}
@@ -444,29 +465,57 @@ const PublicMemories: React.FC = () => {
 
   if (isLoading) {
     return (
+     
       <FlatList
-        contentContainerStyle={styles.scrollContainer}
         data={[1, 2, 3, 4, 5]} // Show 5 skeleton items
         renderItem={() => <SkeletonLoader />}
         keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
       />
     );
   }
 
   return (
+    <View>
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={styles.Backbotton}
+        onPress={() => navigation.goBack()}
+      >
+        <FontAwesome name="angle-left" size={20} color="black" />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>Saved My Memories</Text>
+    </View>
     <FlatList
+      data={filteredMemories}
+      renderItem={renderMemoryItem}
+      keyExtractor={(memory) => memory.id}
       contentContainerStyle={styles.scrollContainer}
-      data={memories}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
     />
+    </View>
+
   );
 };
 
 const styles = StyleSheet.create({
-  // ... existing styles ...
-
   // Skeleton styles
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    paddingBottom: 10,
+    paddingTop: 55,
+    backgroundColor: "white",
+    width: "100%",
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#333",
+    flex: 1,
+  },
+  Backbotton: {},
   skeletonTitle: {
     height: 16,
     backgroundColor: '#E1E9EE',
@@ -506,8 +555,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E1E9EE',
     borderRadius: 8,
   },
+  // Existing styles
   scrollContainer: {
-    paddingBottom: 350,
+    paddingBottom: 700,
+    backgroundColor: "white"
   },
   container: {
     marginHorizontal: 16,
@@ -601,6 +652,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0e0e0",
     borderRadius: 8,
   },
+  
 });
 
-export default PublicMemories;
+export default Savedmymemories;

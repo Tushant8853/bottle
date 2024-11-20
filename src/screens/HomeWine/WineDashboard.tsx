@@ -1,5 +1,5 @@
 // SettingsScreen.js
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,40 @@ import { setLoginUserId } from '../../../redux/actions';
 const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
+  const [visibleDropdown, setVisibleDropdown] = useState<string | null>(null);
+  
+    const toggleDropdown = (menu: string) => {
+      setVisibleDropdown(visibleDropdown === menu ? null : menu);
+    };
+  
+    const handleOptionPress = (menu: string, option: string) => {
+      console.log(`Menu: ${menu}, Selected: ${option}`);
+      if (menu === "saved" && option === "My Memories") {
+        navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
+      }
+      if (menu === "saved" && option === "Other Memories") {
+        navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
+      }
+      setVisibleDropdown(null); // Close dropdown after selection
+    };
+  
+    const savedOptions = [
+      "My Memories",
+      "Other Memories",
+      "Restaurants",
+      "Wineries",
+      "Wines",
+      "Stories",
+    ];
+  
+    const favouriteOptions = [
+      "My Memories",
+      "Other Memories",
+      "Restaurants",
+      "Wineries",
+      "Wines",
+      "Stories",
+    ];
 
   const handleLogout = async () => {
     try {
@@ -86,6 +120,57 @@ const SettingsScreen = () => {
           <Text style={styles.menuText}>Notifications</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
+
+        <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => toggleDropdown("saved")}
+      >
+        <View style={styles.menuIconContainer}>
+          <Icon name="bookmark-outline" size={16} color="#522F60" />
+        </View>
+        <Text style={styles.menuText}>Saved</Text>
+        <Icon name="chevron-forward-outline" size={16} color="black" />
+      </TouchableOpacity>
+
+      {visibleDropdown === "saved" && (
+        <View style={styles.dropdown}>
+          {savedOptions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.dropdownItem}
+              onPress={() => handleOptionPress("saved", option)}
+            >
+              <Text style={styles.dropdownText}>{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      {/* Favourite Menu */}
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => toggleDropdown("favourite")}
+      >
+        <View style={styles.menuIconContainer}>
+          <Icon name="heart-outline" size={16} color="#522F60" />
+        </View>
+        <Text style={styles.menuText}>Favourite</Text>
+        <Icon name="chevron-forward-outline" size={16} color="black" />
+      </TouchableOpacity>
+
+      {visibleDropdown === "favourite" && (
+        <View style={styles.dropdown}>
+          {favouriteOptions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.dropdownItem}
+              onPress={() => handleOptionPress("favourite", option)}
+            >
+              <Text style={styles.dropdownText}>{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
         {/* Activities */}
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Language")}>
@@ -219,6 +304,22 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#522F60",
     marginLeft: 10,
+  },
+  dropdown: {
+    marginTop: 5,
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    elevation: 2,
+    padding: 5,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  dropdownText: {
+    fontSize: 14,
+    color: "#333",
   },
   loginSection: {
     borderWidth: 1,

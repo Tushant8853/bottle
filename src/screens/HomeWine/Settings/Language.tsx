@@ -1,30 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { changeAppLanguage } from '../../../../i18n';
+import Icon from "react-native-vector-icons/FontAwesome";
+import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 const Language: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
 
   const handleLanguageChange = async (lang: string) => {
     setLanguage(lang);
     await changeAppLanguage(lang);
   };
 
+  const languages = [
+    { code: 'en', label: 'English' },
+    { code: 'ja', label: '日本語' },
+  ];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('settings')}</Text>
-      <Text style={styles.label}>{t('change_language')}</Text>
-      <Picker
-        selectedValue={language}
-        onValueChange={(value) => handleLanguageChange(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label={t('english')} value="en" />
-        <Picker.Item label={t('japanese')} value="ja" />
-      </Picker>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.Backbotton}
+          onPress={() => navigation.goBack()}
+        >
+          <Icon name="angle-left" size={20} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Language</Text>
+      </View>
+      <View style={styles.lancontainer}>
+      <Text style={styles.title}>Change Language</Text>
+      {languages.map((lang) => (
+        <TouchableOpacity
+          key={lang.code}
+          style={styles.radioButtonContainer}
+          onPress={() => handleLanguageChange(lang.code)}
+        >
+          <Text style={styles.radioLabel}>{lang.label}</Text>
+          <View style={[styles.radioCircle, language === lang.code && styles.selectedRadio]} /> 
+        </TouchableOpacity>
+      ))}
+      </View>
     </View>
   );
 };
@@ -32,21 +53,61 @@ const Language: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    paddingBottom: 1,
+    paddingTop: 55,
+    backgroundColor: "white",
+    width: "100%",
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#333",
+    flex: 1,
+  },
+  Backbotton: {},
+  lancontainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    marginHorizontal: 16
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
+    marginTop: 20,
   },
   label: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  picker: {
-    width: 200,
-    height: 50,
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    width: '100%',
   },
+  radioLabel: {
+    fontSize: 16,
+    textAlign: 'left',
+    flex: 1,
+  },
+  radioCircle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+  selectedRadio: {
+    backgroundColor: '#000',
+  },
+
 });
 
 export default Language;

@@ -32,6 +32,8 @@ import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 import EditMyMemories from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
 
 import Language from '../screens/HomeWine/Settings/Language';
+import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
+import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -162,6 +164,16 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Language"
                     component={Language}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedmymemories"
+                    component={Savedmymemories}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedothermemories"
+                    component={Savedothermemories}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

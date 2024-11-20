@@ -11,11 +11,13 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
+import { useTranslation } from 'react-i18next';
+
 
 interface Memory {
   id: string;
@@ -101,13 +103,15 @@ const SkeletonLoader: React.FC = () => {
   );
 };
 
-const PublicMemories: React.FC = () => {
+const Savedothermemories: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchMemories = async () => {
@@ -119,28 +123,35 @@ const PublicMemories: React.FC = () => {
           setIsLoading(false);
           return;
         }
-        const { data: memories, error } = await supabase
+
+        const { data: memoriesData, error } = await supabase
           .from("bottleshock_memories")
-          .select("id, user_id, name, description,star_ratings")
-          .eq("is_public", true);
+          .select("id, user_id, name, description, star_ratings")
+          .eq("is_public", true)
+          .neq("user_id", UID);
 
         if (error) {
           console.error("Error fetching memories:", error.message);
+          setIsLoading(false);
           return;
         }
+
         const updatedMemories = await Promise.all(
-          memories.map(async (memory: Memory) => {
+          memoriesData.map(async (memory: Memory) => {
             const { data: gallery, error: galleryError } = await supabase
               .from("bottleshock_memory_gallery")
               .select("file")
               .eq("memory_id", memory.id);
 
             if (galleryError) {
+              console.error("Error fetching gallery:", galleryError.message);
               return memory;
             }
+
             if (gallery && gallery.length > 0) {
               memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
             }
+
             const { data: user, error: userError } = await supabase
               .from("bottleshock_users")
               .select("handle")
@@ -151,9 +162,11 @@ const PublicMemories: React.FC = () => {
               console.error("Error fetching user handle:", userError.message);
               return memory;
             }
+
             if (user) {
               memory.handle = user.handle;
             }
+
             return memory;
           })
         );
@@ -166,6 +179,7 @@ const PublicMemories: React.FC = () => {
         setIsLoading(false);
       }
     };
+
     fetchMemories();
   }, []);
 
@@ -359,8 +373,10 @@ const PublicMemories: React.FC = () => {
       </View>
     );
   };
+  
+  const filteredMemories = memories.filter((_, index) => savedStatus[index]);
 
-  const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => (
+  const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
         <View style={styles.titleMainContainer}>
@@ -426,7 +442,7 @@ const PublicMemories: React.FC = () => {
       </View>
 
       <View style={styles.rightContent}>
-        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
+        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id , from: "MyMemories" })}>
           {memory.thumbnail ? (
             <TwicImg
               src={memory.thumbnail}
@@ -444,29 +460,57 @@ const PublicMemories: React.FC = () => {
 
   if (isLoading) {
     return (
+     
       <FlatList
-        contentContainerStyle={styles.scrollContainer}
         data={[1, 2, 3, 4, 5]} // Show 5 skeleton items
         renderItem={() => <SkeletonLoader />}
         keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
       />
     );
   }
 
   return (
+    <View>
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={styles.Backbotton}
+        onPress={() => navigation.goBack()}
+      >
+        <FontAwesome name="angle-left" size={20} color="black" />
+      </TouchableOpacity>
+      <Text style={styles.headerTitle}>Saved Other Memories</Text>
+    </View>
     <FlatList
+      data={filteredMemories}
+      renderItem={renderMemoryItem}
+      keyExtractor={(memory) => memory.id}
       contentContainerStyle={styles.scrollContainer}
-      data={memories}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
     />
+    </View>
+
   );
 };
 
 const styles = StyleSheet.create({
-  // ... existing styles ...
-
   // Skeleton styles
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    paddingBottom: 10,
+    paddingTop: 55,
+    backgroundColor: "white",
+    width: "100%",
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#333",
+    flex: 1,
+  },
+  Backbotton: {},
   skeletonTitle: {
     height: 16,
     backgroundColor: '#E1E9EE',
@@ -506,8 +550,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E1E9EE',
     borderRadius: 8,
   },
+  // Existing styles
   scrollContainer: {
-    paddingBottom: 350,
+    paddingBottom: 700,
+    backgroundColor: "white"
   },
   container: {
     marginHorizontal: 16,
@@ -601,6 +647,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0e0e0",
     borderRadius: 8,
   },
+  
 });
 
-export default PublicMemories;
+export default Savedothermemories;
