@@ -30,7 +30,7 @@ import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 import EditMyMemories from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
-
+import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMemoryField';
 import Language from '../screens/HomeWine/Settings/Language';
 import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
 import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
@@ -141,6 +141,11 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="EditMyMemories"
                     component={EditMyMemories}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="EditMemoryField"
+                    component={EditMemoryField}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
