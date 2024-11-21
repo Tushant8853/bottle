@@ -36,6 +36,9 @@ import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories'
 import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
 import Savedrestaurants from '../screens/HomeWine/Settings/saved/Savedrestaurants';
 import Profile from '../screens/HomeWine/Profile';
+import NameAndUser_Handle from '../screens/HomeWine/Profile/Feature/NameAndUser_Handle';
+import ChangePwd from '../screens/HomeWine/Profile/Feature/ChangePwd';
+
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -191,6 +194,16 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Profile"
                     component={Profile}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="NameAndUser_Handle"
+                    component={NameAndUser_Handle}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ChangePwd"
+                    component={ChangePwd}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

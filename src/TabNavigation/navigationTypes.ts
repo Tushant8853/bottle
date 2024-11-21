@@ -23,4 +23,6 @@ export type RootStackParamList = {
     Savedothermemories:undefined;
     Savedrestaurants:undefined;
     Profile:undefined;
+    ChangePwd:undefined;
+    NameAndUser_Handle:undefined;
 };
