@@ -34,6 +34,7 @@ import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Fea
 import Language from '../screens/HomeWine/Settings/Language';
 import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
 import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
+import Savedrestaurants from '../screens/HomeWine/Settings/saved/Savedrestaurants';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -179,6 +180,11 @@ const TabNavigation: React.FC = () => {
                  <Stack.Screen
                     name="Savedothermemories"
                     component={Savedothermemories}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedrestaurants"
+                    component={Savedrestaurants}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
