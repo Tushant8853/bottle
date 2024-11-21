@@ -113,7 +113,6 @@ const SkeletonLoader = () => {
 };
 const Savedrestaurants = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [searchText, setSearchText] = useState('');
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
@@ -293,11 +292,6 @@ const Savedrestaurants = () => {
       console.error('Error handling favorite press:', error);
     }
   };
-
-  const filteredRestaurants = restaurants.filter((restaurant) =>
-    restaurant.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -307,26 +301,14 @@ const Savedrestaurants = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('restaurants')}</Text>
+        <Text style={styles.headerTitle}>Saved Restaurants</Text>
       </View>
       
-      <View style={styles.searchContainer}>
-        <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder={t('search')}
-          placeholderTextColor={"#e5e8e8"}
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-        <FontAwesome name="microphone" size={16} color="#989999" />
-      </View>
-
       <ScrollView>
         {isLoading ? (
           <SkeletonLoader />
         ) : (
-          filteredRestaurants.map((restaurant, index) => (
+            restaurants.map((restaurant, index) => (
             <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
               <View style={styles.restaurantContainer}>
                 <View style={styles.restaurantInfo}>
@@ -341,7 +323,6 @@ const Savedrestaurants = () => {
                   </Text>
                   <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
-
                 <View style={styles.iconsContainer}>
                   <TouchableOpacity 
                     onPress={() => handleSavePress(index)}
@@ -441,7 +422,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingBottom: 1,
+    paddingBottom: 10,
     paddingTop: 55,
     backgroundColor: "white",
     width: "100%",

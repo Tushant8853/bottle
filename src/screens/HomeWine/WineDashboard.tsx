@@ -35,6 +35,9 @@ const SettingsScreen = () => {
     if (menu === "saved" && option === "Other Memories") {
       navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
     }
+    if (menu === "saved" && option === "Restaurants") {
+      navigation.navigate("Savedrestaurants"); // Navigate to SavedMemories screen
+    }
     setVisibleDropdown(null); // Close dropdown after selection
   };
 

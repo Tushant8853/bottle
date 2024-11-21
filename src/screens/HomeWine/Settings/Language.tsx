@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   radioCircle: {
-    height: 20,
-    width: 20,
+    height: 15,
+    width: 15,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#000',
