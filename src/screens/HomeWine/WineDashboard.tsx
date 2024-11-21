@@ -22,39 +22,39 @@ const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const [visibleDropdown, setVisibleDropdown] = useState<string | null>(null);
-  
-    const toggleDropdown = (menu: string) => {
-      setVisibleDropdown(visibleDropdown === menu ? null : menu);
-    };
-  
-    const handleOptionPress = (menu: string, option: string) => {
-      console.log(`Menu: ${menu}, Selected: ${option}`);
-      if (menu === "saved" && option === "My Memories") {
-        navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
-      }
-      if (menu === "saved" && option === "Other Memories") {
-        navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
-      }
-      setVisibleDropdown(null); // Close dropdown after selection
-    };
-  
-    const savedOptions = [
-      "My Memories",
-      "Other Memories",
-      "Restaurants",
-      "Wineries",
-      "Wines",
-      "Stories",
-    ];
-  
-    const favouriteOptions = [
-      "My Memories",
-      "Other Memories",
-      "Restaurants",
-      "Wineries",
-      "Wines",
-      "Stories",
-    ];
+
+  const toggleDropdown = (menu: string) => {
+    setVisibleDropdown(visibleDropdown === menu ? null : menu);
+  };
+
+  const handleOptionPress = (menu: string, option: string) => {
+    console.log(`Menu: ${menu}, Selected: ${option}`);
+    if (menu === "saved" && option === "My Memories") {
+      navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
+    }
+    if (menu === "saved" && option === "Other Memories") {
+      navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
+    }
+    setVisibleDropdown(null); // Close dropdown after selection
+  };
+
+  const savedOptions = [
+    "My Memories",
+    "Other Memories",
+    "Restaurants",
+    "Wineries",
+    "Wines",
+    "Stories",
+  ];
+
+  const favouriteOptions = [
+    "My Memories",
+    "Other Memories",
+    "Restaurants",
+    "Wineries",
+    "Wines",
+    "Stories",
+  ];
 
   const handleLogout = async () => {
     try {
@@ -104,7 +104,8 @@ const SettingsScreen = () => {
       {/* Menu Items */}
       <ScrollView contentContainerStyle={styles.menuList}>
         {/* Profile */}
-        <TouchableOpacity style={styles.menuItem}>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Profile')}>
           <View style={styles.menuIconContainer}>
             <Icon name="person-outline" size={16} color="#522F60" />
           </View>
@@ -122,60 +123,60 @@ const SettingsScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={styles.menuItem}
-        onPress={() => toggleDropdown("saved")}
-      >
-        <View style={styles.menuIconContainer}>
-          <Icon name="bookmark-outline" size={16} color="#522F60" />
-        </View>
-        <Text style={styles.menuText}>Saved</Text>
-        <Icon name="chevron-forward-outline" size={16} color="black" />
-      </TouchableOpacity>
+          style={styles.menuItem}
+          onPress={() => toggleDropdown("saved")}
+        >
+          <View style={styles.menuIconContainer}>
+            <Icon name="bookmark-outline" size={16} color="#522F60" />
+          </View>
+          <Text style={styles.menuText}>Saved</Text>
+          <Icon name="chevron-forward-outline" size={16} color="black" />
+        </TouchableOpacity>
 
-      {visibleDropdown === "saved" && (
-        <View style={styles.dropdown}>
-          {savedOptions.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.dropdownItem}
-              onPress={() => handleOptionPress("saved", option)}
-            >
-              <Text style={styles.dropdownText}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+        {visibleDropdown === "saved" && (
+          <View style={styles.dropdown}>
+            {savedOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dropdownItem}
+                onPress={() => handleOptionPress("saved", option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
-      {/* Favourite Menu */}
-      <TouchableOpacity
-        style={styles.menuItem}
-        onPress={() => toggleDropdown("favourite")}
-      >
-        <View style={styles.menuIconContainer}>
-          <Icon name="heart-outline" size={16} color="#522F60" />
-        </View>
-        <Text style={styles.menuText}>Favourite</Text>
-        <Icon name="chevron-forward-outline" size={16} color="black" />
-      </TouchableOpacity>
+        {/* Favourite Menu */}
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => toggleDropdown("favourite")}
+        >
+          <View style={styles.menuIconContainer}>
+            <Icon name="heart-outline" size={16} color="#522F60" />
+          </View>
+          <Text style={styles.menuText}>Favourite</Text>
+          <Icon name="chevron-forward-outline" size={16} color="black" />
+        </TouchableOpacity>
 
-      {visibleDropdown === "favourite" && (
-        <View style={styles.dropdown}>
-          {favouriteOptions.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.dropdownItem}
-              onPress={() => handleOptionPress("favourite", option)}
-            >
-              <Text style={styles.dropdownText}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+        {visibleDropdown === "favourite" && (
+          <View style={styles.dropdown}>
+            {favouriteOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dropdownItem}
+                onPress={() => handleOptionPress("favourite", option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {/* Activities */}
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Language")}>
           <View style={styles.menuIconContainer}>
-          <FontAwesome5 name="language" size={16} color="#522F60" />
+            <FontAwesome5 name="language" size={16} color="#522F60" />
           </View>
           <Text style={styles.menuText}>Language</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
@@ -343,4 +344,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;
+export default SettingsScreen;''

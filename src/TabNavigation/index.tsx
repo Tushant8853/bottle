@@ -35,6 +35,7 @@ import Language from '../screens/HomeWine/Settings/Language';
 import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
 import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
 import Savedrestaurants from '../screens/HomeWine/Settings/saved/Savedrestaurants';
+import Profile from '../screens/HomeWine/Profile';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -187,6 +188,11 @@ const TabNavigation: React.FC = () => {
                     component={Savedrestaurants}
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                    name="Profile"
+                    component={Profile}
+                    options={{ headerShown: false }}
+                />
             </Stack.Navigator>
 
         );
@@ -240,7 +246,6 @@ const TabNavigation: React.FC = () => {
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }} />
 

@@ -22,4 +22,5 @@ export type RootStackParamList = {
     Savedmymemories:undefined;
     Savedothermemories:undefined;
     Savedrestaurants:undefined;
+    Profile:undefined;
 };
