@@ -34,7 +34,6 @@ const Language: React.FC = () => {
         <Text style={styles.headerTitle}>Language</Text>
       </View>
       <View style={styles.lancontainer}>
-      <Text style={styles.title}>Change Language</Text>
       {languages.map((lang) => (
         <TouchableOpacity
           key={lang.code}
@@ -75,7 +74,9 @@ const styles = StyleSheet.create({
   lancontainer: {
     flex: 1,
     backgroundColor: 'white',
-    marginHorizontal: 16
+    marginHorizontal: 16,
+    marginTop: 20,
+
   },
   title: {
     fontSize: 24,

@@ -127,7 +127,6 @@ const Savedothermemories: React.FC = () => {
         const { data: memoriesData, error } = await supabase
           .from("bottleshock_memories")
           .select("id, user_id, name, description, star_ratings")
-          .eq("is_public", true)
           .neq("user_id", UID);
 
         if (error) {
@@ -373,9 +372,9 @@ const Savedothermemories: React.FC = () => {
       </View>
     );
   };
-  
   const filteredMemories = memories.filter((_, index) => savedStatus[index]);
 
+  
   const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
@@ -479,16 +478,15 @@ const Savedothermemories: React.FC = () => {
       >
         <FontAwesome name="angle-left" size={20} color="black" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Saved Other Memories</Text>
+      <Text style={styles.headerTitle}>Saved My Memories</Text>
     </View>
     <FlatList
       data={filteredMemories}
-      renderItem={renderMemoryItem}
+      renderItem={(props) => renderMemoryItem({ ...props, index: memories.indexOf(props.item) })}
       keyExtractor={(memory) => memory.id}
       contentContainerStyle={styles.scrollContainer}
     />
     </View>
-
   );
 };
 
