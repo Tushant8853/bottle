@@ -25,4 +25,5 @@ export type RootStackParamList = {
     Profile:undefined;
     ChangePwd:undefined;
     NameAndUser_Handle:undefined;
+    Savedwineries:undefined;
 };
