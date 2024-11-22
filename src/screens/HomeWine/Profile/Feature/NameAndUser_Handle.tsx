@@ -5,12 +5,14 @@ import Feather from "react-native-vector-icons/Feather";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
 
 const NameAndUser_Handle = () => {
     const navigation = useNavigation();
     const [inputValue, setInputValue] = useState("");  // Store the user handle here
     const [userHandle, setUserHandle] = useState("");  // This will hold the fetched user handle
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);  // Track if the button should be disabled
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchUID();
@@ -90,7 +92,7 @@ const NameAndUser_Handle = () => {
                 <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
                     <Icon name="angle-left" size={20} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>User Handle</Text>
+                <Text style={styles.headerTitle}>{t('userhandle')}</Text>
                 <TouchableOpacity
                     style={[styles.CheckButton, isButtonDisabled && styles.disabledButton]}  // Disable button style
                     onPress={handleSave}
@@ -101,7 +103,7 @@ const NameAndUser_Handle = () => {
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>User Handle</Text>
+                <Text style={styles.label}>{t('userhandle')}</Text>
                 <TextInput
                     style={styles.input}
                     placeholder={userHandle ? userHandle : "Please enter a new user handle"}

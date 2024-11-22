@@ -199,7 +199,7 @@ const ShareWithFriends: React.FC = () => {
         <Text style={styles.DeleteText}>{t('Delete')}</Text>
         <Text style={styles.DeleteText} onPress={() =>
           navigation.navigate("EditMyMemories", { id })
-        }>Edit</Text>
+        }>{t('edit')}</Text>
       </View>
     </View>
   );

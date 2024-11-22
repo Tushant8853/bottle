@@ -6,20 +6,24 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { useTranslation } from 'react-i18next';
+
 
 const Profile = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const { t } = useTranslation();
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Profile</Text>
+                <Text style={styles.headerTitle}>{t('profile')}</Text>
             </View>
             {/* User Handle */}
             <TouchableOpacity style={styles.menuItem} onPress={()=> navigation.navigate("NameAndUser_Handle")}>
                 <View style={styles.menuIconContainer}>
                     <FontAwesome5 name="user-circle" size={16} color="#522F60" />
                 </View>
-                <Text style={styles.menuText}>User Handle</Text>
+                <Text style={styles.menuText}>{t('userhandle')}</Text>
                 <Icon name="chevron-forward-outline" size={16} color="black" />
             </TouchableOpacity>
 
@@ -28,7 +32,7 @@ const Profile = () => {
                 <View style={styles.menuIconContainer}>
                     <MaterialIcons name="password" size={16} color="#522F60" />
                 </View>
-                <Text style={styles.menuText}>Change Password</Text>
+                <Text style={styles.menuText}>{t('changepassword')}</Text>
                 <Icon name="chevron-forward-outline" size={16} color="black" />
             </TouchableOpacity>
         </View>

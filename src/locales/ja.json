@@ -50,5 +50,17 @@
   "savedrestaurants" : "保存されたレストラン",
   "savedwineries" : "保存されたワイナリー",
   "savedstories" : "保存されたストーリー",
-  "savedwines" : "保存されたワイン"
+  "savedwines" : "保存されたワイン",
+  "edit" : "編集",
+  "name" : "名前",
+  "shortdescription" : "簡単な説明",
+  "description" : "説明",
+  "userhandle" : "ユーザーハンドル",
+  "changepassword" : "パスワードを変更する",
+  "oldpassword" : "以前のパスワード",
+  "nempassword" : "新しいパスワード",
+  "confirmnewpassword" : "新しいパスワードを確認する",
+  "enternewpassword" : "新しいパスワードを入力してください",
+  "enteroldpassword" : "古いパスワードを入力してください",
+  "editmymemory" : "私の記憶を編集する"
 }

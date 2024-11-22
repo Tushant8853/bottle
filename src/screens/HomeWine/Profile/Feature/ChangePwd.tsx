@@ -6,6 +6,8 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient"; // Adjust import path as needed
 import { err } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from 'react-i18next';
+
 
 const ChangePwd = () => {
     const [oldPassword, setOldPassword] = useState("");
@@ -13,6 +15,8 @@ const ChangePwd = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const navigation = useNavigation<NavigationProp<any>>();
+    const { t } = useTranslation();
+
 
     const passwordValidation = (password: string) => {
         const minLength = 6;
@@ -93,7 +97,7 @@ const ChangePwd = () => {
                 <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
                     <Icon name="angle-left" size={20} color="black" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Change Password</Text>
+                <Text style={styles.headerTitle}>{t('changepassword')}</Text>
                 <TouchableOpacity
                     style={[styles.CheckButton, isTickDisabled ? styles.disabledButton : null]}
                     onPress={handleSavePassword}
@@ -104,20 +108,20 @@ const ChangePwd = () => {
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Old Password</Text>
+                <Text style={styles.label}>{t('oldpassword')}</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter old password"
+                    placeholder={t('enteroldpassword')}
                     value={oldPassword}
                     onChangeText={setOldPassword}
                     secureTextEntry
                 />
             </View>
             <View style={styles.formGroup}>
-                <Text style={styles.label}>New Password</Text>
+                <Text style={styles.label}>{t('newpassword')}</Text>
                 <TextInput
                     style={[styles.input, error ? styles.errorInput : null]}
-                    placeholder="Enter new password"
+                    placeholder={t('enternewpassword')}
                     value={newPassword}
                     onChangeText={(value) => {
                         setNewPassword(value);
@@ -132,10 +136,10 @@ const ChangePwd = () => {
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Confirm New Password</Text>
+                <Text style={styles.label}>{t('confirmnewpassword')}</Text>
                 <TextInput
                     style={[styles.input, error ? styles.errorInput : null]}
-                    placeholder="Confirm new password"
+                    placeholder={t('confirmnewpassword')}
                     value={confirmPassword}
                     onChangeText={handleConfirmPasswordChange}
                     secureTextEntry

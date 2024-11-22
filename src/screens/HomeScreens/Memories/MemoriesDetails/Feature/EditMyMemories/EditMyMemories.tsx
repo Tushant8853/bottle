@@ -4,11 +4,15 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, useRoute, NavigationProp, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
+
 
 const EditMyMemories = () => {
   const route = useRoute<RouteProp<{ params: { id: string } }, "params">>();
   const { id } = route.params;
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
+
 
   const [memory, setMemory] = useState({
     name: "",
@@ -55,7 +59,7 @@ const EditMyMemories = () => {
         <TouchableOpacity style={styles.Backbotton} onPress={() => navigation.goBack()}>
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit My Memories</Text>
+        <Text style={styles.headerTitle}>{t('editmymemory')}</Text>
       </View>
 
       {/* Fields */}
