@@ -14,15 +14,6 @@ const Profile = () => {
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Profile</Text>
             </View>
-            {/* Change Name */}
-            <TouchableOpacity style={styles.menuItem} onPress={()=> navigation.navigate("NameAndUser_Handle")}>
-                <View style={styles.menuIconContainer}>
-                    <MaterialCommunityIcons name="rename-box" size={16} color="#522F60" />
-                </View>
-                <Text style={styles.menuText}>Name</Text>
-                <Icon name="chevron-forward-outline" size={16} color="black" />
-            </TouchableOpacity>
-
             {/* User Handle */}
             <TouchableOpacity style={styles.menuItem} onPress={()=> navigation.navigate("NameAndUser_Handle")}>
                 <View style={styles.menuIconContainer}>

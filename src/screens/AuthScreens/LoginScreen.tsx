@@ -48,21 +48,24 @@ const LoginScreen: React.FC = () => {
       email,
       password,
     });
-
+  
     if (error) {
       Alert.alert('Login Failed', error.message);
     } else if (data.user) {
       const UID = data.user.id;
       try {
         await AsyncStorage.setItem("UID", UID);
-        console.log("UID stored successfully:", UID);
+        await AsyncStorage.setItem("email", email);
+        console.log("UID and email stored successfully:", UID, email);
       } catch (storageError) {
-        console.error("Error storing UID:", storageError);
+        console.error("Error storing UID and password:", storageError);
       }
+  
       const userId = data.user.id;
       dispatch(setLoginUserId(userId));
     }
   };
+  
 
   const isButtonDisabled = !(email && password);
 
