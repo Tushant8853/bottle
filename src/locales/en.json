@@ -44,5 +44,11 @@
   "logout" : "Logout",
   "wineries": "Wineries",
   "stories" : "Stories",
-  "wines" : "Wines"
+  "wines" : "Wines",
+  "savedmymemories" : "Saved My Memories",
+  "savedothersmemories" : "Saved Others Memories",
+  "savedrestaurants" : "Saved Restaurants",
+  "savedwineries" : "Saved Wineries",
+  "savedstories" : "Saved Stories",
+  "savedwines" : "Saved Wines"
 }

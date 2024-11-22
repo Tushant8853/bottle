@@ -44,5 +44,11 @@
   "logout" : "ログアウト",
   "wineries": "ワイナリー",
   "stories" : "物語",
-  "wines" : "ワイン"
+  "wines" : "ワイン",
+  "savedmymemories" : "思い出を保存しました",
+  "savedothersmemories" : "他人の思い出を救った",
+  "savedrestaurants" : "保存されたレストラン",
+  "savedwineries" : "保存されたワイナリー",
+  "savedstories" : "保存されたストーリー",
+  "savedwines" : "保存されたワイン"
 }

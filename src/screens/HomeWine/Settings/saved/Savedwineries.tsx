@@ -251,7 +251,7 @@ const Savedwineries = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Saved wineries</Text>
+        <Text style={styles.headerTitle}>{t('savedwineries')}</Text>
       </View>
 
       {/* List of Wineries */}

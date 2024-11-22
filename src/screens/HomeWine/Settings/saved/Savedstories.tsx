@@ -249,7 +249,7 @@ const Savedstories: React.FC = () => {
         >
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('Stories')}</Text>
+        <Text style={styles.headerTitle}>{t('savedstories')}</Text>
       </View>
 
       {/* Stories List */}

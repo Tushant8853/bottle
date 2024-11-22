@@ -279,7 +279,7 @@ const Savedrestaurants = () => {
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <FontAwesome name="angle-left" size={20} color="black" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Saved Restaurants</Text>
+          <Text style={styles.headerTitle}>{t('savedrestaurants')}</Text>
         </View>
   
         <ScrollView>

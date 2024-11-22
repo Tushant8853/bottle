@@ -478,7 +478,7 @@ const Savedmymemories: React.FC = () => {
       >
         <FontAwesome name="angle-left" size={20} color="black" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Saved My Memories</Text>
+      <Text style={styles.headerTitle}>{t('savedmymemories')}</Text>
     </View>
     <FlatList
       data={filteredMemories}
