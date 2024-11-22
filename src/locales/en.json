@@ -50,5 +50,17 @@
   "savedrestaurants" : "Saved Restaurants",
   "savedwineries" : "Saved Wineries",
   "savedstories" : "Saved Stories",
-  "savedwines" : "Saved Wines"
+  "savedwines" : "Saved Wines",
+  "edit" : "Edit",
+  "name" : "Name",
+  "short_description" : "Short Description",
+  "description" : "Description",
+  "userhandle" : "User Handle",
+  "changepassword" : "Change Password",
+  "oldpassword" : "Old Password",
+  "newpassword" : "New Password",
+  "confirmnewpassword" : "Confirm New Password",
+  "enternewpassword" : "Enter New Password",
+  "enteroldpassword" : "Enter Old Password",
+  "editmymemory" : "Edit My Memory"
 }

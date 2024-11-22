@@ -53,7 +53,7 @@
   "savedwines" : "保存されたワイン",
   "edit" : "編集",
   "name" : "名前",
-  "shortdescription" : "簡単な説明",
+  "short_description" : "簡単な説明",
   "description" : "説明",
   "userhandle" : "ユーザーハンドル",
   "changepassword" : "パスワードを変更する",

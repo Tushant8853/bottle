@@ -5,6 +5,7 @@ import { useNavigation, useRoute, NavigationProp, RouteProp, useFocusEffect } fr
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from 'react-i18next';
+import i18n from "../../../../../../../i18n";
 
 
 const EditMyMemories = () => {
@@ -76,7 +77,7 @@ const EditMyMemories = () => {
               })
             }
           >
-            <Text style={styles.label}>{field.replace("_", " ")}</Text>
+            <Text style={styles.label}>{i18n.t(field)}</Text>
             <Text style={styles.value} numberOfLines={1}>
               {memory[field as keyof typeof memory]}
             </Text>

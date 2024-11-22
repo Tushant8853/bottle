@@ -4,11 +4,14 @@ import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navig
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import { useTranslation } from 'react-i18next';
+import i18n from "../../../../../../../i18n";
 
 const EditMemoryField = () => {
   const route = useRoute<RouteProp<{ params: { id: string; field: string; value: string } }, "params">>();
   const navigation = useNavigation<NavigationProp<any>>();
   const { id, field, value } = route.params;
+  const { t } = useTranslation();
 
   const [input, setInput] = useState(value);
 
@@ -36,7 +39,7 @@ const EditMemoryField = () => {
         <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit {field.replace("_", " ")}</Text>
+        <Text style={styles.headerTitle}>{t("edit")} {i18n.t(field)}</Text>
         <TouchableOpacity
           style={[
             styles.CheckButton,
