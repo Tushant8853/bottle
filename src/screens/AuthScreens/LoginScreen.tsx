@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   RegisterText: {
     marginTop:10,
-    color: '#522F60',
+    color: '#A0A0A0',
   }
 });
 
