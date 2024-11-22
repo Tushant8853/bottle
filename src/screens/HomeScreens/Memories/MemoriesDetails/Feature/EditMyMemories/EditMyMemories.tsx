@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
+import { useNavigation, useRoute, NavigationProp, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
+import i18n from "../../../../../../../i18n";
+
 
 const EditMyMemories = () => {
   const route = useRoute<RouteProp<{ params: { id: string } }, "params">>();
   const { id } = route.params;
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
+
 
   const [memory, setMemory] = useState({
     name: "",
@@ -16,34 +21,37 @@ const EditMyMemories = () => {
     description: "",
   });
 
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const { data: memoriesData, error } = await supabase
-          .from("bottleshock_memories")
-          .select("id, user_id, name, description, short_description")
-          .eq("id", id)
-          .single();
+  const fetchMemories = async () => {
+    try {
+      const { data: memoriesData, error } = await supabase
+        .from("bottleshock_memories")
+        .select("id, user_id, name, description, short_description")
+        .eq("id", id)
+        .single();
 
-        if (error) {
-          console.error("Error fetching memories:", error.message);
-          return;
-        }
-
-        if (memoriesData) {
-          setMemory({
-            name: memoriesData.name || "",
-            short_description: memoriesData.short_description || "",
-            description: memoriesData.description || "",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching memories:", err);
+      if (error) {
+        console.error("Error fetching memories:", error.message);
+        return;
       }
-    };
 
-    fetchMemories();
-  }, [id]);
+      if (memoriesData) {
+        setMemory({
+          name: memoriesData.name || "",
+          short_description: memoriesData.short_description || "",
+          description: memoriesData.description || "",
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching memories:", err);
+    }
+  };
+
+  // Use useFocusEffect to reload data when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchMemories();
+    }, [id])
+  );
 
   return (
     <View style={styles.container}>
@@ -52,7 +60,7 @@ const EditMyMemories = () => {
         <TouchableOpacity style={styles.Backbotton} onPress={() => navigation.goBack()}>
           <Icon name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit My Memories</Text>
+        <Text style={styles.headerTitle}>{t('editmymemory')}</Text>
       </View>
 
       {/* Fields */}
@@ -69,7 +77,7 @@ const EditMyMemories = () => {
               })
             }
           >
-            <Text style={styles.label}>{field.replace("_", " ")}</Text>
+            <Text style={styles.label}>{i18n.t(field)}</Text>
             <Text style={styles.value} numberOfLines={1}>
               {memory[field as keyof typeof memory]}
             </Text>

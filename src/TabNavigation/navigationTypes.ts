@@ -21,4 +21,10 @@ export type RootStackParamList = {
     EditMemoryField: { id: string; field: string; value: string };
     Savedmymemories:undefined;
     Savedothermemories:undefined;
+    Savedrestaurants:undefined;
+    Profile:undefined;
+    ChangePwd:undefined;
+    NameAndUser_Handle:undefined;
+    Savedwineries:undefined;
+    Savedstories:undefined;
 };

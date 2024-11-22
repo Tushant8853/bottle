@@ -34,6 +34,13 @@ import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Fea
 import Language from '../screens/HomeWine/Settings/Language';
 import Savedmymemories from '../screens/HomeWine/Settings/saved/Savedmymemories';
 import Savedothermemories from '../screens/HomeWine/Settings/saved/Savedothermemories';
+import Savedrestaurants from '../screens/HomeWine/Settings/saved/Savedrestaurants';
+import Profile from '../screens/HomeWine/Profile';
+import NameAndUser_Handle from '../screens/HomeWine/Profile/Feature/NameAndUser_Handle';
+import ChangePwd from '../screens/HomeWine/Profile/Feature/ChangePwd';
+import Savedwineries from '../screens/HomeWine/Settings/saved/Savedwineries';
+import Savedstories from '../screens/HomeWine/Settings/saved/Savedstories';
+
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -181,6 +188,36 @@ const TabNavigation: React.FC = () => {
                     component={Savedothermemories}
                     options={{ headerShown: false }}
                 />
+                 <Stack.Screen
+                    name="Savedrestaurants"
+                    component={Savedrestaurants}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="Profile"
+                    component={Profile}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="NameAndUser_Handle"
+                    component={NameAndUser_Handle}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="ChangePwd"
+                    component={ChangePwd}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedwineries"
+                    component={Savedwineries}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="Savedstories"
+                    component={Savedstories}
+                    options={{ headerShown: false }}
+                />
             </Stack.Navigator>
 
         );
@@ -234,7 +271,6 @@ const TabNavigation: React.FC = () => {
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }} />
 

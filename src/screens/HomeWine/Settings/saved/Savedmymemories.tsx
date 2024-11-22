@@ -108,9 +108,8 @@ const Savedmymemories: React.FC = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMemorySaved, setIsMemorySaved] = useState<boolean[]>([]);
-  const [isMemoryFavorited, setIsMemoryFavorited] = useState<boolean[]>([]);  
-  const [filteredMemories, setFilteredMemories] = useState<Memory[]>([]);  // New state for filtered memories
+  const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const { t } = useTranslation();
 
 
@@ -190,31 +189,28 @@ const Savedmymemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-  
+
       const { data: savedMemories, error } = await supabase
         .from('bottleshock_saved_memories')
         .select('memory_id')
         .eq('user_id', UID);
-  
+
       if (error) {
         console.error('Error fetching saved memories:', error.message);
         return;
       }
-  
-      const savedIds = savedMemories?.map((memory) => String(memory.memory_id));
+
+      const savedIds = savedMemories?.map((memory) => memory.memory_id);
       const updatedSavedStatus = fetchedMemories.map((memory) =>
-        savedIds.includes(String(memory.id))
+        savedIds.includes(memory.id)
       );
-  
-      setIsMemorySaved(updatedSavedStatus);
-      const filtered = fetchedMemories.filter((_, index) => updatedSavedStatus[index]);
-      setFilteredMemories(filtered); 
+
+      setSavedStatus(updatedSavedStatus);
     } catch (error) {
       console.error('Error in checkSavedMemories:', error);
     }
   };
-  
-  
+
   const checkFavoriteMemories = async (fetchedMemories: Memory[]) => {
     try {
       const UID = await AsyncStorage.getItem("UID");
@@ -222,29 +218,27 @@ const Savedmymemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-  
+
       const { data: favoriteMemories, error } = await supabase
         .from('bottleshock_fav_memories')
         .select('memory_id')
         .eq('user_id', UID);
-  
+
       if (error) {
         console.error('Error fetching favorite memories:', error.message);
         return;
       }
-  
-      const favoriteIds = favoriteMemories?.map((memory) => String(memory.memory_id));
+
+      const favoriteIds = favoriteMemories?.map((memory) => memory.memory_id);
       const updatedFavoriteStatus = fetchedMemories.map((memory) =>
-        favoriteIds.includes(String(memory.id))
+        favoriteIds.includes(memory.id)
       );
-  
-      setIsMemoryFavorited(updatedFavoriteStatus);
+
+      setFavoriteStatus(updatedFavoriteStatus);
     } catch (error) {
       console.error('Error in checkFavoriteMemories:', error);
     }
   };
-  
-  
 
   const handleSavePress = async (index: number) => {
     try {
@@ -253,16 +247,16 @@ const Savedmymemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-  
+
       const memory = memories[index];
-      const isSaved = isMemorySaved[index];
-  
+      const isSaved = savedStatus[index];
+
       if (isSaved) {
         const { error } = await supabase
           .from('bottleshock_saved_memories')
           .delete()
           .match({ user_id: UID, memory_id: memory.id });
-  
+
         if (error) {
           console.error('Error removing memory:', error.message);
           return;
@@ -271,21 +265,20 @@ const Savedmymemories: React.FC = () => {
         const { error } = await supabase
           .from('bottleshock_saved_memories')
           .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
-  
+
         if (error) {
           console.error('Error saving memory:', error.message);
           return;
         }
       }
-  
-      const newStatus = [...isMemorySaved];
+
+      const newStatus = [...savedStatus];
       newStatus[index] = !newStatus[index];
-      setIsMemorySaved(newStatus);
+      setSavedStatus(newStatus);
     } catch (error) {
       console.error('Error handling save press:', error);
     }
   };
-  
 
   const handleFavoritePress = async (index: number) => {
     try {
@@ -294,16 +287,16 @@ const Savedmymemories: React.FC = () => {
         console.error("User ID not found.");
         return;
       }
-  
+
       const memory = memories[index];
-      const isFavorited = isMemoryFavorited[index];
-  
+      const isFavorited = favoriteStatus[index];
+
       if (isFavorited) {
         const { error } = await supabase
           .from('bottleshock_fav_memories')
           .delete()
           .match({ user_id: UID, memory_id: memory.id });
-  
+
         if (error) {
           console.error('Error removing favorite memory:', error.message);
           return;
@@ -312,22 +305,20 @@ const Savedmymemories: React.FC = () => {
         const { error } = await supabase
           .from('bottleshock_fav_memories')
           .insert([{ user_id: UID, memory_id: memory.id, created_at: new Date().toISOString() }]);
-  
+
         if (error) {
           console.error('Error favoriting memory:', error.message);
           return;
         }
       }
-  
-      const newStatus = [...isMemoryFavorited];
+
+      const newStatus = [...favoriteStatus];
       newStatus[index] = !newStatus[index];
-      setIsMemoryFavorited(newStatus);
+      setFavoriteStatus(newStatus);
     } catch (error) {
       console.error('Error handling favorite press:', error);
     }
   };
-  
-
   const renderStars = (rating: number) => {
     const totalStars = 5; // Total number of stars
     const fullStars = Math.floor(rating); // Number of full stars
@@ -381,6 +372,9 @@ const Savedmymemories: React.FC = () => {
       </View>
     );
   };
+  const filteredMemories = memories.filter((_, index) => savedStatus[index]);
+
+  
   const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
@@ -399,7 +393,7 @@ const Savedmymemories: React.FC = () => {
                   <Feather
                     name="paperclip"
                     size={16}
-                    color={isMemorySaved[index] ? '#522F60' : 'gray'}
+                    color={savedStatus[index] ? '#522F60' : 'gray'}
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
@@ -409,7 +403,7 @@ const Savedmymemories: React.FC = () => {
                   accessibilityRole="button"
                 >
                   <FontAwesome
-                    name={isMemoryFavorited[index] ? "heart" : "heart-o"}
+                    name={favoriteStatus[index] ? "heart" : "heart-o"}
                     size={16}
                     color='gray'
                     style={styles.Icons}
@@ -484,16 +478,15 @@ const Savedmymemories: React.FC = () => {
       >
         <FontAwesome name="angle-left" size={20} color="black" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Saved My Memories</Text>
+      <Text style={styles.headerTitle}>{t('savedmymemories')}</Text>
     </View>
     <FlatList
       data={filteredMemories}
-      renderItem={renderMemoryItem}
+      renderItem={(props) => renderMemoryItem({ ...props, index: memories.indexOf(props.item) })}
       keyExtractor={(memory) => memory.id}
       contentContainerStyle={styles.scrollContainer}
     />
     </View>
-
   );
 };
 
