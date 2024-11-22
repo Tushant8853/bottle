@@ -12,6 +12,7 @@ const ChangePwd = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const [oldPasswordError, setOldPasswordError] = useState(""); // Added error state for old password
     const navigation = useNavigation<NavigationProp<any>>();
 
     const passwordValidation = (password: string) => {
@@ -30,7 +31,7 @@ const ChangePwd = () => {
     const handleSavePassword = async () => {
         Alert.alert(
             "Change Password",
-            "Are you sure",
+            "Are you sure?",
             [
                 {
                     text: "No",
@@ -43,8 +44,9 @@ const ChangePwd = () => {
                 {
                     text: "Yes",
                     onPress: async () => {
-                        const storedemail = await AsyncStorage.getItem("email");
-                        console.log(storedemail);
+                        const storedEmail = await AsyncStorage.getItem("email");
+                        console.log(storedEmail);
+
                         if (newPassword !== confirmPassword) {
                             setError("Passwords do not match");
                             return;
@@ -54,11 +56,24 @@ const ChangePwd = () => {
                             setError(validationError);
                             return;
                         }
+
+                        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+                            email: storedEmail ?? "",
+                            password: oldPassword,
+                        });
+
+                        if (signInError || !data.user) {
+                            setOldPasswordError("Old password is incorrect"); // Set error for old password
+                            return;
+                        }
+
+                        setOldPasswordError(""); // Clear old password error if login is successful
+
                         try {
                             const { error: updateError } = await supabase.auth.updateUser({
                                 password: newPassword,
                             });
-    
+
                             if (updateError) {
                                 setError(updateError.message);
                                 return;
@@ -75,7 +90,7 @@ const ChangePwd = () => {
             { cancelable: false }
         );
     };
-    
+
     const handleConfirmPasswordChange = (value: string) => {
         setConfirmPassword(value);
         if (value !== newPassword) {
@@ -113,6 +128,8 @@ const ChangePwd = () => {
                     secureTextEntry
                 />
             </View>
+            {oldPasswordError && <Text style={styles.errorMessage}>{oldPasswordError}</Text>}
+            
             <View style={styles.formGroup}>
                 <Text style={styles.label}>New Password</Text>
                 <TextInput
