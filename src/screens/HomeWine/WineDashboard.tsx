@@ -124,14 +124,7 @@ const SettingsScreen = () => {
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
-        {/* Notifications */}
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Icon name="notifications-outline" size={16} color="#522F60" />
-          </View>
-          <Text style={styles.menuText}>{t('notification')}</Text>
-          <Icon name="chevron-forward-outline" size={16} color="black" />
-        </TouchableOpacity>
+   
 
         <TouchableOpacity
           style={styles.menuItem}
@@ -189,42 +182,15 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <FontAwesome5 name="language" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>{t('language')}</Text>
+          <Text style={styles.menuText}>Language</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
-        {/* Privacy */}
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Icon name="lock-closed-outline" size={16} color="#522F60" />
-          </View>
-          <Text style={styles.menuText}>{t('privacy')}</Text>
-          <Icon name="chevron-forward-outline" size={16} color="black" />
-        </TouchableOpacity>
+       
 
-        {/* Security */}
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Icon name="shield-checkmark-outline" size={16} color="#522F60" />
-          </View>
-          <Text style={styles.menuText}>{t('security')}</Text>
-          <Icon name="chevron-forward-outline" size={16} color="black" />
-        </TouchableOpacity>
-
-        {/* About */}
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Icon name="information-circle-outline" size={16} color="#522F60" />
-          </View>
-          <Text style={styles.menuText}>{t('about')}</Text>
-          <Icon name="chevron-forward-outline" size={16} color="black" />
-        </TouchableOpacity>
+      
         <View style={styles.lastSection}></View>
         <View style={styles.loginSection}>
-          <Text style={styles.loginTitle}>{t('logins')}</Text>
-          <TouchableOpacity>
-            <Text style={styles.loginOption}>{t('addorswitchaccount')}</Text>
-          </TouchableOpacity>
           <TouchableOpacity onPress={handleLogout}>
             <Text style={styles.loginOption}>{t('logout')}</Text>
           </TouchableOpacity>
@@ -331,21 +297,21 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   loginSection: {
-    borderWidth: 1,
     borderColor: '#555',
     borderRadius: 10,
-    padding: 15,
+    padding: 10,
     marginBottom: 20,
   },
   loginTitle: {
     color: '"black"',
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 10,
   },
   loginOption: {
     color: '#522F60',
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 10,
+    fontWeight: "600",
   },
   lastSection: {
     marginBottom: 10,

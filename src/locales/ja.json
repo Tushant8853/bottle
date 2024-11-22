@@ -58,7 +58,7 @@
   "userhandle" : "ユーザーハンドル",
   "changepassword" : "パスワードを変更する",
   "oldpassword" : "以前のパスワード",
-  "nempassword" : "新しいパスワード",
+  "newpassword" : "新しいパスワード",
   "confirmnewpassword" : "新しいパスワードを確認する",
   "enternewpassword" : "新しいパスワードを入力してください",
   "enteroldpassword" : "古いパスワードを入力してください",
