@@ -33,67 +33,49 @@ const ChangePwd = () => {
     };
 
     const handleSavePassword = async () => {
-        Alert.alert(
-            "Change Password",
-            "Are you sure?",
-            [
-                {
-                    text: "No",
-                    onPress: () => {
-                        // Navigate back if "No" is pressed
-                        navigation.goBack();
-                    },
-                    style: "cancel",
-                },
-                {
-                    text: "Yes",
-                    onPress: async () => {
-                        const storedEmail = await AsyncStorage.getItem("email");
-                        console.log(storedEmail);
-
-                        if (newPassword !== confirmPassword) {
-                            setError("Passwords do not match");
-                            return;
-                        }
-                        const validationError = passwordValidation(newPassword);
-                        if (validationError) {
-                            setError(validationError);
-                            return;
-                        }
-
-                        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-                            email: storedEmail ?? "",
-                            password: oldPassword,
-                        });
-
-                        if (signInError || !data.user) {
-                            setOldPasswordError("Old password is incorrect"); // Set error for old password
-                            return;
-                        }
-
-                        setOldPasswordError(""); // Clear old password error if login is successful
-
-                        try {
-                            const { error: updateError } = await supabase.auth.updateUser({
-                                password: newPassword,
-                            });
-
-                            if (updateError) {
-                                setError(updateError.message);
-                                return;
-                            }
-                            Alert.alert("Success", "Your password has been updated!");
-                            navigation.goBack();
-                        } catch (error) {
-                            setError("An error occurred while updating the password. Please try again.");
-                            console.log(error);
-                        }
-                    },
-                },
-            ],
-            { cancelable: false }
-        );
+        const storedEmail = await AsyncStorage.getItem("email");
+        console.log(storedEmail);
+    
+        if (newPassword !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+    
+        const validationError = passwordValidation(newPassword);
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+    
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            email: storedEmail ?? "",
+            password: oldPassword,
+        });
+    
+        if (signInError || !data.user) {
+            setOldPasswordError("Old password is incorrect"); // Set error for old password
+            return;
+        }
+    
+        setOldPasswordError(""); // Clear old password error if login is successful
+    
+        try {
+            const { error: updateError } = await supabase.auth.updateUser({
+                password: newPassword,
+            });
+    
+            if (updateError) {
+                setError(updateError.message);
+                return;
+            }
+    
+            navigation.goBack();
+        } catch (error) {
+            setError("An error occurred while updating the password. Please try again.");
+            console.log(error);
+        }
     };
+    
 
     const handleConfirmPasswordChange = (value: string) => {
         setConfirmPassword(value);
