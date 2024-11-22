@@ -100,7 +100,7 @@ const SignUpScreen: React.FC = () => {
                                 secureTextEntry={!showPassword}
                                 textContentType="password"
                                 autoCapitalize="none"
-                                keyboardType="default"
+                                
                             />
                             <TouchableOpacity
                                 style={styles.eyeIcon}

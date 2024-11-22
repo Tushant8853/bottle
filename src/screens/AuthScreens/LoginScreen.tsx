@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   RegisterText: {
+    marginTop:10,
     color: '#522F60',
-    textDecorationLine: 'underline',
   }
 });
 
