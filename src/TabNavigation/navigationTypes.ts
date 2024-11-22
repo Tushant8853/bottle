@@ -26,4 +26,5 @@ export type RootStackParamList = {
     ChangePwd:undefined;
     NameAndUser_Handle:undefined;
     Savedwineries:undefined;
+    Savedstories:undefined;
 };

@@ -31,5 +31,18 @@
   "Public": "Public",
   "restaurants": "Restaurants",
   "search": "search",
-  "comingsoon" : "Coming Soon"
+  "comingsoon" : "Coming Soon",
+  "profile" : "Profile",
+  "notification": "Notification",
+  "saved" : "Saved",
+  "favourite" : "Favourite",
+  "privacy" : "Privacy",
+  "security" : "Security",
+  "about" : "About",
+  "logins" : "Logins",
+  "addorswitchaccount" : "Add Or Switch Account",
+  "logout" : "Logout",
+  "wineries": "Wineries",
+  "stories" : "Stories",
+  "wines" : "Wines"
 }

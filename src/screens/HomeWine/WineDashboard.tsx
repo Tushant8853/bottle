@@ -16,12 +16,14 @@ import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { setLoginUserId } from '../../../redux/actions';
-
+import { useTranslation } from 'react-i18next';
 
 const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const [visibleDropdown, setVisibleDropdown] = useState<string | null>(null);
+  const { t } = useTranslation();
+
 
   const toggleDropdown = (menu: string) => {
     setVisibleDropdown(visibleDropdown === menu ? null : menu);
@@ -29,37 +31,40 @@ const SettingsScreen = () => {
 
   const handleOptionPress = (menu: string, option: string) => {
     console.log(`Menu: ${menu}, Selected: ${option}`);
-    if (menu === "saved" && option === "My Memories") {
+    if (menu === "saved" && (option === "My Memories" || option === "私の思い出")) {
       navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && option === "Other Memories") {
+    if (menu === "saved" && (option === "Memories from Others" || option === "他の思い出")) {
       navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && option === "Restaurants") {
+    if (menu === "saved" && (option === "Restaurants" || option === "レストラン")) {
       navigation.navigate("Savedrestaurants"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && option === "Wineries") {
+    if (menu === "saved" && (option === "Wineries" || option === "ワイナリー")) {
       navigation.navigate("Savedwineries"); // Navigate to SavedMemories screen
+    }
+    if (menu === "saved" && (option === "Stories" || option === "物語")) {
+      navigation.navigate("Savedstories"); // Navigate to SavedMemories screen
     }
     setVisibleDropdown(null); // Close dropdown after selection
   };
 
   const savedOptions = [
-    "My Memories",
-    "Other Memories",
-    "Restaurants",
-    "Wineries",
-    "Wines",
-    "Stories",
+    t("mymemories"),
+    t("othermemories"),
+    t("restaurants"),
+    t("wineries"),
+    t("stories"),
+    t("wines"),
   ];
 
   const favouriteOptions = [
-    "My Memories",
-    "Other Memories",
-    "Restaurants",
-    "Wineries",
-    "Wines",
-    "Stories",
+    t("mymemories"),
+    t("othermemories"),
+    t("restaurants"),
+    t("wineries"),
+    t("stories"),
+    t("wines"),
   ];
 
   const handleLogout = async () => {
@@ -88,7 +93,7 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('settings')}</Text>
       </View>
 
       {/* Search Input */}
@@ -101,7 +106,7 @@ const SettingsScreen = () => {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search"
+          placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
         />
         <Icons name="microphone" size={16} color="#989999" />
@@ -115,7 +120,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="person-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Profile</Text>
+          <Text style={styles.menuText}>{t('profile')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -124,7 +129,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="notifications-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Notifications</Text>
+          <Text style={styles.menuText}>{t('notification')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -135,7 +140,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="bookmark-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Saved</Text>
+          <Text style={styles.menuText}>{t('saved')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -161,7 +166,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="heart-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Favourite</Text>
+          <Text style={styles.menuText}>{t('favourite')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -184,7 +189,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <FontAwesome5 name="language" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Language</Text>
+          <Text style={styles.menuText}>{t('language')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -193,7 +198,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="lock-closed-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Privacy</Text>
+          <Text style={styles.menuText}>{t('privacy')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -202,7 +207,7 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="shield-checkmark-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>Security</Text>
+          <Text style={styles.menuText}>{t('security')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
@@ -211,20 +216,17 @@ const SettingsScreen = () => {
           <View style={styles.menuIconContainer}>
             <Icon name="information-circle-outline" size={16} color="#522F60" />
           </View>
-          <Text style={styles.menuText}>About</Text>
+          <Text style={styles.menuText}>{t('about')}</Text>
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
         <View style={styles.lastSection}></View>
         <View style={styles.loginSection}>
-          <Text style={styles.loginTitle}>Logins</Text>
+          <Text style={styles.loginTitle}>{t('logins')}</Text>
           <TouchableOpacity>
-            <Text style={styles.loginOption}>Add or switch accounts</Text>
+            <Text style={styles.loginOption}>{t('addorswitchaccount')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.loginOption}>Log out</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.loginOption}>Log out all accounts</Text>
+            <Text style={styles.loginOption}>{t('logout')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

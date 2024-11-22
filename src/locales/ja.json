@@ -31,5 +31,18 @@
   "Public": "公共",
   "restaurants": "レストラン",
   "search": "検索",
-  "comingsoon" : "近日公開"
+  "comingsoon" : "近日公開",
+  "profile" : "プロフィール",
+  "notification": "通知",
+  "saved" : "保存されました",
+  "favourite" : "お気に入り",
+  "privacy" : "プライバシー",
+  "security" : "安全",
+  "about" : "について",
+  "logins" : "ログイン",
+  "addorswitchaccount" : "アカウントの追加または切り替え",
+  "logout" : "ログアウト",
+  "wineries": "ワイナリー",
+  "stories" : "物語",
+  "wines" : "ワイン"
 }

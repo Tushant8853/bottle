@@ -87,94 +87,79 @@ const Savedwineries = () => {
 
 
   useEffect(() => {
-    const fetchWineries = async () => {
+    const fetchSavedwineries = async () => {
       try {
-        const { data, error } = await supabase
-          .from("bottleshock_wineries")
-          .select("wineries_id, winery_name, address, verified, banner, logo");
-
-        if (error) {
-          console.error("Error fetching wineries:", error.message);
+        setIsLoading(true);
+        const UID = await AsyncStorage.getItem("UID");
+        if (!UID) {
+          console.error("User ID not found.");
           return;
         }
 
-        const formattedWineries = data.map((winery: any) => ({
-          id: winery.wineries_id,
+        // Fetch saved restaurants
+        const { data: savedData, error: savedError } = await supabase
+          .from("bottleshock_saved_wineries")
+          .select("winery_id")
+          .eq("user_id", UID);
+
+        if (savedError) {
+          console.error("Error fetching saved wineries:", savedError.message);
+          return;
+        }
+
+        const savedIds = savedData?.map((item) => item.winery_id);
+
+        // Fetch restaurant details for saved restaurants
+        const { data: wineriesData, error: wineriesError } = await supabase
+          .from("bottleshock_wineries")
+          .select("*")
+          .in("wineries_id", savedIds || []);
+
+        if (wineriesError) {
+          console.error("Error fetching winery details:", wineriesError.message);
+          return;
+        }
+
+        const formattedwineries = wineriesData.map((winery: any) => ({
+          wineries_id: winery.wineries_id,
           name: winery.winery_name,
+          location: winery.location,
           address: winery.address,
           logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
           verified: winery.verified,
+          hashtags: winery.hashtags,
         }));
-        await checkSavedWineries(formattedWineries);
-        await checkFavoriteWineries(formattedWineries);
-        setWineries(formattedWineries);
+
+        // Set saved status and update saved restaurants
+        setWineries(formattedwineries);
+        setSavedStatus(new Array(formattedwineries.length).fill(true));
+
+        // Fetch favorite status for these restaurants
+        const { data: favoriteData, error: favoriteError } = await supabase
+          .from("bottleshock_fav_wineries")
+          .select("winery_id")
+          .eq("user_id", UID);
+
+        if (favoriteError) {
+          console.error("Error fetching favorite wineries:", favoriteError.message);
+          return;
+        }
+
+        const favoriteIds = favoriteData?.map((item) => item.winery_id);
+        const updatedFavoriteStatus = formattedwineries.map((winery) =>
+          favoriteIds.includes(winery.wineries_id)
+        );
+
+        setFavoriteStatus(updatedFavoriteStatus);
       } catch (error) {
-        console.error("Error in fetchWineries:", error);
+        console.error("Error in fetchSavedWineries:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchWineries();
+    fetchSavedwineries();
   }, []);
-
-  const checkSavedWineries = async (fetchedWineries: any[]) => {
-    try {
-      const UID = await AsyncStorage.getItem("UID");
-      if (!UID) {
-        console.error("User ID not found.");
-        return;
-      }
-
-      const { data: savedWineries, error } = await supabase
-        .from('bottleshock_saved_wineries')
-        .select('winery_id')
-        .eq('user_id', UID);
-
-      if (error) {
-        console.error('Error fetching saved wineries:', error.message);
-        return;
-      }
-
-      const savedIds = savedWineries?.map((winery) => winery.winery_id);
-      const updatedSavedStatus = fetchedWineries.map((winery) =>
-        savedIds.includes(winery.id)
-      );
-
-      setSavedStatus(updatedSavedStatus);
-    } catch (error) {
-      console.error('Error in checkSavedWineries:', error);
-    }
-  };
-
-  const checkFavoriteWineries = async (fetchedWineries: any[]) => {
-    try {
-      const UID = await AsyncStorage.getItem("UID");
-      if (!UID) {
-        console.error("User ID not found.");
-        return;
-      }
-
-      const { data: favoriteWineries, error } = await supabase
-        .from('bottleshock_fav_wineries')
-        .select('winery_id')
-        .eq('user_id', UID);
-
-      if (error) {
-        console.error('Error fetching favorite wineries:', error.message);
-        return;
-      }
-
-      const favoriteIds = favoriteWineries?.map((winery) => winery.winery_id);
-      const updatedFavoriteStatus = fetchedWineries.map((winery) =>
-        favoriteIds.includes(winery.id)
-      );
-
-      setFavoriteStatus(updatedFavoriteStatus);
-    } catch (error) {
-      console.error('Error in checkFavoriteWineries:', error);
-    }
-  };
 
   const handleSavePress = async (index: number) => {
     try {
@@ -266,7 +251,7 @@ const Savedwineries = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('Winery')}</Text>
+        <Text style={styles.headerTitle}>Saved wineries</Text>
       </View>
 
       {/* List of Wineries */}
@@ -291,7 +276,7 @@ const Savedwineries = () => {
                       />
                     )}
                   </Text>
-                  <Text style={styles.wineryLocation}>{winery.address}</Text>
+                  <Text style={styles.wineryLocation}>{winery.location}</Text>
                 </View>
 
                 {/* Action Icons */}
