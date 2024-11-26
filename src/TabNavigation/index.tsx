@@ -29,6 +29,8 @@ import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDe
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
+import SVGComponentWine from '../assets/svg/SvgCodeFile/WineIconTab';
+import SVGComponentPerson from '../assets/svg/SvgCodeFile/PersoneTabIcon';
 import EditMyMemories from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
 import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMemoryField';
 import Language from '../screens/HomeWine/Settings/Language';
@@ -245,13 +247,11 @@ const TabNavigation: React.FC = () => {
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/png/TabiconGlass.png')}
+                            <SVGComponentWine
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }}
                             />
@@ -285,13 +285,11 @@ const TabNavigation: React.FC = () => {
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/png/TabiconMe.png')}
+                            <SVGComponentPerson
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
                                     marginBottom: 24,
                                 }}
                             />
