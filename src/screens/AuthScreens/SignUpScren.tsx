@@ -17,6 +17,8 @@ import { supabase } from '../../../backend/supabase/supabaseClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LoginLogo from '../../../src/assets/svg/SvgCodeFile/LoginLogo';
+import { changeAppLanguage } from "../../../i18n";
+import { useTranslation } from 'react-i18next';
 
 // Define navigation types
 type RootStackParamList = {
@@ -35,6 +37,9 @@ const SignUpScreen: React.FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const emailInputRef = useRef<TextInput>(null);
+    const { t, i18n } = useTranslation();
+    const [language, setLanguage] = useState(i18n.language);
+    const [selectedlanguage, handleLanguage] = useState<"en" | "ja">("ja");
 
     useEffect(() => {
         emailInputRef.current?.focus();
@@ -51,7 +56,15 @@ const SignUpScreen: React.FC = () => {
         setLoading(false);
 
         if (error) {
-            Alert.alert('Signup Failed', error.message);
+            Alert.alert(
+                t("sign_up_failed"),  
+                t(error.code),  
+            [
+                {
+                  text: t("ok"),
+                }
+              ]
+            );
         } else if (data.user) {
             const UID = data.user.id;
             try {
