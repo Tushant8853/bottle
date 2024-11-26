@@ -8,6 +8,7 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
+    Pressable
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -38,8 +39,12 @@ const SignUpScreen: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const emailInputRef = useRef<TextInput>(null);
     const { t, i18n } = useTranslation();
-    const [language, setLanguage] = useState(i18n.language);
-    const [selectedlanguage, handleLanguage] = useState<"en" | "ja">("ja");
+    const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ja">(i18n.language as "en" | "ja");
+
+    const handleLanguageChange = async (language: "en" | "ja") => {
+        setSelectedLanguage(language);
+        await changeAppLanguage(language);
+      };
 
     useEffect(() => {
         emailInputRef.current?.focus();
@@ -92,7 +97,7 @@ const SignUpScreen: React.FC = () => {
                 {/* Email, Password, and Confirm Password Input Fields */}
                 <View style={styles.MaininputContainer}>
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>EMAIL</Text>
+                        <Text style={styles.label}>{t("email")}</Text>
                         <TextInput
                             style={styles.input}
                             value={email}
@@ -104,7 +109,7 @@ const SignUpScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>PASSWORD</Text>
+                        <Text style={styles.label}>{t("password")}</Text>
                         <View style={styles.passwordContainer}>
                             <TextInput
                                 style={[styles.input, { width: '90%' }]}
@@ -125,7 +130,7 @@ const SignUpScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>CONFIRM PASSWORD</Text>
+                        <Text style={styles.label}>{t("confirmpassword")}</Text>
                         <View style={styles.passwordContainer}>
                             <TextInput
                                 style={[styles.input, { width: '90%' }]}
@@ -153,10 +158,47 @@ const SignUpScreen: React.FC = () => {
                         onPress={handleSignUp}
                         disabled={isButtonDisabled || loading}
                     >
-                        <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
+                        <Text style={styles.buttonText}>{loading ? t("password") : t("signup")}</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
+    <View style={styles.BothlanguageContainer}>
+        <View style={styles.ToggleContainer}>
+          <View style={styles.englishContainer}>
+          <Pressable
+          style={[
+            styles.englishToggleButton,
+            selectedLanguage === "en" && styles.selectedButton,
+          ]}
+          onPress={() => handleLanguageChange("en")}
+        >
+              <Text
+                style={[
+                  styles.Text,
+                  selectedLanguage === "en" && styles.selectedText,
+                ]}
+              >{"English"}</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.japaneseContainer}>
+          <Pressable
+          style={[
+            styles.japaneseToggleButton,
+            selectedLanguage === "ja" && styles.selectedButton,
+          ]}
+          onPress={() => handleLanguageChange("ja")}
+        >
+              <Text
+                style={[
+                  styles.Text,
+                  selectedLanguage === "ja" && styles.selectedText,
+                ]}
+              >{"日本語"}</Text>
+            </Pressable>
+          </View>
+        </View>
+    </View>
         </View>
 
     );
@@ -166,6 +208,7 @@ const styles = StyleSheet.create({
     Maincontainer: {
         flex: 1,
         backgroundColor: '#fff',
+        
     },
     container: {
         flex: 1,
@@ -230,6 +273,67 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
     },
+    BothlanguageContainer: {
+        marginBottom: 150,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      ToggleContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        height: 39,
+        marginHorizontal: 30,
+        marginTop: 4,
+        marginBottom: 4,
+        borderRadius: 8,
+        width: 200,
+        backgroundColor: '#F3F3F3',
+      },
+      englishContainer: {
+        alignSelf: "center",
+        justifyContent:"center",
+        marginLeft: 4,
+        flex: 1,
+      },
+      japaneseContainer: {
+        alignSelf: "center",
+        flex: 1,
+        marginRight: 4,
+      },
+      englishToggleButton: {
+        height: 28,
+        alignItems: "center",
+        justifyContent: 'center',
+        borderRadius: 7,
+      },
+     japaneseToggleButton: {
+        height: 28,
+        alignItems: "center",
+        justifyContent: 'center',
+        borderRadius: 7,
+      },
+      selectedButton: {
+        backgroundColor: "white",
+        shadowColor: '#000', // The color of the shadow
+        shadowOffset: { width: 0, height: 3 }, // X and Y offset
+        shadowOpacity: 0.1, // Opacity matching #0000000A
+        shadowRadius: 1, // Matching the first shadow blur radius of 1px
+    
+        // Elevation for Android
+        elevation: 3, // Creates the shadow effect in Android (approximation of 3px shadow)
+    
+        // Second shadow properties
+        shadowOpacity: 0.31, // Opacity matching #0000001F (31% opacity)
+        shadowRadius: 8, // Matching the second shadow blur radius of 8px
+      },
+      Text: {
+        fontSize: 13,
+        color: "#522F60",
+        fontFamily: 'SF Pro',
+        fontWeight: '500',
+        lineHeight: 18,
+        textAlign: 'center',
+      },
 });
 
 export default SignUpScreen;

@@ -43,14 +43,19 @@ const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const emailInputRef = useRef<TextInput>(null);
   const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language);
-  const [selectedlanguage, handleLanguage] = useState<"en" | "ja">("ja");
+  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ja">(i18n.language as "en" | "ja");
 
-  const handleLanguageChange = async (language: string) => {
-    setLanguage(language);
-    await changeAppLanguage(language);
-  };
-
+  const handleLanguageChange = async (language: "en" | "ja") => {
+      setSelectedLanguage(language);
+      await changeAppLanguage(language);
+    };
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+        setSelectedLanguage(i18n.language as "en" | "ja");
+      });
+    
+      return unsubscribe;
+    }, [navigation, i18n.language]);
   
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -59,7 +64,13 @@ const LoginScreen: React.FC = () => {
     });
   
     if (error) {
-      Alert.alert(t("login_failed"), t(error.code));
+      Alert.alert(t("login_failed"), t(error.code),  
+      [
+          {
+            text: t("ok"),
+          }
+        ]
+      );
     } else if (data.user) {
       const UID = data.user.id;
       try {
@@ -139,46 +150,40 @@ const LoginScreen: React.FC = () => {
     <View style={styles.BothlanguageContainer}>
         <View style={styles.ToggleContainer}>
           <View style={styles.englishContainer}>
-            <Pressable
-              style={[
-                styles.englishToggleButton,
-                selectedlanguage === "en" && styles.selectedButton,
-              ]}
-              onPress={() => {
-                handleLanguage("en");
-                handleLanguageChange("en");
-              } }
-            >
+          <Pressable
+          style={[
+            styles.englishToggleButton,
+            selectedLanguage === "en" && styles.selectedButton,
+          ]}
+          onPress={() => handleLanguageChange("en")}
+        >
               <Text
                 style={[
                   styles.Text,
-                  selectedlanguage === "en" && styles.selectedText,
+                  selectedLanguage === "en" && styles.selectedText,
                 ]}
               >{"English"}</Text>
             </Pressable>
           </View>
 
           <View style={styles.japaneseContainer}>
-            <Pressable
-              style={[
-                styles.japaneseToggleButton,
-                selectedlanguage === "ja" && styles.selectedButton,
-              ]}
-              onPress={() => {
-                handleLanguage("ja");
-                handleLanguageChange("ja");
-              } }
-            >
+          <Pressable
+          style={[
+            styles.japaneseToggleButton,
+            selectedLanguage === "ja" && styles.selectedButton,
+          ]}
+          onPress={() => handleLanguageChange("ja")}
+        >
               <Text
                 style={[
                   styles.Text,
-                  selectedlanguage === "ja" && styles.selectedText,
+                  selectedLanguage === "ja" && styles.selectedText,
                 ]}
               >{"日本語"}</Text>
             </Pressable>
           </View>
         </View>
-      </View>
+    </View>
       </View>
 
  
