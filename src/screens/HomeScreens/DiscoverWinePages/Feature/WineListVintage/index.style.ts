@@ -151,6 +151,23 @@ const styles = StyleSheet.create({
         alignContent: 'center',
     },
     Arrow:{},
+    comingSoonContainer: {
+        position: "absolute", // Position relative to the parent container
+        top: 0,              // Align at the top of the parent
+        left: 18,            // Same padding as the search input
+        right: 18,           // Same padding as the search input
+        bottom: 0,           // Stretch to the bottom
+        justifyContent: "center", // Center the text vertically
+        alignItems: "center",     // Center the text horizontally
+        backgroundColor: "white", // Match the background color of the input
+        borderRadius: 8,          // Match the input's border radius
+        zIndex: 1,                // Ensure it's above other elements
+    },
+    comingSoonText: {
+        color: '#522F60',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
 });
 
 export default styles;

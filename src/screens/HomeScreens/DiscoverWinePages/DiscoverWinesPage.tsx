@@ -25,7 +25,7 @@ interface Wine {
     winery_name: string;
     bottleshock_rating: number;
     winery_id: number; // Ensure winery_id is included here
-    wines_id:number;
+    wines_id: number;
 }
 
 const WineSkeletonLoader = () => {
@@ -112,7 +112,7 @@ const DiscoverWinespages: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { t } = useTranslation();
-
+    const [showComingSoon, setShowComingSoon] = useState(false);
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -135,11 +135,11 @@ const DiscoverWinespages: React.FC = () => {
                                 .select("varietal_name, brand_name, winery_varietals_id")
                                 .eq("winery_id", winery.wineries_id)
                                 .limit(1);
-                
+
                             if (varietalsError) {
                                 return [];
                             }
-                            
+
                             const winesData = await Promise.all(
                                 (varietalsData || []).map(async (varietal) => {
                                     const { data: wineDetails, error: wineError } = await supabase
@@ -147,12 +147,12 @@ const DiscoverWinespages: React.FC = () => {
                                         .select("year, image, wines_id, varietal_id, bottleshock_rating")
                                         .eq("varietal_id", varietal.winery_varietals_id)
                                         .limit(1);
-                
+
                                     if (wineError) {
                                         console.error(`🚨 Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
                                         return [];
                                     }
-                
+
                                     return (wineDetails || []).map((wine) => ({
                                         ...wine,
                                         year: wine.year.slice(0, 4),
@@ -164,14 +164,14 @@ const DiscoverWinespages: React.FC = () => {
                                     }));
                                 })
                             );
-                
+
                             return winesData.flat();
                         })
                     );
-                
+
                     setWines(bottleshock_winery_varietals_Details.flat());
                 }
-                
+
             } finally {
                 setIsLoading(false);
             }
@@ -196,9 +196,14 @@ const DiscoverWinespages: React.FC = () => {
                     style={styles.searchInput}
                     placeholder={t('search')}
                     placeholderTextColor={"#e5e8e8"}
-                    value={searchText}
-                    onChangeText={setSearchText}
+                    onFocus={() => setShowComingSoon(true)} // Show "Coming soon" message on focus
+                    onBlur={() => setShowComingSoon(false)} // Hide the message when focus is lost
                 />
+                {showComingSoon && (
+                    <View style={styles.comingSoonContainer}>
+                        <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+                    </View>
+                )}
                 <FontAwesome name="microphone" size={16} color="#989999" />
             </View>
 

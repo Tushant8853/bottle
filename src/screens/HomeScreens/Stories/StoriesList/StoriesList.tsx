@@ -93,7 +93,7 @@ const StoriesList: React.FC = () => {
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   const updateSearch = (searchValue: string) => {
     setSearch(searchValue);
@@ -215,7 +215,7 @@ const StoriesList: React.FC = () => {
 
     return contentWithoutImages.trim();
   };
- 
+
   const handleShare = async (index: number) => {
     const story = storiesList[index];
     const title = story.name;
@@ -245,9 +245,14 @@ const StoriesList: React.FC = () => {
           style={styles.searchInput}
           placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
-          value={search}
-          onChangeText={updateSearch}
+          onFocus={() => setShowComingSoon(true)} // Show "Coming soon" message on focus
+          onBlur={() => setShowComingSoon(false)} // Hide the message when focus is lost
         />
+        {showComingSoon && (
+          <View style={styles.comingSoonContainer}>
+            <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+          </View>
+        )}
         <Icon name="microphone" size={16} color="#989999" />
       </View>
 
@@ -291,7 +296,7 @@ const StoriesList: React.FC = () => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => handleShare(index)}>
-                        <Icons name="share-outline" size={17} color="#808080" />
+                          <Icons name="share-outline" size={17} color="#808080" />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -455,4 +460,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 4,
   },
+  comingSoonContainer: {
+    position: "absolute", // Position relative to the parent container
+    top: 0,              // Align at the top of the parent
+    left: 18,            // Same padding as the search input
+    right: 18,           // Same padding as the search input
+    bottom: 0,           // Stretch to the bottom
+    justifyContent: "center", // Center the text vertically
+    alignItems: "center",     // Center the text horizontally
+    backgroundColor: "white", // Match the background color of the input
+    borderRadius: 8,          // Match the input's border radius
+    zIndex: 1,                // Ensure it's above other elements
+},
+comingSoonText: {
+    color: '#522F60',
+    fontSize: 14,
+    fontWeight: 'bold',
+},
 });

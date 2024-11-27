@@ -44,7 +44,7 @@ const SignUpScreen: React.FC = () => {
     const handleLanguageChange = async (language: "en" | "ja") => {
         setSelectedLanguage(language);
         await changeAppLanguage(language);
-      };
+    };
 
     useEffect(() => {
         emailInputRef.current?.focus();
@@ -62,13 +62,13 @@ const SignUpScreen: React.FC = () => {
 
         if (error) {
             Alert.alert(
-                t("sign_up_failed"),  
-                t(error.code),  
-            [
-                {
-                  text: t("ok"),
-                }
-              ]
+                t("sign_up_failed"),
+                t(error.code),
+                [
+                    {
+                        text: t("ok"),
+                    }
+                ]
             );
         } else if (data.user) {
             const UID = data.user.id;
@@ -118,7 +118,7 @@ const SignUpScreen: React.FC = () => {
                                 secureTextEntry={!showPassword}
                                 textContentType="password"
                                 autoCapitalize="none"
-                                
+
                             />
                             <TouchableOpacity
                                 style={styles.eyeIcon}
@@ -161,44 +161,47 @@ const SignUpScreen: React.FC = () => {
                         <Text style={styles.buttonText}>{loading ? t("password") : t("signup")}</Text>
                     </TouchableOpacity>
                 </View>
+                <Pressable onPress={() => navigation.navigate("LoginScreen")}>
+                    <Text style={styles.RegisterText}>{t("login")}</Text>
+                </Pressable>
             </KeyboardAvoidingView>
-    <View style={styles.BothlanguageContainer}>
-        <View style={styles.ToggleContainer}>
-          <View style={styles.englishContainer}>
-          <Pressable
-          style={[
-            styles.englishToggleButton,
-            selectedLanguage === "en" && styles.selectedButton,
-          ]}
-          onPress={() => handleLanguageChange("en")}
-        >
-              <Text
-                style={[
-                  styles.Text,
-                  selectedLanguage === "en" && styles.selectedText,
-                ]}
-              >{"English"}</Text>
-            </Pressable>
-          </View>
+            <View style={styles.BothlanguageContainer}>
+                <View style={styles.ToggleContainer}>
+                    <View style={styles.englishContainer}>
+                        <Pressable
+                            style={[
+                                styles.englishToggleButton,
+                                selectedLanguage === "en" && styles.selectedButton,
+                            ]}
+                            onPress={() => handleLanguageChange("en")}
+                        >
+                            <Text
+                                style={[
+                                    styles.Text,
+                                    selectedLanguage === "en" && styles.selectedText,
+                                ]}
+                            >{"English"}</Text>
+                        </Pressable>
+                    </View>
 
-          <View style={styles.japaneseContainer}>
-          <Pressable
-          style={[
-            styles.japaneseToggleButton,
-            selectedLanguage === "ja" && styles.selectedButton,
-          ]}
-          onPress={() => handleLanguageChange("ja")}
-        >
-              <Text
-                style={[
-                  styles.Text,
-                  selectedLanguage === "ja" && styles.selectedText,
-                ]}
-              >{"日本語"}</Text>
-            </Pressable>
-          </View>
-        </View>
-    </View>
+                    <View style={styles.japaneseContainer}>
+                        <Pressable
+                            style={[
+                                styles.japaneseToggleButton,
+                                selectedLanguage === "ja" && styles.selectedButton,
+                            ]}
+                            onPress={() => handleLanguageChange("ja")}
+                        >
+                            <Text
+                                style={[
+                                    styles.Text,
+                                    selectedLanguage === "ja" && styles.selectedText,
+                                ]}
+                            >{"日本語"}</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
         </View>
 
     );
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
     Maincontainer: {
         flex: 1,
         backgroundColor: '#fff',
-        
+
     },
     container: {
         flex: 1,
@@ -220,7 +223,7 @@ const styles = StyleSheet.create({
         marginBottom: 40,
         alignItems: 'center',
     },
-
+    selectedText:{},
     ////////////////////////////////////////////
     MaininputContainer: {
         width: '100%',
@@ -277,8 +280,8 @@ const styles = StyleSheet.create({
         marginBottom: 150,
         justifyContent: "center",
         alignItems: "center",
-      },
-      ToggleContainer: {
+    },
+    ToggleContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         height: 39,
@@ -288,51 +291,51 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         width: 200,
         backgroundColor: '#F3F3F3',
-      },
-      englishContainer: {
+    },
+    englishContainer: {
         alignSelf: "center",
-        justifyContent:"center",
+        justifyContent: "center",
         marginLeft: 4,
         flex: 1,
-      },
-      japaneseContainer: {
+    },
+    japaneseContainer: {
         alignSelf: "center",
         flex: 1,
         marginRight: 4,
-      },
-      englishToggleButton: {
+    },
+    englishToggleButton: {
         height: 28,
         alignItems: "center",
         justifyContent: 'center',
         borderRadius: 7,
-      },
-     japaneseToggleButton: {
+    },
+    japaneseToggleButton: {
         height: 28,
         alignItems: "center",
         justifyContent: 'center',
         borderRadius: 7,
-      },
-      selectedButton: {
+    },
+    selectedButton: {
         backgroundColor: "white",
         shadowColor: '#000', // The color of the shadow
         shadowOffset: { width: 0, height: 3 }, // X and Y offset
         shadowOpacity: 0.1, // Opacity matching #0000000A
         shadowRadius: 1, // Matching the first shadow blur radius of 1px
-    
+
         // Elevation for Android
         elevation: 3, // Creates the shadow effect in Android (approximation of 3px shadow)
-    
-        // Second shadow properties
-        shadowOpacity: 0.31, // Opacity matching #0000001F (31% opacity)
-        shadowRadius: 8, // Matching the second shadow blur radius of 8px
-      },
-      Text: {
+    },
+    Text: {
         fontSize: 13,
         color: "#522F60",
         fontFamily: 'SF Pro',
         fontWeight: '500',
         lineHeight: 18,
         textAlign: 'center',
+    },
+    RegisterText: {
+        marginTop:10,
+        color: '#A0A0A0',
       },
 });
 
