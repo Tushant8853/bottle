@@ -1,33 +1,13 @@
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
 // Define the types for each style object
-interface Styles {
-    container: ViewStyle;
-    TitleContainer: ViewStyle;
-    leftContainer: ViewStyle;
-    MemoriesImg: ImageStyle;
-    text: TextStyle;
-    ListOfStoriesContainer: ViewStyle;
-    Stories: ViewStyle;
-    StoriesImgContainer: ViewStyle;
-    StoriesImage: ImageStyle;
-    StoriesText: ViewStyle;
-    StoriesTitle: ViewStyle;
-    StoriesTitleText: TextStyle;
-    StoriesSubtitle: TextStyle;
-    StoriesDescription: TextStyle;
-    StoriesTitleIMG: ViewStyle;
-    StoriesDescriptionConatiner: ViewStyle;
-    boldText: TextStyle;
-    StoriesTitleTextContainer:ViewStyle;
-}
 
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
     container: {
         height: 'auto',
         width: '100%',
         marginBottom: 5,
-        padding: 10,
+        paddingTop: 10,
         paddingBottom: 3,
     },
     TitleContainer: {
