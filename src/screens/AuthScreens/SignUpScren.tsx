@@ -158,7 +158,7 @@ const SignUpScreen: React.FC = () => {
                         onPress={handleSignUp}
                         disabled={isButtonDisabled || loading}
                     >
-                        <Text style={styles.buttonText}>{loading ? t("password") : t("signup")}</Text>
+                        <Text style={styles.buttonText}>{loading ? t("signing_up...") : t("signup")}</Text>
                     </TouchableOpacity>
                 </View>
                 <Pressable onPress={() => navigation.navigate("LoginScreen")}>
