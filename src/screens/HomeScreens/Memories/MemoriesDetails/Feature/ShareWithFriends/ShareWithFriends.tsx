@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -20,7 +20,7 @@ interface Wine {
   star_ratings: number;
   is_public: boolean;
   shared_with_friends: boolean;
-  id:string;
+  id: string;
 }
 
 const ShareWithFriends: React.FC = () => {
@@ -76,6 +76,76 @@ const ShareWithFriends: React.FC = () => {
       : backgroundColor === '#522F60'
         ? t('SharedwithFriends')
         : t('notshared');
+
+  const handleDelete = () => {
+    Alert.alert(
+      t('DeleteMemory'),
+      t('Are You Sure Delete Memory '),
+      [
+        {
+          text: t('No'),
+          onPress: () => console.log('Delete canceled'),
+          style: 'cancel',
+        },
+        {
+          text: t('Yes'),
+          onPress: async () => {
+            try {
+              // First delete from bottleshock_memory_wines
+              const { error: deleteMemoryWinesError } = await supabase
+                .from('bottleshock_memory_wines')
+                .delete()
+                .eq('memory_id', id);
+
+              if (deleteMemoryWinesError) {
+                console.error('Error deleting from memory wines:', deleteMemoryWinesError.message);
+                return;
+              }
+
+              // Then delete from bottleshock_fav_memories
+              const { error: deleteFavMemoryError } = await supabase
+                .from('bottleshock_fav_memories')
+                .delete()
+                .eq('memory_id', id);
+
+              if (deleteFavMemoryError) {
+                console.error('Error deleting from fav memories:', deleteFavMemoryError.message);
+                return;
+              }
+
+              // Next delete from bottleshock_memory_gallery
+              const { error: deleteGalleryError } = await supabase
+                .from('bottleshock_memory_gallery')
+                .delete()
+                .eq('memory_id', id);
+
+              if (deleteGalleryError) {
+                console.error('Error deleting from memory gallery:', deleteGalleryError.message);
+                return;
+              }
+
+              // Finally, delete the memory from bottleshock_memories
+              const { error: deleteMemoryError } = await supabase
+                .from('bottleshock_memories')
+                .delete()
+                .eq('id', id);
+
+              if (deleteMemoryError) {
+                console.error('Error deleting memory:', deleteMemoryError.message);
+              } else {
+                console.log('Memory deleted successfully');
+                navigation.goBack(); // Navigate back after deleting the memory
+              }
+            } catch (error) {
+              console.error('Error in delete operation:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
 
   return (
     <View style={styles.Container}>
@@ -196,7 +266,10 @@ const ShareWithFriends: React.FC = () => {
       </View>
 
       <View style={styles.DeleteBoxContainer}>
-        <Text style={styles.DeleteText}>{t('Delete')}</Text>
+        <Pressable onPress={handleDelete}>
+          <Text style={styles.DeleteText}>{t('Delete')}</Text>
+        </Pressable>
+
         <Text style={styles.DeleteText} onPress={() =>
           navigation.navigate("EditMyMemories", { id })
         }>{t('edit')}</Text>

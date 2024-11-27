@@ -26,6 +26,7 @@ import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 import { useTranslation } from 'react-i18next';
+import SkeletonLoader from "./SkeletonLoader";
 
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
@@ -62,127 +63,14 @@ const formatDate = (dateString: string) => {
         year: 'numeric'
     });
 };
-
-const SkeletonLoader: React.FC = () => {
-    const animatedValue = new Animated.Value(0);
-
-    React.useEffect(() => {
-        const startAnimation = () => {
-            Animated.sequence([
-                Animated.timing(animatedValue, {
-                    toValue: 1,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(animatedValue, {
-                    toValue: 0,
-                    duration: 1000,
-                    useNativeDriver: true,
-                }),
-            ]).start(() => startAnimation());
-        };
-
-        startAnimation();
-    }, []);
-
-    const translateX = animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-350, 350],
-    });
-
-    const shimmerStyle = {
-        transform: [{ translateX }],
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    };
-
-    return (
-        <ScrollView style={styles.container}>
-            <View style={styles.imageContainer}>
-                <View style={styles.imageSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-                <View style={styles.buttonContainer}>
-                    {[1, 2, 3].map((_, index) => (
-                        <View key={index} style={styles.buttonSkeleton}>
-                            <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                        </View>
-                    ))}
-                </View>
-                <View style={styles.textContainer}>
-                    <View style={styles.titleSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                    <View style={styles.subtextSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                </View>
-            </View>
-
-            <View style={styles.skeletondescriptionContainer}>
-                <View style={styles.descriptionIconSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-                <View style={styles.descriptionTextSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-            </View>
-
-            <View style={styles.dateContainer}>
-                <View style={styles.dateIconSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-                <View style={styles.dateTextSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-            </View>
-
-            <View style={styles.picandvideoContainer}>
-                <View style={styles.picandvideoHeader}>
-                    <View style={styles.headerTextSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                </View>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailContainer}>
-                    {[1, 2, 3, 4].map((_, index) => (
-                        <View key={index} style={styles.thumbnailSkeleton}>
-                            <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                        </View>
-                    ))}
-                </ScrollView>
-            </View>
-
-            <View style={styles.mapContainer}>
-                <View style={styles.mapHeaderContainer}>
-                    <View style={styles.mapHeaderSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                    <View style={styles.mapActionContainer}>
-                        {[1, 2, 3].map((_, index) => (
-                            <View key={index} style={styles.mapActionSkeleton}>
-                                <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                            </View>
-                        ))}
-                    </View>
-                </View>
-                <View style={styles.mapViewSkeleton}>
-                    <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                </View>
-                <View style={styles.addressContainer}>
-                    <View style={styles.addressIconSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                    <View style={styles.addressTextSkeleton}>
-                        <Animated.View style={[styles.shimmer, shimmerStyle]} />
-                    </View>
-                </View>
-            </View>
-        </ScrollView>
-    );
+type MemoriesDetailsRouteParams = {
+    id: string;
+    from: string;
 };
 
 const MemoriesDetails: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-    const route = useRoute<RouteProp<{ params: { id: string } }, 'params'>>();
+    const route = useRoute<RouteProp<{ params: MemoriesDetailsRouteParams }, 'params'>>();
     const { id, from } = route.params;
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const [memories, setMemories] = useState<Memory[]>([]);
@@ -191,274 +79,265 @@ const MemoriesDetails: React.FC = () => {
     const [checkedImages, setCheckedImages] = useState<{ [key: string]: boolean }>({});
     const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
     const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
-    const [savedItemsStatus, setSavedItemsStatus] = useState([]);
-    const [favoriteItemsStatus, setFavoriteItemsStatus] = useState([]); 
-    const [UID, setUID] = useState(null);
+    const [savedItemsStatus, setSavedItemsStatus] = useState<boolean[]>([]);
+    const [favoriteItemsStatus, setFavoriteItemsStatus] = useState<boolean[]>([]); // Specify the type as boolean[]
+
+    const [UID, setUID] = useState<string | null>(null);
     const { t } = useTranslation();
 
-    
+
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
     };
-    const handleImagePress = (imageId: string) => {
-        setCheckedImages(prev => ({
-            ...prev,
-            [imageId]: !prev[imageId],
-        }));
-    };
-     // Use state for UID
-  
-    // Fetch UID from AsyncStorage when the component mounts
+
     useEffect(() => {
-      const fetchUID = async () => {
-        try {
-          const userId = await AsyncStorage.getItem('UID');
-          setUID(userId); // Save UID to state
-        } catch (error) {
-          console.error('Error fetching UID from AsyncStorage:', error);
-        }
-      };
-      
-      fetchUID();
-    }, []); // This effect runs once when the component mounts
-  
+        const fetchUID = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('UID');
+                setUID(userId);
+            } catch (error) {
+                console.error('Error fetching UID from AsyncStorage:', error);
+            }
+        };
+
+        fetchUID();
+    }, []);
+
     useEffect(() => {
         if (UID) {
-          const fetchSavedItemsStatus = async () => {
-            try {
-              const savedWineriesResponse = await supabase
-                .from('bottleshock_saved_wineries')
-                .select('winery_id')
-                .eq('user_id', UID);
-    
-              const savedRestaurantsResponse = await supabase
-                .from('bottleshock_saved_restaurants')
-                .select('restaurant_id')
-                .eq('user_id', UID);
-    
-              const savedWineries = savedWineriesResponse.data.map(row => row.winery_id);
-              const savedRestaurants = savedRestaurantsResponse.data.map(row => row.restaurant_id);
-    
-              const status = memories.map((memory) => {
-                if (memory.winery_id) {
-                  return savedWineries.includes(memory.winery_id);
+            const fetchSavedItemsStatus = async () => {
+                try {
+                    const savedWineriesResponse = await supabase
+                        .from('bottleshock_saved_wineries')
+                        .select('winery_id')
+                        .eq('user_id', UID);
+
+                    const savedRestaurantsResponse = await supabase
+                        .from('bottleshock_saved_restaurants')
+                        .select('restaurant_id')
+                        .eq('user_id', UID);
+
+                    const savedWineries = savedWineriesResponse.data.map(row => row.winery_id);
+                    const savedRestaurants = savedRestaurantsResponse.data.map(row => row.restaurant_id);
+
+                    const status = memories.map((memory) => {
+                        if (memory.winery_id) {
+                            return savedWineries.includes(memory.winery_id);
+                        }
+                        if (memory.restaurant_id) {
+                            return savedRestaurants.includes(memory.restaurant_id);
+                        }
+                        return false;
+                    });
+
+                    setSavedItemsStatus(status);
+                } catch (error) {
+                    console.error('Error fetching saved items status from Supabase:', error);
                 }
-                if (memory.restaurant_id) {
-                  return savedRestaurants.includes(memory.restaurant_id);
+            };
+
+            const fetchFavoriteItemsStatus = async () => {
+                try {
+                    const favoriteWineriesResponse = await supabase
+                        .from('bottleshock_fav_wineries')
+                        .select('winery_id')
+                        .eq('user_id', UID);
+
+                    const favoriteRestaurantsResponse = await supabase
+                        .from('bottleshock_fav_restaurants')
+                        .select('restaurant_id')
+                        .eq('user_id', UID);
+
+                    const favoriteWineries = favoriteWineriesResponse.data.map(row => row.winery_id);
+                    const favoriteRestaurants = favoriteRestaurantsResponse.data.map(row => row.restaurant_id);
+
+                    const favoriteStatus = memories.map((memory) => {
+                        if (memory.winery_id) {
+                            return favoriteWineries.includes(memory.winery_id);
+                        }
+                        if (memory.restaurant_id) {
+                            return favoriteRestaurants.includes(memory.restaurant_id);
+                        }
+                        return false;
+                    });
+
+                    setFavoriteItemsStatus(favoriteStatus);
+                } catch (error) {
+                    console.error('Error fetching favorite items status from Supabase:', error);
                 }
-                return false;
-              });
-    
-              setSavedItemsStatus(status);
-            } catch (error) {
-              console.error('Error fetching saved items status from Supabase:', error);
-            }
-          };
-    
-          const fetchFavoriteItemsStatus = async () => {
-            try {
-              const favoriteWineriesResponse = await supabase
-                .from('bottleshock_fav_wineries')
-                .select('winery_id')
-                .eq('user_id', UID);
-    
-              const favoriteRestaurantsResponse = await supabase
-                .from('bottleshock_fav_restaurants')
-                .select('restaurant_id')
-                .eq('user_id', UID);
-    
-              const favoriteWineries = favoriteWineriesResponse.data.map(row => row.winery_id);
-              const favoriteRestaurants = favoriteRestaurantsResponse.data.map(row => row.restaurant_id);
-    
-              const favoriteStatus = memories.map((memory) => {
-                if (memory.winery_id) {
-                  return favoriteWineries.includes(memory.winery_id);
-                }
-                if (memory.restaurant_id) {
-                  return favoriteRestaurants.includes(memory.restaurant_id);
-                }
-                return false;
-              });
-    
-              setFavoriteItemsStatus(favoriteStatus);
-            } catch (error) {
-              console.error('Error fetching favorite items status from Supabase:', error);
-            }
-          };
-    
-          fetchSavedItemsStatus();
-          fetchFavoriteItemsStatus();
+            };
+
+            fetchSavedItemsStatus();
+            fetchFavoriteItemsStatus();
         }
-      }, [UID, memories]); // This effect runs when UID or memories change
-    
-  
-    // Handle saving or unsaving winery
-    const handleSavePresswr = async (index) => {
-      const memory = memories[index];
-      const isSaved = savedItemsStatus[index];
-      
-      try {
-        if (memory.winery_id) {
-          if (isSaved) {
-            await deleteWinery(UID, memory.winery_id); // Delete from saved wineries
-            savedItemsStatus[index] = false; // Update local status
-          } else {
-            await saveWinery(UID, memory.winery_id); // Save to saved wineries
-            savedItemsStatus[index] = true; // Update local status
-          }
-        } else if (memory.restaurant_id) {
-          if (isSaved) {
-            await deleteRestaurant(UID, memory.restaurant_id); // Delete from saved restaurants
-            savedItemsStatus[index] = false; // Update local status
-          } else {
-            await saveRestaurant(UID, memory.restaurant_id); // Save to saved restaurants
-            savedItemsStatus[index] = true; // Update local status
-          }
+    }, [UID, memories]);
+
+    const handleSavePresswr = async (index: number) => {
+        const memory = memories[index];
+        const isSaved = savedItemsStatus[index];
+
+        try {
+            if (memory.winery_id) {
+                if (isSaved) {
+                    await deleteWinery(UID, memory.winery_id); // Delete from saved wineries
+                    savedItemsStatus[index] = false; // Update local status
+                } else {
+                    await saveWinery(UID, memory.winery_id); // Save to saved wineries
+                    savedItemsStatus[index] = true; // Update local status
+                }
+            } else if (memory.restaurant_id) {
+                if (isSaved) {
+                    await deleteRestaurant(UID, memory.restaurant_id); // Delete from saved restaurants
+                    savedItemsStatus[index] = false; // Update local status
+                } else {
+                    await saveRestaurant(UID, memory.restaurant_id); // Save to saved restaurants
+                    savedItemsStatus[index] = true; // Update local status
+                }
+            }
+            setSavedItemsStatus([...savedItemsStatus]); // Trigger re-render
+        } catch (error) {
+            console.error('Error toggling saved status:', error);
         }
-        setSavedItemsStatus([...savedItemsStatus]); // Trigger re-render
-      } catch (error) {
-        console.error('Error toggling saved status:', error);
-      }
     };
-    const handleFavoritePresswr = async (index) => {
+    const handleFavoritePresswr = async (index:number) => {
         const memory = memories[index];
         const isFavorite = favoriteItemsStatus[index];
-    
+
         try {
-          if (memory.winery_id) {
-            if (isFavorite) {
-              await deleteFavoriteWinery(UID, memory.winery_id); // Delete from favorite wineries
-              favoriteItemsStatus[index] = false; // Update local status
-            } else {
-              await addFavoriteWinery(UID, memory.winery_id); // Add to favorite wineries
-              favoriteItemsStatus[index] = true; // Update local status
+            if (memory.winery_id) {
+                if (isFavorite) {
+                    await deleteFavoriteWinery(UID, memory.winery_id);
+                    favoriteItemsStatus[index] = false;
+                } else {
+                    await addFavoriteWinery(UID, memory.winery_id);
+                    favoriteItemsStatus[index] = true;
+                }
+            } else if (memory.restaurant_id) {
+                if (isFavorite) {
+                    await deleteFavoriteRestaurant(UID, memory.restaurant_id);
+                    favoriteItemsStatus[index] = false;
+                } else {
+                    await addFavoriteRestaurant(UID, memory.restaurant_id);
+                    favoriteItemsStatus[index] = true;
+                }
             }
-          } else if (memory.restaurant_id) {
-            if (isFavorite) {
-              await deleteFavoriteRestaurant(UID, memory.restaurant_id); // Delete from favorite restaurants
-              favoriteItemsStatus[index] = false; // Update local status
-            } else {
-              await addFavoriteRestaurant(UID, memory.restaurant_id); // Add to favorite restaurants
-              favoriteItemsStatus[index] = true; // Update local status
-            }
-          }
-          setFavoriteItemsStatus([...favoriteItemsStatus]); // Trigger re-render
+            setFavoriteItemsStatus([...favoriteItemsStatus]);
         } catch (error) {
-          console.error('Error toggling favorite status:', error);
+            console.error('Error toggling favorite status:', error);
         }
-      };
-  
+    };
+
     // Save Winery to Supabase
-    const saveWinery = async (UID, wineryId) => {
-      try {
-        const { error } = await supabase
-          .from('bottleshock_saved_wineries')
-          .insert([
-            { created_at: new Date(), user_id: UID, winery_id: wineryId }
-          ]);
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error saving winery to Supabase:', error);
-      }
+    const saveWinery = async (UID: string, wineryId: string) => {
+        try {
+            const { error } = await supabase
+                .from('bottleshock_saved_wineries')
+                .insert([
+                    { created_at: new Date(), user_id: UID, winery_id: wineryId }
+                ]);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error saving winery to Supabase:', error);
+        }
     };
-    const addFavoriteWinery = async (UID, wineryId) => {
+    const addFavoriteWinery = async (UID: string, wineryId: string) => {
         try {
-          const { error } = await supabase
-            .from('bottleshock_fav_wineries')
-            .insert([
-              { created_at: new Date(), user_id: UID, winery_id: wineryId }
-            ]);
-          if (error) throw error;
+            const { error } = await supabase
+                .from('bottleshock_fav_wineries')
+                .insert([
+                    { created_at: new Date(), user_id: UID, winery_id: wineryId }
+                ]);
+            if (error) throw error;
         } catch (error) {
-          console.error('Error adding winery to favorites:', error);
+            console.error('Error adding winery to favorites:', error);
         }
-      };
-    
-      // Delete Winery from Favorites
-      const deleteFavoriteWinery = async (UID, wineryId) => {
+    };
+
+    // Delete Winery from Favorites
+    const deleteFavoriteWinery = async (UID: string, wineryId: string) => {
         try {
-          const { error } = await supabase
-            .from('bottleshock_fav_wineries')
-            .delete()
-            .eq('user_id', UID)
-            .eq('winery_id', wineryId);
-          if (error) throw error;
+            const { error } = await supabase
+                .from('bottleshock_fav_wineries')
+                .delete()
+                .eq('user_id', UID)
+                .eq('winery_id', wineryId);
+            if (error) throw error;
         } catch (error) {
-          console.error('Error deleting winery from favorites:', error);
+            console.error('Error deleting winery from favorites:', error);
         }
-      };
-    
-      // Add Restaurant to Favorites
-      const addFavoriteRestaurant = async (UID, restaurantId) => {
+    };
+
+    // Add Restaurant to Favorites
+    const addFavoriteRestaurant = async (UID:string, restaurantId:string) => {
         try {
-          const { error } = await supabase
-            .from('bottleshock_fav_restaurants')
-            .insert([
-              { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
-            ]);
-          if (error) throw error;
+            const { error } = await supabase
+                .from('bottleshock_fav_restaurants')
+                .insert([
+                    { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
+                ]);
+            if (error) throw error;
         } catch (error) {
-          console.error('Error adding restaurant to favorites:', error);
+            console.error('Error adding restaurant to favorites:', error);
         }
-      };
-    
-      // Delete Restaurant from Favorites
-      const deleteFavoriteRestaurant = async (UID, restaurantId) => {
+    };
+
+    // Delete Restaurant from Favorites
+    const deleteFavoriteRestaurant = async (UID:string, restaurantId:string) => {
         try {
-          const { error } = await supabase
-            .from('bottleshock_fav_restaurants')
-            .delete()
-            .eq('user_id', UID)
-            .eq('restaurant_id', restaurantId);
-          if (error) throw error;
+            const { error } = await supabase
+                .from('bottleshock_fav_restaurants')
+                .delete()
+                .eq('user_id', UID)
+                .eq('restaurant_id', restaurantId);
+            if (error) throw error;
         } catch (error) {
-          console.error('Error deleting restaurant from favorites:', error);
+            console.error('Error deleting restaurant from favorites:', error);
         }
-      };
-  
+    };
+
     // Delete Winery from Supabase
-    const deleteWinery = async (UID, wineryId) => {
-      try {
-        const { error } = await supabase
-          .from('bottleshock_saved_wineries')
-          .delete()
-          .eq('user_id', UID)
-          .eq('winery_id', wineryId);
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error deleting winery from Supabase:', error);
-      }
+    const deleteWinery = async (UID:string, wineryId:string) => {
+        try {
+            const { error } = await supabase
+                .from('bottleshock_saved_wineries')
+                .delete()
+                .eq('user_id', UID)
+                .eq('winery_id', wineryId);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error deleting winery from Supabase:', error);
+        }
     };
-  
+
     // Save Restaurant to Supabase
     const saveRestaurant = async (UID, restaurantId) => {
-      try {
-        const { error } = await supabase
-          .from('bottleshock_saved_restaurants')
-          .insert([
-            { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
-          ]);
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error saving restaurant to Supabase:', error);
-      }
+        try {
+            const { error } = await supabase
+                .from('bottleshock_saved_restaurants')
+                .insert([
+                    { created_at: new Date(), user_id: UID, restaurant_id: restaurantId }
+                ]);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error saving restaurant to Supabase:', error);
+        }
     };
-  
+
     // Delete Restaurant from Supabase
     const deleteRestaurant = async (UID, restaurantId) => {
-      try {
-        const { error } = await supabase
-          .from('bottleshock_saved_restaurants')
-          .delete()
-          .eq('user_id', UID)
-          .eq('restaurant_id', restaurantId);
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error deleting restaurant from Supabase:', error);
-      }
+        try {
+            const { error } = await supabase
+                .from('bottleshock_saved_restaurants')
+                .delete()
+                .eq('user_id', UID)
+                .eq('restaurant_id', restaurantId);
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error deleting restaurant from Supabase:', error);
+        }
     };
-  
-    
+
+
     useEffect(() => {
         const fetchMemories = async () => {
             try {
@@ -724,7 +603,7 @@ const MemoriesDetails: React.FC = () => {
     if (isLoading) {
         return <SkeletonLoader />;
     }
-    
+
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -882,29 +761,29 @@ const MemoriesDetails: React.FC = () => {
                             </View>
                         </View>
                         <View style={styles.actionHeaderContainer}>
-                        {memory.restaurant_id || memory.winery_id ? ( // Check if either restaurant_id or winery_id is present
-                          <>
-                         <View style={styles.twoContent}>
-                         <TouchableOpacity onPress={() => handleSavePresswr(index)}>
-                         <Ionicons
-                          name="attach"
-                          size={18}
-                          color={savedItemsStatus[index] ? '#522F60' : 'gray'}
-                          style={styles.rotatedIcon}
-                          />
-                         </TouchableOpacity>                       
-                         </View>
-                           <View style={styles.threeContent}>
-                           <TouchableOpacity onPress={() => handleFavoritePresswr(index)}>
-                             <Ionicons
-                               name={favoriteItemsStatus[index] ? 'heart' : 'heart-outline'}
-                               size={18}
-                               color='gray'
-                              />
-                            </TouchableOpacity>
-                           </View>
-                          </>
-                         ) : null}  
+                            {memory.restaurant_id || memory.winery_id ? ( // Check if either restaurant_id or winery_id is present
+                                <>
+                                    <View style={styles.twoContent}>
+                                        <TouchableOpacity onPress={() => handleSavePresswr(index)}>
+                                            <Ionicons
+                                                name="attach"
+                                                size={18}
+                                                color={savedItemsStatus[index] ? '#522F60' : 'gray'}
+                                                style={styles.rotatedIcon}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.threeContent}>
+                                        <TouchableOpacity onPress={() => handleFavoritePresswr(index)}>
+                                            <Ionicons
+                                                name={favoriteItemsStatus[index] ? 'heart' : 'heart-outline'}
+                                                size={18}
+                                                color='gray'
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </>
+                            ) : null}
                             <View style={styles.fourContent}>
                                 <Ionicons name="share-outline" size={18} />
                             </View>
@@ -947,8 +826,8 @@ const MemoriesDetails: React.FC = () => {
                     </View>
                 </View>
             ))}
-            
-            <DiscoverWines id={id}/>
+
+            <DiscoverWines id={id} />
             {from === "MyMemories" && <ShareWithFriends id={id} />}
             <View style={styles.bottom}></View>
         </ScrollView >

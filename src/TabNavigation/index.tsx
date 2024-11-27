@@ -3,7 +3,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, Platform, View } from 'react-native';
+import { Image, Platform, View, Text } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
 import { Linking } from 'react-native';
@@ -29,6 +29,8 @@ import WineDetails from '../screens/HomeScreens/DiscoverWinePages/Feature/WineDe
 import LoginScreen from '../screens/AuthScreens/LoginScreen';
 import BottleTabIcon from "../assets/svg/SvgCodeFile/bottleTabIcon"
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
+import SVGComponentWine from '../assets/svg/SvgCodeFile/WineIconTab';
+import SVGComponentPerson from '../assets/svg/SvgCodeFile/PersoneTabIcon';
 import EditMyMemories from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
 import EditMemoryField from '../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMemoryField';
 import Language from '../screens/HomeWine/Settings/Language';
@@ -178,17 +180,17 @@ const TabNavigation: React.FC = () => {
                     component={Language}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="Savedmymemories"
                     component={Savedmymemories}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="Savedothermemories"
                     component={Savedothermemories}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="Savedrestaurants"
                     component={Savedrestaurants}
                     options={{ headerShown: false }}
@@ -208,12 +210,12 @@ const TabNavigation: React.FC = () => {
                     component={ChangePwd}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="Savedwineries"
                     component={Savedwineries}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="Savedstories"
                     component={Savedstories}
                     options={{ headerShown: false }}
@@ -245,16 +247,25 @@ const TabNavigation: React.FC = () => {
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/png/TabiconGlass.png')}
+                            <SVGComponentWine
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
-                                    marginBottom: 24,
                                 }}
                             />
+                            <Text style={{
+                                fontFamily: 'Hiragino Sans',
+                                fontSize: 10,
+                                fontWeight: '300',
+                                lineHeight: 15,
+                                textAlign: 'center',
+                                textDecorationLine: 'none',
+                                color :"#808080",
+                            }}>
+                                Home
+                            </Text>
+
                         </View>
                     ),
                     headerShown: false,
@@ -285,16 +296,24 @@ const TabNavigation: React.FC = () => {
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={require('../assets/png/TabiconMe.png')}
+                            <SVGComponentPerson
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
-                                    tintColor: focused ? '#522F60' : 'gray',
-                                    marginBottom: 24,
                                 }}
                             />
+                             <Text style={{
+                                fontFamily: 'Hiragino Sans',
+                                fontSize: 10,
+                                fontWeight: '300',
+                                lineHeight: 15,
+                                textAlign: 'center',
+                                textDecorationLine: 'none',
+                                color :"#808080",
+                            }}>
+                                Me
+                            </Text>
                         </View>
                     ),
                     headerShown: false,
