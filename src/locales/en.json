@@ -115,5 +115,6 @@
   "weak_password": "The password is too weak. A stronger password is required.",
   "login_failed": "Login Failed",
   "sign_up_failed": "Sign-up Failed",
-  "ok": "OK"
+  "ok": "OK",
+  "signing_up..." : "Signing Up..." 
 }
