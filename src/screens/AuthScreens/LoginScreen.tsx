@@ -52,6 +52,7 @@ const LoginScreen: React.FC = () => {
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
         setSelectedLanguage(i18n.language as "en" | "ja");
+       handleLanguageChange(i18n.language as "en" | "ja");
       });
     
       return unsubscribe;

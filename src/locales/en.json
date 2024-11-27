@@ -53,7 +53,7 @@
   "login": "Login",
   "register": "Register",
   "confirmpassword": "Confirm Password",
-  "logingin...": "Logingin...",
+  "logingin...": "Loging in...",
   "signup": "Sign Up",
   "anonymous_provider_disabled": "Anonymous sign-in is disabled.",
   "bad_code_verifier": "The provided code verifier does not match during the PKCE flow. This might be due to a bug in the client library implementation.",
