@@ -116,5 +116,11 @@
   "login_failed": "Login Failed",
   "sign_up_failed": "Sign-up Failed",
   "ok": "OK",
-  "signing_up..." : "Signing Up..." 
+  "signing_up..." : "Signing Up...",
+  "favourite_my_memories" : "Favourite My Memories",
+  "favourite_others_memories" : "Favourite Others Memories",
+  "favourite_restaurants" : "Favourite Restaurants",
+  "favourite_wineries" : "Favourite Wineries",
+  "favourite_stories" : "Favourite Stories",
+  "favourite_wines" : "Favourite Wines" 
 }

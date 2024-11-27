@@ -46,6 +46,12 @@ const SettingsScreen = () => {
     if (menu === "saved" && (option === "Stories" || option === "物語")) {
       navigation.navigate("Savedstories"); // Navigate to SavedMemories screen
     }
+    if (menu === "favourite" && (option === "My Memories" || option === "私の思い出")) {
+      navigation.navigate("Favouritemymemories"); // Navigate to SavedMemories screen
+    }
+    if (menu === "favourite" && (option === "Memories from Others" || option === "他の思い出")) {
+      navigation.navigate("Favouriteothersmemories"); // Navigate to SavedMemories screen
+    }
     setVisibleDropdown(null); // Close dropdown after selection
   };
 
