@@ -44,7 +44,8 @@ import Savedwineries from '../screens/HomeWine/Settings/saved/Savedwineries';
 import Savedstories from '../screens/HomeWine/Settings/saved/Savedstories';
 import Favouritemymemories from '../screens/HomeWine/Settings/favourite/Favouritemymemories';
 import Favouriteothersmemories from '../screens/HomeWine/Settings/favourite/Favouriteothersmemories';
-
+import Favouriterestaurants from '../screens/HomeWine/Settings/favourite/Favouriterestaurants';
+import Favouritewineries from '../screens/HomeWine/Settings/favourite/Favouritewineries';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -231,7 +232,17 @@ const TabNavigation: React.FC = () => {
                     name="Favouriteothersmemories"
                     component={Favouriteothersmemories}
                     options={{ headerShown: false }}
-                />
+                /> 
+                <Stack.Screen
+                name="Favouriterestaurants"
+                component={Favouriterestaurants}
+                options={{ headerShown: false }}
+            /> 
+            <Stack.Screen
+            name="Favouritewineries"
+            component={Favouritewineries}
+            options={{ headerShown: false }}
+        />
             </Stack.Navigator>
 
         );
