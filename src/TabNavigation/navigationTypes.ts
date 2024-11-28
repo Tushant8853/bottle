@@ -27,4 +27,6 @@ export type RootStackParamList = {
     NameAndUser_Handle:undefined;
     Savedwineries:undefined;
     Savedstories:undefined;
+    Favouritemymemories:undefined;
+    Favouriteothersmemories:undefined;
 };

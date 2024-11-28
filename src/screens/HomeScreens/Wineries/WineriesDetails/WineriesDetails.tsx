@@ -495,7 +495,7 @@ const WineriesDetails = () => {
       </View>
 
 
-      <DiscoverWines />
+      <DiscoverWines id={wineryId}/>
       <View style={styles.bottom}></View>
     </ScrollView>
   );

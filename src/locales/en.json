@@ -53,7 +53,7 @@
   "login": "Login",
   "register": "Register",
   "confirmpassword": "Confirm Password",
-  "logingin...": "Logingin...",
+  "logingin...": "Loging in...",
   "signup": "Sign Up",
   "anonymous_provider_disabled": "Anonymous sign-in is disabled.",
   "bad_code_verifier": "The provided code verifier does not match during the PKCE flow. This might be due to a bug in the client library implementation.",
@@ -116,5 +116,11 @@
   "login_failed": "Login Failed",
   "sign_up_failed": "Sign-up Failed",
   "ok": "OK",
-  "signing_up..." : "Signing Up..." 
+  "signing_up..." : "Signing Up...",
+  "favourite_my_memories" : "Favourite My Memories",
+  "favourite_others_memories" : "Favourite Others Memories",
+  "favourite_restaurants" : "Favourite Restaurants",
+  "favourite_wineries" : "Favourite Wineries",
+  "favourite_stories" : "Favourite Stories",
+  "favourite_wines" : "Favourite Wines" 
 }

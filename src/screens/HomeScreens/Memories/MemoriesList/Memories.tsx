@@ -6,6 +6,8 @@ import {
   TextInput,
   StyleSheet,
   Pressable,
+  Alert,
+  ToastAndroid, Platform
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
@@ -20,6 +22,7 @@ const MemorieList: React.FC = () => {
   const [selectedMemory, setSelectedMemory] = useState<"Public" | "My">("My"); // Set "My" as default
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   useEffect(() => {
     if (route.params?.memoryType) {
@@ -50,9 +53,19 @@ const MemorieList: React.FC = () => {
           style={styles.searchInput}
           placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
+          onFocus={() => setShowComingSoon(true)} // Show "Coming soon" message on focus
+          onBlur={() => setShowComingSoon(false)} // Hide the message when focus is lost
         />
+        {showComingSoon && (
+          <View style={styles.comingSoonContainer}>
+            <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+          </View>
+        )}
         <Icon name="microphone" size={16} color="#989999" />
       </View>
+
+      {/* Display "Coming soon" message inside the search box */}
+
 
       <View style={styles.BothMemoriesContainer}>
         <View style={styles.ToggleContainer}>
@@ -95,7 +108,7 @@ const MemorieList: React.FC = () => {
           </View>
         </View>
         <View style={styles.ComponentContainer} >
-        {selectedMemory === "My" ? <MyMemories /> : <PublicMemories />}
+          {selectedMemory === "My" ? <MyMemories /> : <PublicMemories />}
         </View>
 
       </View>
@@ -158,6 +171,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
   },
+  selectedText:{},
   Backbotton: {
     width: 25,
     height: 19,
@@ -178,7 +192,7 @@ const styles = StyleSheet.create({
   },
   PublicMemoriesContainer: {
     alignSelf: "center",
-    justifyContent:"center",
+    justifyContent: "center",
     marginLeft: 4,
     flex: 1,
   },
@@ -201,17 +215,11 @@ const styles = StyleSheet.create({
   },
   selectedButton: {
     backgroundColor: "white",
-    shadowColor: '#000', // The color of the shadow
-    shadowOffset: { width: 0, height: 3 }, // X and Y offset
-    shadowOpacity: 0.1, // Opacity matching #0000000A
-    shadowRadius: 1, // Matching the first shadow blur radius of 1px
-
-    // Elevation for Android
-    elevation: 3, // Creates the shadow effect in Android (approximation of 3px shadow)
-
-    // Second shadow properties
-    shadowOpacity: 0.31, // Opacity matching #0000001F (31% opacity)
-    shadowRadius: 8, // Matching the second shadow blur radius of 8px
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1, 
+    shadowRadius: 1,
+    elevation: 3,
   },
   Text: {
     fontSize: 13,
@@ -221,9 +229,26 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
   },
-  ComponentContainer:{
+  ComponentContainer: {
     marginTop: 4,
     marginBottom: 4,
     borderTopWidth: 1,
+  },
+  comingSoonContainer: {
+    position: "absolute", // Position relative to the parent container
+    top: 0,              // Align at the top of the parent
+    left: 18,            // Same padding as the search input
+    right: 18,           // Same padding as the search input
+    bottom: 0,           // Stretch to the bottom
+    justifyContent: "center", // Center the text vertically
+    alignItems: "center",     // Center the text horizontally
+    backgroundColor: "white", // Match the background color of the input
+    borderRadius: 8,          // Match the input's border radius
+    zIndex: 1,                // Ensure it's above other elements
+  },
+  comingSoonText: {
+    color: '#522F60',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

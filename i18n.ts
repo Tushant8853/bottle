@@ -6,10 +6,10 @@ import ja from './src/locales/ja.json';
 
 const LANGUAGE_KEY = 'appLanguage';
 
-// Load the saved language from AsyncStorage
+// Load the saved language or default to 'ja' (Japanese)
 const loadLanguage = async () => {
   const savedLanguage = await AsyncStorage.getItem(LANGUAGE_KEY);
-  return savedLanguage || 'en';
+  return savedLanguage || 'ja'; // Default to 'ja' if no language is set
 };
 
 i18n
@@ -19,7 +19,7 @@ i18n
       en: { translation: en },
       ja: { translation: ja },
     },
-    lng: 'en',
+    lng: 'ja', // Initial language (will be overridden later)
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
@@ -30,7 +30,7 @@ i18n
     },
   });
 
-// Set the language from AsyncStorage on startup
+// Set the language on app startup
 loadLanguage().then((lang) => i18n.changeLanguage(lang));
 
 export const changeAppLanguage = async (language: string) => {

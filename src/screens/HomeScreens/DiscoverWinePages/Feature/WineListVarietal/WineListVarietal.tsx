@@ -115,7 +115,7 @@ const WineListVarietal: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { t } = useTranslation();
-
+    const [showComingSoon, setShowComingSoon] = useState(false);
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -200,9 +200,14 @@ const WineListVarietal: React.FC = () => {
                     style={styles.searchInput}
                     placeholder={t('search')}
                     placeholderTextColor={"#e5e8e8"}
-                    value={searchText}
-                    onChangeText={setSearchText}
+                    onFocus={() => setShowComingSoon(true)} // Show "Coming soon" message on focus
+                    onBlur={() => setShowComingSoon(false)} // Hide the message when focus is lost
                 />
+                {showComingSoon && (
+                    <View style={styles.comingSoonContainer}>
+                        <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+                    </View>
+                )}
                 <FontAwesome name="microphone" size={16} color="#989999" />
             </View>
 

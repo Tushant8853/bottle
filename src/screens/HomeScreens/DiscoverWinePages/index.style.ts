@@ -8,14 +8,14 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
     },
-    bottom:{
-        marginBottom:100
+    bottom: {
+        marginBottom: 100
     },
     header: {
         marginTop: 40,
         backgroundColor: "white",
         height: 22,
-        marginBottom:4,
+        marginBottom: 4,
     },
     headingContainer: {
         flexDirection: "row",
@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         color: '#30425F',
     },
-    
-////////////////////////////Search //////////////////////////
+
+    ////////////////////////////Search //////////////////////////
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 6,
         elevation: 3,
-        height:42,
+        height: 42,
     },
     searchIcon: {
         marginRight: 7,
@@ -141,7 +141,23 @@ const styles = StyleSheet.create({
         color: '#834B99',
     },
     StoriesTitleTextContainer: {
-
+    },
+    comingSoonContainer: {
+        position: "absolute", // Position relative to the parent container
+        top: 0,              // Align at the top of the parent
+        left: 18,            // Same padding as the search input
+        right: 18,           // Same padding as the search input
+        bottom: 0,           // Stretch to the bottom
+        justifyContent: "center", // Center the text vertically
+        alignItems: "center",     // Center the text horizontally
+        backgroundColor: "white", // Match the background color of the input
+        borderRadius: 8,          // Match the input's border radius
+        zIndex: 1,                // Ensure it's above other elements
+    },
+    comingSoonText: {
+        color: '#522F60',
+        fontSize: 14,
+        fontWeight: 'bold',
     },
 });
 
