@@ -31,4 +31,5 @@ export type RootStackParamList = {
     Favouriteothersmemories:undefined;
     Favouritewineries:undefined;
     Favouriterestaurants: undefined;
+    Favouritestories: undefined;
 };
