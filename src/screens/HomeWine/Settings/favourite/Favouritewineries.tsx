@@ -76,106 +76,90 @@ const SkeletonLoader = () => {
 };
 
 
-const WineriesList = () => {
+const Favouritewineries = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [searchText, setSearchText] = useState('');
   const [wineries, setWineries] = useState<any[]>([]);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const { t } = useTranslation();
-  const [showComingSoon, setShowComingSoon] = useState(false);
+
 
   useEffect(() => {
-    const fetchWineries = async () => {
+    const fetchSavedwineries = async () => {
       try {
-        const { data, error } = await supabase
-          .from("bottleshock_wineries")
-          .select("wineries_id, winery_name, address, verified, banner, logo");
-
-        if (error) {
-          console.error("Error fetching wineries:", error.message);
+        setIsLoading(true);
+        const UID = await AsyncStorage.getItem("UID");
+        if (!UID) {
+          console.error("User ID not found.");
           return;
         }
 
-        const formattedWineries = data.map((winery: any) => ({
+        // Fetch saved restaurants
+        const { data: savedData, error: savedError } = await supabase
+          .from("bottleshock_fav_wineries")
+          .select("winery_id")
+          .eq("user_id", UID);
+
+        if (savedError) {
+          console.error("Error fetching saved wineries:", savedError.message);
+          return;
+        }
+
+        const savedIds = savedData?.map((item) => item.winery_id);
+
+        // Fetch restaurant details for saved restaurants
+        const { data: wineriesData, error: wineriesError } = await supabase
+          .from("bottleshock_wineries")
+          .select("*")
+          .in("wineries_id", savedIds || []);
+
+        if (wineriesError) {
+          console.error("Error fetching winery details:", wineriesError.message);
+          return;
+        }
+
+        const formattedwineries = wineriesData.map((winery: any) => ({
           id: winery.wineries_id,
           name: winery.winery_name,
+          location: winery.location,
           address: winery.address,
           logo: winery.logo ? `${imagePrefix}${winery.logo}` : null,
           verified: winery.verified,
+          hashtags: winery.hashtags,
         }));
-        await checkSavedWineries(formattedWineries);
-        await checkFavoriteWineries(formattedWineries);
-        setWineries(formattedWineries);
+
+        // Set saved status and update saved restaurants
+        setWineries(formattedwineries);
+        setSavedStatus(new Array(formattedwineries.length).fill(true));
+
+        // Fetch favorite status for these restaurants
+        const { data: favoriteData, error: favoriteError } = await supabase
+          .from("bottleshock_saved_wineries")
+          .select("winery_id")
+          .eq("user_id", UID);
+
+        if (favoriteError) {
+          console.error("Error fetching favorite wineries:", favoriteError.message);
+          return;
+        }
+
+        const favoriteIds = favoriteData?.map((item) => item.winery_id);
+        const updatedFavoriteStatus = formattedwineries.map((winery) =>
+          favoriteIds.includes(winery.id)
+        );
+
+        setFavoriteStatus(updatedFavoriteStatus);
       } catch (error) {
-        console.error("Error in fetchWineries:", error);
+        console.error("Error in fetchSavedWineries:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchWineries();
+    fetchSavedwineries();
   }, []);
-
-  const checkSavedWineries = async (fetchedWineries: any[]) => {
-    try {
-      const UID = await AsyncStorage.getItem("UID");
-      if (!UID) {
-        console.error("User ID not found.");
-        return;
-      }
-
-      const { data: savedWineries, error } = await supabase
-        .from('bottleshock_saved_wineries')
-        .select('winery_id')
-        .eq('user_id', UID);
-
-      if (error) {
-        console.error('Error fetching saved wineries:', error.message);
-        return;
-      }
-
-      const savedIds = savedWineries?.map((winery) => winery.winery_id);
-      const updatedSavedStatus = fetchedWineries.map((winery) =>
-        savedIds.includes(winery.id)
-      );
-
-      setSavedStatus(updatedSavedStatus);
-    } catch (error) {
-      console.error('Error in checkSavedWineries:', error);
-    }
-  };
-
-  const checkFavoriteWineries = async (fetchedWineries: any[]) => {
-    try {
-      const UID = await AsyncStorage.getItem("UID");
-      if (!UID) {
-        console.error("User ID not found.");
-        return;
-      }
-
-      const { data: favoriteWineries, error } = await supabase
-        .from('bottleshock_fav_wineries')
-        .select('winery_id')
-        .eq('user_id', UID);
-
-      if (error) {
-        console.error('Error fetching favorite wineries:', error.message);
-        return;
-      }
-
-      const favoriteIds = favoriteWineries?.map((winery) => winery.winery_id);
-      const updatedFavoriteStatus = fetchedWineries.map((winery) =>
-        favoriteIds.includes(winery.id)
-      );
-
-      setFavoriteStatus(updatedFavoriteStatus);
-    } catch (error) {
-      console.error('Error in checkFavoriteWineries:', error);
-    }
-  };
 
   const handleSavePress = async (index: number) => {
     try {
@@ -186,7 +170,7 @@ const WineriesList = () => {
       }
 
       const winery = wineries[index];
-      const isSaved = savedStatus[index];
+      const isSaved = favoriteStatus[index];
 
       if (isSaved) {
         const { error } = await supabase
@@ -209,9 +193,9 @@ const WineriesList = () => {
         }
       }
 
-      const newStatus = [...savedStatus];
+      const newStatus = [...favoriteStatus];
       newStatus[index] = !newStatus[index];
-      setSavedStatus(newStatus);
+      setFavoriteStatus(newStatus);
     } catch (error) {
       console.error('Error handling save press:', error);
     }
@@ -226,7 +210,7 @@ const WineriesList = () => {
       }
 
       const winery = wineries[index];
-      const isFavorited = favoriteStatus[index];
+      const isFavorited = savedStatus[index];
 
       if (isFavorited) {
         const { error } = await supabase
@@ -249,18 +233,14 @@ const WineriesList = () => {
         }
       }
 
-      const newStatus = [...favoriteStatus];
+      const newStatus = [...savedStatus];
       newStatus[index] = !newStatus[index];
-      setFavoriteStatus(newStatus);
+      setSavedStatus(newStatus);
     } catch (error) {
       console.error('Error handling favorite press:', error);
     }
   };
 
-  // Handle search filtering
-  const filteredWineries = wineries.filter((winery) =>
-    winery.name.toLowerCase().includes(searchText.toLowerCase())
-  );
 
   return (
     <View style={styles.container}>
@@ -271,25 +251,7 @@ const WineriesList = () => {
         >
           <FontAwesome name="angle-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('Winery')}</Text>
-      </View>
-      
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder={t('search')}
-          placeholderTextColor={"#e5e8e8"}
-          onFocus={() => setShowComingSoon(true)}
-          onBlur={() => setShowComingSoon(false)}
-        />
-        {showComingSoon && (
-          <View style={styles.comingSoonContainer}>
-            <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
-          </View>
-        )}
-        <FontAwesome name="microphone" size={16} color="#989999" />
+        <Text style={styles.headerTitle}>{t('favourite_wineries')}</Text>
       </View>
 
       {/* List of Wineries */}
@@ -300,7 +262,7 @@ const WineriesList = () => {
             <SkeletonLoader key={index} />
           ))
         ) : (
-          filteredWineries.map((winery, index) => (
+            wineries.map((winery, index) => (
             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
               <View style={styles.wineryContainer}>
                 {/* Winery Info */}
@@ -314,7 +276,7 @@ const WineriesList = () => {
                       />
                     )}
                   </Text>
-                  <Text style={styles.wineryLocation}>{winery.address}</Text>
+                  <Text style={styles.wineryLocation}>{winery.location}</Text>
                 </View>
 
                 {/* Action Icons */}
@@ -327,7 +289,7 @@ const WineriesList = () => {
                     <Feather
                       name="paperclip"
                       size={16}
-                      color={savedStatus[index] ? '#522F60' : 'gray'}
+                      color={favoriteStatus[index] ? '#522F60' : 'gray'}
                       style={styles.icon}
                     />
                   </TouchableOpacity>
@@ -337,7 +299,7 @@ const WineriesList = () => {
                     accessibilityRole="button"
                   >
                     <FontAwesome
-                      name={favoriteStatus[index] ? "heart" : "heart-o"}
+                      name={savedStatus[index] ? "heart" : "heart-o"}
                       size={16}
                       color='gray'
                       style={styles.icon}
@@ -382,7 +344,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingBottom: 1,
+    paddingBottom: 10,
     paddingTop: 55,
     backgroundColor: "white",
     width: "100%",
@@ -504,23 +466,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E1E9EE',
   },
-  comingSoonContainer: {
-    position: "absolute", // Position relative to the parent container
-    top: 0,              // Align at the top of the parent
-    left: 18,            // Same padding as the search input
-    right: 18,           // Same padding as the search input
-    bottom: 0,           // Stretch to the bottom
-    justifyContent: "center", // Center the text vertically
-    alignItems: "center",     // Center the text horizontally
-    backgroundColor: "white", // Match the background color of the input
-    borderRadius: 8,          // Match the input's border radius
-    zIndex: 1,                // Ensure it's above other elements
-  },
-  comingSoonText: {
-    color: '#522F60',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
 });
 
-export default WineriesList;
+export default Favouritewineries;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity ,StyleSheet} from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './index.style';
 import { useRoute, RouteProp } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import Markdown from 'react-native-markdown-display';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
+import Scanner from '../../../../../assets/png/Scanner.png';
 type WineDetailsRouteProp = RouteProp<{
   params: {
     winery_id: number;
@@ -28,6 +29,9 @@ type Wine = {
   ws_rating: number;
   year: string;
   description: string;
+  jp_winery_name: string,
+  jp_name: string,
+  jp_vintage_name: string,
 };
 
 const WineDetails: React.FC = () => {
@@ -42,7 +46,7 @@ const WineDetails: React.FC = () => {
       try {
         const { data: bottleshock_wineries_Data, error: wineriesError } = await supabase
           .from("bottleshock_wineries")
-          .select("wineries_id, winery_name")
+          .select("wineries_id, winery_name ,jp_winery_name")
           .eq("wineries_id", winery_id);
         if (wineriesError) {
           console.error("Error fetching wineries:", wineriesError.message);
@@ -53,7 +57,7 @@ const WineDetails: React.FC = () => {
             bottleshock_wineries_Data.map(async (winery) => {
               const { data: varietalsData, error: varietalsError } = await supabase
                 .from("bottleshock_winery_varietals")
-                .select("varietal_name, brand_name, winery_varietals_id")
+                .select("varietal_name, brand_name, winery_varietals_id , jp_name")
                 .eq("winery_id", winery.wineries_id)
                 .eq("winery_varietals_id", winery_varietals_id);
               if (varietalsError) {
@@ -64,7 +68,7 @@ const WineDetails: React.FC = () => {
                 (varietalsData || []).map(async (varietal) => {
                   const { data: wineDetails, error: wineError } = await supabase
                     .from("bottleshock_wines")
-                    .select("year, image, wines_id, varietal_id, rp_rating, jd_rating, we_rating, ws_rating ,description")
+                    .select("year, image, wines_id, varietal_id, rp_rating, jd_rating, we_rating, ws_rating ,description , jp_vintage_name")
                     .eq("varietal_id", varietal.winery_varietals_id)
                     .eq("wines_id", wine_id);
                   if (wineError) {
@@ -83,7 +87,10 @@ const WineDetails: React.FC = () => {
                     wines_id: wine.wines_id,
                     ws_rating: wine.ws_rating,
                     year: wine.year.slice(0, 4),
-                    description: wine.description
+                    description: wine.description,
+                    jp_winery_name: winery.jp_winery_name,
+                    jp_name: varietal.jp_name,
+                    jp_vintage_name: wine.jp_vintage_name,
                   }));
                 })
               );
@@ -133,15 +140,15 @@ const WineDetails: React.FC = () => {
               <View style={styles.detailsContainer}>
                 <View style={styles.wineryNameContainer}>
                   <Text style={styles.wineryName}>{wine.winery_name}</Text>
-                  <Text style={styles.wineryNameJapanese}>ハーテレンディ・ヴィンヤーズ</Text>
+                  <Text style={styles.wineryNameJapanese}>{wine.jp_winery_name}</Text>
                 </View>
                 <View style={styles.wineNameContainer}>
                   <Text style={styles.wineName} numberOfLines={2}>{wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}</Text>
-                  <Text style={styles.wineNameJapanese}>レジェンド</Text>
+                  <Text style={styles.wineNameJapanese}>{wine.jp_vintage_name}</Text>
                 </View>
                 <View style={styles.vintageContainer}>
                   <Text style={styles.vintage}>{wine.year}</Text>
-                  <Text style={styles.vintageJapanese}>ヴィンテージを見る</Text>
+                  <Text style={styles.vintageJapanese}>{wine.jp_name}</Text>
                 </View>
                 <View style={styles.wineTypeConatiner}>
                   <Text style={styles.wineType}>{wine.varietal_name}</Text>
@@ -169,8 +176,21 @@ const WineDetails: React.FC = () => {
                 </View>
               </View>
             </View>
+            {/* Discription */}
             <View style={styles.ScrollDiscriptionContainer}>
               <Markdown style={markdownStyles}>{wine.description}</Markdown>
+            </View>
+            {/* box and scanner */}
+            <View style={styles.BoxAndScannerContainer}>
+              <View style={styles.Box1Container}>
+                <Text style={styles.bottomText}>このワインが飲めるお店</Text>
+              </View >
+              <View style={styles.Box1Container}>
+                <Text style={styles.bottomText}>ワインを入手</Text>
+              </View>
+              <View style={styles.ScannerContainer}>
+                <Image source={require('../../../../../assets/png/Scanner.png')} style={styles.imagescanner} />
+              </View>
             </View>
             <View style={styles.bottom}></View>
           </ScrollView>
@@ -192,9 +212,9 @@ const markdownStyles = StyleSheet.create({
   },
   paragraph: {
     fontFamily: 'Hiragino Kaku Gothic Pro',
-    fontSize: 16, 
-    fontWeight: '300', 
-    lineHeight: 24, 
+    fontSize: 16,
+    fontWeight: '300',
+    lineHeight: 24,
     textAlign: 'left',
   },
 });

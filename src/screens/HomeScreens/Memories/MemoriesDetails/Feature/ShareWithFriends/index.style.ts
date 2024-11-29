@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   RatingContainer: {
-    width: 110,
+paddingHorizontal:8,
     borderWidth: 1,
     borderRadius: 4,
     marginTop: 10,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   StarIconContainer: {
-    alignItems: 'center',
+    alignContent:'center',
     justifyContent: 'center',
     borderRightWidth: 1,
     height: 29,

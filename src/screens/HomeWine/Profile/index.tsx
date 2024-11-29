@@ -7,7 +7,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation, useRoute, NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
 import { useTranslation } from 'react-i18next';
-
+import Icon1 from "react-native-vector-icons/FontAwesome";
 
 const Profile = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -16,10 +16,13 @@ const Profile = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
+                    <Icon1 name="angle-left" size={20} color="black" />
+                </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t('profile')}</Text>
             </View>
             {/* User Handle */}
-            <TouchableOpacity style={styles.menuItem} onPress={()=> navigation.navigate("NameAndUser_Handle")}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("NameAndUser_Handle")}>
                 <View style={styles.menuIconContainer}>
                     <FontAwesome5 name="user-circle" size={16} color="#522F60" />
                 </View>
@@ -46,23 +49,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     header: {
-        borderBottomWidth:0.5,
-        borderBottomColor: 'lightgray',
-        alignItems: "center",
-        paddingBottom: 10,
-        paddingTop: 55,
-        backgroundColor: "white",
-        width: "100%",
-        marginBottom:10,
+        marginTop: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        height: 60,
+    },
+    BackButton: {
+        position: 'absolute',
+        left: 16,
+        zIndex: 1,
     },
     headerTitle: {
         fontSize: 16,
         fontWeight: "600",
-        textAlignVertical: "center",
-        width: "100%",
         color: "#333",
         textAlign: "center",
-        alignItems: "center",
+        flex: 1,
     },
     menuList: {
         //borderWidth:1,

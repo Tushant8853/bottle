@@ -61,21 +61,27 @@ const ShareWithFriends: React.FC = () => {
   const backgroundColor =
     memoryData.length > 0
       ? memoryData[0].is_public
-        ? 'red'
+        ? '#c92c20'
         : memoryData[0].shared_with_friends
-          ? '#522F60'
-          : 'white'
+        ? '#522F60'
+        : 'white'
       : 'white';
 
-  const textColor = backgroundColor === 'white' ? '#522F60' : 'white';
-  const iconColor = backgroundColor === 'white' ? '#522F60' : 'white'; // Add this for icon color
+  const borderColor =
+    backgroundColor === '#c92c20'
+      ? '#c92c20'
+      : backgroundColor === '#522F60'
+      ? '#522F60'
+      : 'transparent';
 
+  const textColor = backgroundColor === 'white' ? '#522F60' : 'white';
+  const iconColor = textColor; // Same logic for icons
   const statusText =
-    backgroundColor === 'red'
+    backgroundColor === '#c92c20'
       ? t('Public')
       : backgroundColor === '#522F60'
-        ? t('SharedwithFriends')
-        : t('notshared');
+      ? t('SharedwithFriends')
+      : t('notshared');
 
         const handleDelete = () => {
           Alert.alert(
@@ -168,7 +174,7 @@ const ShareWithFriends: React.FC = () => {
         <View style={styles.Line} />
       </View>
       {/* Share to Friends Section */}
-      <View style={[styles.ShareContainer, { backgroundColor }]}>
+      <View style={[styles.ShareContainer, { backgroundColor, borderColor, borderWidth: 2}]}>
         <View style={styles.ShareWithFriendsContainer}>
           <View style={styles.IconWrapper}>
             <Ionicons

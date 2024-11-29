@@ -29,4 +29,7 @@ export type RootStackParamList = {
     Savedstories:undefined;
     Favouritemymemories:undefined;
     Favouriteothersmemories:undefined;
+    Favouritewineries:undefined;
+    Favouriterestaurants: undefined;
+    Favouritestories: undefined;
 };
