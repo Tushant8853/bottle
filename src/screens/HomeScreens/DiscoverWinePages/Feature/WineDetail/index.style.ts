@@ -158,7 +158,41 @@ const styles = StyleSheet.create({
   bottom:{
     marginBottom:100,
   },
-  
+  BoxAndScannerContainer:{
+    marginTop:10,
+    alignItems:'center',
+    marginLeft: 40,
+    marginRight:8,
+  },
+  Box1Container:{
+    backgroundColor:'#BBBCDE',
+    marginTop:4,
+    alignItems:'center',
+    justifyContent:'center',
+    height:40,
+    width:"100%",
+    borderWidth:1,
+    borderRadius:4,
+    borderColor:"#522F60",
+  },
+  bottomText: {
+    fontFamily: 'Hiragino Sans',
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 24,
+    textAlign: 'center',
+    color:'#522F60'
+  },
+  ScannerContainer:{
+    marginTop:31,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagescanner: {
+    width: 79,
+    height: 79,
+  },
 });
 
 export default styles;

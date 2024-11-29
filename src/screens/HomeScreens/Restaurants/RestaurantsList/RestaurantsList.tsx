@@ -120,7 +120,7 @@ const RestaurantsList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const { t } = useTranslation();
-
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -316,9 +316,14 @@ const RestaurantsList = () => {
           style={styles.searchInput}
           placeholder={t('search')}
           placeholderTextColor={"#e5e8e8"}
-          value={searchText}
-          onChangeText={setSearchText}
+          onFocus={() => setShowComingSoon(true)}
+          onBlur={() => setShowComingSoon(false)}
         />
+        {showComingSoon && (
+          <View style={styles.comingSoonContainer}>
+            <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+          </View>
+        )}
         <FontAwesome name="microphone" size={16} color="#989999" />
       </View>
 
@@ -533,6 +538,23 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 10, // Add some margin for better spacing
+  },
+  comingSoonContainer: {
+    position: "absolute", // Position relative to the parent container
+    top: 0,              // Align at the top of the parent
+    left: 18,            // Same padding as the search input
+    right: 18,           // Same padding as the search input
+    bottom: 0,           // Stretch to the bottom
+    justifyContent: "center", // Center the text vertically
+    alignItems: "center",     // Center the text horizontally
+    backgroundColor: "white", // Match the background color of the input
+    borderRadius: 8,          // Match the input's border radius
+    zIndex: 1,                // Ensure it's above other elements
+  },
+  comingSoonText: {
+    color: '#522F60',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
