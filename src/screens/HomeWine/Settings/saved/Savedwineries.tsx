@@ -263,7 +263,7 @@ const Savedwineries = () => {
           ))
         ) : (
             wineries.map((winery, index) => (
-            <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
+          <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.wineries_id}>
               <View style={styles.wineryContainer}>
                 {/* Winery Info */}
                 <View style={styles.wineryInfo}>
