@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './index.style';
 import { useRoute, RouteProp } from "@react-navigation/native";
@@ -7,7 +7,8 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import Markdown from 'react-native-markdown-display';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
-import Scanner from '../../../../../assets/png/Scanner.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type WineDetailsRouteProp = RouteProp<{
   params: {
     winery_id: number;
@@ -40,6 +41,9 @@ const WineDetails: React.FC = () => {
   const { winery_id, winery_varietals_id, wine_id } = route.params;
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [wines, setWines] = useState<Wine[]>([]);
+  const [savedStatus, setSavedStatus] = useState(false);
+  const [favoriteStatus, setFavoriteStatus] = useState(false);
+  const { wine_id: wineId } = route.params;
 
   useEffect(() => {
     const fetchWines = async () => {
@@ -98,13 +102,136 @@ const WineDetails: React.FC = () => {
             })
           );
           setWines(bottleshock_winery_varietals_Details.flat());
+          checkFavoriteStatus();
+    checkSavedStatus();
         }
       } catch (error) {
         console.error("Error fetching wines data:", error);
       }
     };
+
+    const checkFavoriteStatus = async () => {
+      try {
+        const UID = await AsyncStorage.getItem("UID");
+        if (!UID) return;
+
+        const { data: favorites, error } = await supabase
+          .from("bottleshock_fav_wines")
+          .select("wine_id")
+          .eq("user_id", UID)
+          .eq("wine_id", wine_id);
+
+        if (error) {
+          console.error("Error fetching favorite status:", error.message);
+          return;
+        }
+
+        setFavoriteStatus(favorites.length > 0);
+      } catch (error) {
+        console.error("Error checking favorite status:", error);
+      }
+    };
+
+    const checkSavedStatus = async () => {
+      try {
+        const UID = await AsyncStorage.getItem("UID");
+        if (!UID) return;
+
+        const { data: savedWines, error } = await supabase
+          .from("bottleshock_saved_wines")
+          .select("wine_id")
+          .eq("user_id", UID)
+          .eq("wine_id", wine_id);
+
+        if (error) {
+          console.error("Error fetching saved status:", error.message);
+          return;
+        }
+
+        setSavedStatus(savedWines.length > 0);
+      } catch (error) {
+        console.error("Error checking saved status:", error);
+      }
+    };
+
     fetchWines();
   }, [winery_id, winery_varietals_id, wine_id, imagePrefix]);
+
+  const handleFavoritePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (favoriteStatus) {
+        const { error } = await supabase
+          .from("bottleshock_fav_wines")
+          .delete()
+          .match({ user_id: UID, wine_id });
+
+        if (error) {
+          console.error("Error removing favorite wine:", error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from("bottleshock_fav_wines")
+          .insert([
+            {
+              user_id: UID,
+              wine_id,
+              created_at: new Date().toISOString(),
+            },
+          ]);
+
+        if (error) {
+          console.error("Error favoriting wine:", error.message);
+          return;
+        }
+      }
+
+      setFavoriteStatus(!favoriteStatus);
+    } catch (error) {
+      console.error("Error handling favorite press:", error);
+    }
+  };
+
+  const handleSavePress = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
+      if (!UID) return;
+
+      if (savedStatus) {
+        const { error } = await supabase
+          .from("bottleshock_saved_wines")
+          .delete()
+          .match({ user_id: UID, wine_id });
+
+        if (error) {
+          console.error("Error removing saved wine:", error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabase
+          .from("bottleshock_saved_wines")
+          .insert([
+            {
+              user_id: UID,
+              wine_id,
+              created_at: new Date().toISOString(),
+            },
+          ]);
+
+        if (error) {
+          console.error("Error saving wine:", error.message);
+          return;
+        }
+      }
+
+      setSavedStatus(!savedStatus);
+    } catch (error) {
+      console.error("Error handling save press:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -115,13 +242,20 @@ const WineDetails: React.FC = () => {
         </TouchableOpacity>
         <View style={styles.spacer} />
         {/* Attachment Icon */}
-        <TouchableOpacity style={styles.iconContainer}>
-          <Ionicons name="attach" size={24} color="black" />
-        </TouchableOpacity>
-        {/* Heart Icon */}
-        <TouchableOpacity style={styles.iconContainer}>
-          <Ionicons name="heart" size={24} color="red" />
-        </TouchableOpacity>
+        <Pressable style={styles.iconContainer} onPress={handleSavePress}>
+            <Ionicons
+              name="attach"
+              size={24}
+              color={savedStatus ? "#522F60" : "gray"}
+              style={styles.rotatedIcon}
+            />
+          </Pressable>
+          <Pressable style={styles.iconContainer} onPress={handleFavoritePress}>
+            <Ionicons
+              name={favoriteStatus ? "heart" : "heart-outline"}
+              size={24}
+            />
+          </Pressable>
         {/* Share Icon */}
         <TouchableOpacity style={styles.iconContainer}>
           <Ionicons name="share-outline" size={24} color="black" />

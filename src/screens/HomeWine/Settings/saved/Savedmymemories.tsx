@@ -480,18 +480,36 @@ const Savedmymemories: React.FC = () => {
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{t('savedmymemories')}</Text>
     </View>
+    {filteredMemories.length === 0 ? (
+      // Show "No data available" message if there are no saved memories
+      <View style={styles.noDataContainer}>
+        <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+      </View>
+    ) : (
     <FlatList
       data={filteredMemories}
       renderItem={(props) => renderMemoryItem({ ...props, index: memories.indexOf(props.item) })}
       keyExtractor={(memory) => memory.id}
       contentContainerStyle={styles.scrollContainer}
     />
+  )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   // Skeleton styles
+  noDataContainer: {
+   
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#808080',
+    textAlign: 'center',
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",

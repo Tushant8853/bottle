@@ -23,6 +23,18 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
   },
+  rotatedIcon: {
+    transform: [{ rotate: "45deg" }],
+  },
+  button: {
+    backgroundColor: "white",
+    borderRadius: 5,
+    alignContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 35,
+    height: 40,
+  },
   SubContainer: {
     flexDirection: 'row',
   },
