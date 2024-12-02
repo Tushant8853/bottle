@@ -249,6 +249,10 @@ const Favouritestories: React.FC = () => {
             [...Array(5)].map((_, index) => (
               <SkeletonLoader key={`skeleton-${index}`} />
             ))
+          ) : storiesList.length === 0 ? (
+            <View style={styles.noDataContainer}>
+              <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+            </View>
           ) : (
             storiesList.map((story, index) => (
               <Pressable
@@ -326,6 +330,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333",
     flex: 1,
+  },
+  noDataContainer: {
+   
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#808080',
+    textAlign: 'center',
   },
   searchContainer: {
     flexDirection: "row",

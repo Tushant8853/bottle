@@ -260,6 +260,10 @@ const Savedstories: React.FC = () => {
             [...Array(5)].map((_, index) => (
               <SkeletonLoader key={`skeleton-${index}`} />
             ))
+          ) : storiesList.length === 0 ? (
+            <View style={styles.noDataContainer}>
+              <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+            </View>
           ) : (
             storiesList.map((story, index) => (
               <Pressable
@@ -455,5 +459,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#E1E1E1',
     borderRadius: 8,
     marginHorizontal: 4,
+  },
+  noDataContainer: {
+   
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#808080',
+    textAlign: 'center',
   },
 });

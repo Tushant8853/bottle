@@ -206,6 +206,10 @@ const Favouritewines: React.FC = () => {
                         <WineSkeletonItem />
                         <WineSkeletonItem />
                     </>
+                    ) : savedWines.length === 0 ? (
+                        <View style={styles.noDataContainer}>
+                          <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+                        </View>
                 ) : (
                     savedWines.map((wine) => (
                         <Pressable
@@ -266,6 +270,17 @@ const styles = StyleSheet.create({
     },
     backButton: {
         marginRight: 1, // Add some margin for better spacing
+      },
+      noDataContainer: {
+   
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 120,
+      },
+      noDataText: {
+        fontSize: 16,
+        color: '#808080',
+        textAlign: 'center',
       },
     header: {
         flexDirection: "row",
