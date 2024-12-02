@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, StyleSheet, Animated, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Animated, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Bannericon from '../../../../assets/svg/SvgCodeFile/bannericon';
@@ -82,7 +82,7 @@ const WineSkeletonItem: React.FC = () => (
     </View>
 );
 
-const Savedwines: React.FC = () => {
+const Favouritewines: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [wines, setWines] = useState<Wine[]>([]);
     const [savedWines, setSavedWines] = useState<Wine[]>([]); // State for saved wines
@@ -166,7 +166,7 @@ const Savedwines: React.FC = () => {
           return;
         }
                 const { data: savedWineIds, error } = await supabase
-                    .from("bottleshock_saved_wines") // Example table for saved wines
+                    .from("bottleshock_fav_wines") // Example table for saved wines
                     .select("wine_id")
                     .eq("user_id", UID);
 
@@ -196,9 +196,9 @@ const Savedwines: React.FC = () => {
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <FontAwesome name="angle-left" size={20} color="black" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('savedwines')}</Text>
+          <Text style={styles.headerTitle}>{t('favourite_wines')}</Text>
         </View>
-                <ScrollView>
+                <ScrollView style={styles.container1}>
                 {isLoading ? (
                     <>
                         <WineSkeletonItem />
@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         padding: 10,
         paddingBottom: 3,
+        backgroundColor: 'white'
     },
     container1: {
         height: '100%',
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     backButton: {
-        marginRight: 10, // Add some margin for better spacing
+        marginRight: 1, // Add some margin for better spacing
       },
     header: {
         flexDirection: "row",
@@ -388,4 +389,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default Savedwines;
+export default Favouritewines;
