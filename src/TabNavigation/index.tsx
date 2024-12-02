@@ -42,6 +42,7 @@ import NameAndUser_Handle from '../screens/HomeWine/Profile/Feature/NameAndUser_
 import ChangePwd from '../screens/HomeWine/Profile/Feature/ChangePwd';
 import Savedwineries from '../screens/HomeWine/Settings/saved/Savedwineries';
 import Savedstories from '../screens/HomeWine/Settings/saved/Savedstories';
+import Savedwines from '../screens/HomeWine/Settings/saved/Savedwines';
 import Favouritemymemories from '../screens/HomeWine/Settings/favourite/Favouritemymemories';
 import Favouriteothersmemories from '../screens/HomeWine/Settings/favourite/Favouriteothersmemories';
 import Favouriterestaurants from '../screens/HomeWine/Settings/favourite/Favouriterestaurants';
@@ -247,6 +248,11 @@ const TabNavigation: React.FC = () => {
         <Stack.Screen
             name="Favouritewineries"
             component={Favouritewineries}
+            options={{ headerShown: false }}
+        />
+         <Stack.Screen
+            name="Savedwines"
+            component={Savedwines}
             options={{ headerShown: false }}
         />
           </Stack.Navigator>

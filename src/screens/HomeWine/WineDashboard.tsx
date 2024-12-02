@@ -61,6 +61,12 @@ const SettingsScreen = () => {
     if (menu === "favourite" && (option === "Stories" || option === "物語")) {
       navigation.navigate("Favouritestories"); // Navigate to SavedMemories screen
     }
+    if (menu === "saved" && (option === "Wines" || option === "ワイン")) {
+      navigation.navigate("Savedwines"); // Navigate to SavedMemories screen
+    }
+    if (menu === "favourite" && (option === "Wines" || option === "ワイン")) {
+      navigation.navigate("Savedwines"); // Navigate to SavedMemories screen
+    }
     setVisibleDropdown(null); // Close dropdown after selection
   };
 
