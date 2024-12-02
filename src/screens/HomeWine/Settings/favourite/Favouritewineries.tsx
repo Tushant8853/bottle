@@ -261,6 +261,10 @@ const Favouritewineries = () => {
           [...Array(5)].map((_, index) => (
             <SkeletonLoader key={index} />
           ))
+        ) : wineries.length === 0 ? (
+            <View style={styles.noDataContainer}>
+              <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+            </View>
         ) : (
             wineries.map((winery, index) => (
             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
@@ -355,6 +359,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333",
     flex: 1,
+  },
+  noDataContainer: {
+   
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120,
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#808080',
+    textAlign: 'center',
   },
   searchContainer: {
     flexDirection: "row",

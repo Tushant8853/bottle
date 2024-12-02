@@ -25,7 +25,7 @@ export type RootStackParamList = {
     Profile:undefined;
     ChangePwd:undefined;
     NameAndUser_Handle:undefined;
-    Savedwineries:{ id: number };
+    Savedwineries:undefined;
     Savedstories:undefined;
     Savedwines:undefined;
     Favouritemymemories:undefined;
