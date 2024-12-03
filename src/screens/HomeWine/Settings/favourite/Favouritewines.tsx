@@ -86,7 +86,8 @@ const Favouritewines: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [wines, setWines] = useState<Wine[]>([]);
     const [savedWines, setSavedWines] = useState<Wine[]>([]); // State for saved wines
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true); // Loading wines
+    const [isFiltering, setIsFiltering] = useState(true); // Filtering saved wines
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { t } = useTranslation();
 
@@ -161,10 +162,11 @@ const Favouritewines: React.FC = () => {
         const filterSavedWines = async () => {
             try {
                 const UID = await AsyncStorage.getItem("UID");
-        if (!UID) {
-          console.error("User ID not found.");
-          return;
-        }
+                if (!UID) {
+                    console.error("User ID not found.");
+                    return;
+                }
+
                 const { data: savedWineIds, error } = await supabase
                     .from("bottleshock_fav_wines") // Example table for saved wines
                     .select("wine_id")
@@ -181,13 +183,15 @@ const Favouritewines: React.FC = () => {
                 setSavedWines(filteredWines);
             } catch (error) {
                 console.error("🚨 Error filtering saved wines:", error);
+            } finally {
+                setIsFiltering(false);
             }
         };
 
-        if (wines.length > 0) {
+        if (!isLoading) {
             filterSavedWines();
         }
-    }, [wines]);
+    }, [wines, isLoading]);
 
     return (
         <View>
@@ -199,7 +203,7 @@ const Favouritewines: React.FC = () => {
           <Text style={styles.headerTitle}>{t('favourite_wines')}</Text>
         </View>
                 <ScrollView style={styles.container1}>
-                {isLoading ? (
+                {isLoading || isFiltering ? (
                     <>
                         <WineSkeletonItem />
                         <WineSkeletonItem />
