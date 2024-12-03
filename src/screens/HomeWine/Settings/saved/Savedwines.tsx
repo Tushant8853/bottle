@@ -85,8 +85,9 @@ const WineSkeletonItem: React.FC = () => (
 const Savedwines: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [wines, setWines] = useState<Wine[]>([]);
-    const [savedWines, setSavedWines] = useState<Wine[]>([]); // State for saved wines
-    const [isLoading, setIsLoading] = useState(true);
+    const [savedWines, setSavedWines] = useState<Wine[]>([]);
+    const [isLoading, setIsLoading] = useState(true); // Fetching all wines
+    const [isFiltering, setIsFiltering] = useState(true); // Filtering saved wines
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { t } = useTranslation();
 
@@ -159,12 +160,14 @@ const Savedwines: React.FC = () => {
     // Filter saved wines
     useEffect(() => {
         const filterSavedWines = async () => {
+            setIsFiltering(true); // Start filtering
             try {
                 const UID = await AsyncStorage.getItem("UID");
-        if (!UID) {
-          console.error("User ID not found.");
-          return;
-        }
+                if (!UID) {
+                    console.error("User ID not found.");
+                    return;
+                }
+
                 const { data: savedWineIds, error } = await supabase
                     .from("bottleshock_saved_wines") // Example table for saved wines
                     .select("wine_id")
@@ -181,13 +184,15 @@ const Savedwines: React.FC = () => {
                 setSavedWines(filteredWines);
             } catch (error) {
                 console.error("🚨 Error filtering saved wines:", error);
+            } finally {
+                setIsFiltering(false); // End filtering
             }
         };
 
-        if (wines.length > 0) {
+        if (!isLoading) {
             filterSavedWines();
         }
-    }, [wines]);
+    }, [wines, isLoading]);
 
     return (
         <View>
@@ -199,7 +204,7 @@ const Savedwines: React.FC = () => {
           <Text style={styles.headerTitle}>{t('savedwines')}</Text>
         </View>
                 <ScrollView>
-                {isLoading ? (
+                {isLoading || isFiltering ? (
                     <>
                         <WineSkeletonItem />
                         <WineSkeletonItem />
