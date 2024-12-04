@@ -218,7 +218,7 @@ const Favouritewines: React.FC = () => {
                     savedWines.map((wine) => (
                         <Pressable
                             key={wine.wines_id}
-                            onPress={() => navigation.navigate("WineListVintage", { winery_id: wine.winery_id, winery_varietals_id: wine.winery_varietals_id })}                        >
+                            onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id, winery_varietals_id: wine.winery_varietals_id, wine_id: wine.wines_id })}                        >
                             <View style={styles.ListOfStoriesContainer}>
                                 <View style={styles.Stories}>
                                     <View style={styles.StoriesImgContainer}>

@@ -3,7 +3,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, Platform, View, Text } from 'react-native';
+import { Image, Platform, View, Text, Pressable } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
 import { Linking } from 'react-native';
@@ -172,7 +172,7 @@ const TabNavigation: React.FC = () => {
         return (
             <Stack.Navigator initialRouteName="WineDashboard">
                 <Stack.Screen
-                    name="WineDashboardScreen"
+                    name="WineDashboard"
                     component={WineDashboard}
                     options={{ headerShown: false }}
                 />
@@ -261,6 +261,31 @@ const TabNavigation: React.FC = () => {
             component={Favouritewines}
             options={{ headerShown: false }}
         />
+          <Stack.Screen
+                    name="WineDetails"
+                    component={WineDetails}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="RestaurantsDetails"
+                    component={RestaurantsDetails}
+                    options={{ headerShown: false }}
+                />
+                   <Stack.Screen
+                    name="MemoriesDetails"
+                    component={MemoriesDetails}
+                    options={{ headerShown: false }}
+                />
+                 <Stack.Screen
+                    name="StoriesDetail"
+                    component={StoriesDetail}
+                    options={{ headerShown: false }}
+                />
+                  <Stack.Screen
+                    name="WineriesDetails"
+                    component={WineriesDetails}
+                    options={{ headerShown: false }}
+                />
           </Stack.Navigator>
 
         );

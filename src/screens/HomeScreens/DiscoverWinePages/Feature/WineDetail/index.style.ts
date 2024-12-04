@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     fontFamily: 'Hiragino Sans',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     lineHeight: 24,
     textAlign: 'center',
