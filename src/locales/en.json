@@ -123,5 +123,7 @@
   "favourite_restaurants" : "Favourite Restaurants",
   "favourite_wineries" : "Favourite Wineries",
   "favourite_stories" : "Favourite Stories",
-  "favourite_wines" : "Favourite Wines" 
+  "favourite_wines" : "Favourite Wines",
+  "Restaurants_which_have_this_wine" : "Restaurants which have this Wine",
+  "Buy_wine" : "Buy Wine"
 }

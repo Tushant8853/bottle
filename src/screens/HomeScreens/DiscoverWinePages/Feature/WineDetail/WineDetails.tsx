@@ -8,6 +8,8 @@ import Markdown from 'react-native-markdown-display';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
 
 type WineDetailsRouteProp = RouteProp<{
   params: {
@@ -44,6 +46,8 @@ const WineDetails: React.FC = () => {
   const [savedStatus, setSavedStatus] = useState(false);
   const [favoriteStatus, setFavoriteStatus] = useState(false);
   const { wine_id: wineId } = route.params;
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchWines = async () => {
@@ -317,10 +321,10 @@ const WineDetails: React.FC = () => {
             {/* box and scanner */}
             <View style={styles.BoxAndScannerContainer}>
               <View style={styles.Box1Container}>
-                <Text style={styles.bottomText}>このワインが飲めるお店</Text>
+                <Text style={styles.bottomText}>{t('Restaurants_which_have_this_wine')}</Text>
               </View >
               <View style={styles.Box1Container}>
-                <Text style={styles.bottomText}>ワインを入手</Text>
+                <Text style={styles.bottomText}>{t('Buy_wine')}</Text>
               </View>
               <View style={styles.ScannerContainer}>
                 <Image source={require('../../../../../assets/png/Scanner.png')} style={styles.imagescanner} />
