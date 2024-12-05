@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black',
         fontFamily: 'SF Pro',
-        fontWeight: '400',
     },
     StoriesTitleIMG: {
         flexDirection: 'row',

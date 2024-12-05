@@ -311,6 +311,7 @@ const WineriesList = () => {
                         name="verified"
                         size={13}
                         color="#522F60"
+                        style={styles.verified}
                       />
                     )}
                   </Text>
@@ -434,11 +435,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 13,
     color: '#3C3C3C',
+    
   },
   wineryLocation: {
     fontWeight: '400',
     fontSize: 11,
     color: '#808080',
+    paddingTop: 4
+  },
+  verified: {
+    paddingTop: 8,
+    marginTop:  4
   },
   iconsContainer: {
     flexDirection: 'row',

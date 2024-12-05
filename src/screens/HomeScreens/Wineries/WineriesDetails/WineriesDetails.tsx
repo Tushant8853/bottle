@@ -7,7 +7,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg } from "@twicpics/components/react-native";
-import DiscoverWines from "./Feature/WineEnjoyed";
+import WineEnjoyed from "./Feature/WineEnjoyed";
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -495,7 +495,7 @@ const WineriesDetails = () => {
       </View>
 
 
-      <DiscoverWines id={wineryId}/>
+      <WineEnjoyed id={wineryId} />
       <View style={styles.bottom}></View>
     </ScrollView>
   );
@@ -552,7 +552,6 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     borderWidth: 1,
     marginHorizontal: 16,
-    marginTop: 8,
     borderRadius: 4,
     borderColor: "#522F6080",
     flexDirection: "row",
@@ -603,10 +602,10 @@ const styles = StyleSheet.create({
   },
   //////////////////////////////////////////Pic and Video //////////////////////////////////////////
   memoriesContainer: {
-    marginTop: 8,
+    marginTop: 29,
     borderRadius: 4,
     borderColor: "#522F6080",
-    height: 146,
+    height: 140,
   },
   memoriesHeaderContainer: {
     height: 22,

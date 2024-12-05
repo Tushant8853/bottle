@@ -49,6 +49,7 @@ import Favouriterestaurants from '../screens/HomeWine/Settings/favourite/Favouri
 import Favouritewineries from '../screens/HomeWine/Settings/favourite/Favouritewineries';
 import Favouritestories from '../screens/HomeWine/Settings/favourite/Favouritestories';
 import Favouritewines from '../screens/HomeWine/Settings/favourite/Favouritewines';
+import DiscoverWines from '../screens/HomeScreens/Wineries/WineriesDetails/Feature/WineEnjoyed';
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

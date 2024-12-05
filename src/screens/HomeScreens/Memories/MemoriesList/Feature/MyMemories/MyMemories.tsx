@@ -425,7 +425,7 @@ const MyMemories: React.FC = () => {
             <Ionicons
               style={styles.usernameIcon}
               name="checkmark-circle"
-              size={11}
+              size={13}
               color="grey"
             />
           </View>

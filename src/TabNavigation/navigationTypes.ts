@@ -14,6 +14,7 @@ export type RootStackParamList = {
     RestaurantsDetails: { id: number };
     WineriesDetails: { id: number };
     DiscoverWinespages:undefined;
+    WineEnjoyed: { winery_id: number };
     WineListVarietal: {winery_id:number};
     WineListVintage:{winery_id:number , winery_varietals_id:number};
     WineDetails: { winery_id: number; winery_varietals_id: number,wine_id:number  };

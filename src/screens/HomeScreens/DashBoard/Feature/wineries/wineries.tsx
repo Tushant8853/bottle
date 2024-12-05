@@ -235,7 +235,7 @@ const Wineries: React.FC = () => {
                     </Pressable>
                   </View>
                   <View>
-                    <View style={styles.componentTitle}>
+                  <View style={styles.componentTitle}>
                       <Text style={styles.componentText} numberOfLines={1}>
                         {winery.winery_name}{' '}
                       </Text>
