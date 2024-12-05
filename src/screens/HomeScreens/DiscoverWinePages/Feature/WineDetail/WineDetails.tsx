@@ -9,7 +9,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-
+import WineDetailsSkeleton from './WineDetailsSkeleton';
 
 type WineDetailsRouteProp = RouteProp<{
   params: {
@@ -46,11 +46,20 @@ const WineDetails: React.FC = () => {
   const [savedStatus, setSavedStatus] = useState(false);
   const [favoriteStatus, setFavoriteStatus] = useState(false);
   const { wine_id: wineId } = route.params;
+  const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-
+  const [showText, setShowText] = useState(false);
+  const [showText2, setShowText2] = useState(false);
+  const handlePress = () => {
+    setShowText(!showText);
+  };
+  const handlePress2 = () => {
+    setShowText2(!showText2);
+  };
 
   useEffect(() => {
     const fetchWines = async () => {
+      setIsLoading(true);
       try {
         const { data: bottleshock_wineries_Data, error: wineriesError } = await supabase
           .from("bottleshock_wineries")
@@ -107,10 +116,13 @@ const WineDetails: React.FC = () => {
           );
           setWines(bottleshock_winery_varietals_Details.flat());
           checkFavoriteStatus();
-    checkSavedStatus();
+          checkSavedStatus();
         }
       } catch (error) {
         console.error("Error fetching wines data:", error);
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -236,7 +248,9 @@ const WineDetails: React.FC = () => {
       console.error("Error handling save press:", error);
     }
   };
-
+  if (isLoading) {
+    return <WineDetailsSkeleton />;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -247,19 +261,19 @@ const WineDetails: React.FC = () => {
         <View style={styles.spacer} />
         {/* Attachment Icon */}
         <Pressable style={styles.iconContainer} onPress={handleSavePress}>
-            <Ionicons
-              name="attach"
-              size={24}
-              color={savedStatus ? "#522F60" : "gray"}
-              style={styles.rotatedIcon}
-            />
-          </Pressable>
-          <Pressable style={styles.iconContainer} onPress={handleFavoritePress}>
-            <Ionicons
-              name={favoriteStatus ? "heart" : "heart-outline"}
-              size={24}
-            />
-          </Pressable>
+          <Ionicons
+            name="attach"
+            size={24}
+            color={savedStatus ? "#522F60" : "gray"}
+            style={styles.rotatedIcon}
+          />
+        </Pressable>
+        <Pressable style={styles.iconContainer} onPress={handleFavoritePress}>
+          <Ionicons
+            name={favoriteStatus ? "heart" : "heart-outline"}
+            size={24}
+          />
+        </Pressable>
         {/* Share Icon */}
         <TouchableOpacity style={styles.iconContainer}>
           <Ionicons name="share-outline" size={24} color="black" />
@@ -320,12 +334,24 @@ const WineDetails: React.FC = () => {
             </View>
             {/* box and scanner */}
             <View style={styles.BoxAndScannerContainer}>
-              <View style={styles.Box1Container}>
-                <Text style={styles.bottomText}>{t('Restaurants_which_have_this_wine')}</Text>
-              </View >
-              <View style={styles.Box1Container}>
-                <Text style={styles.bottomText}>{t('Buy_wine')}</Text>
-              </View>
+              <Pressable onPress={handlePress} style={styles.Box1Container}>
+                <View >
+                  {showText ? (
+                    <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
+                  ) : (
+                    <Text style={styles.bottomText}>{t('Restaurants_which_have_this_wine')}</Text>
+                  )}
+                </View >
+              </Pressable>
+              <Pressable onPress={handlePress2} style={styles.Box1Container}>
+                <View >
+                  {showText2 ? (
+                    <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
+                  ) : (
+                    <Text style={styles.bottomText}>{t('Buy_wine')}</Text>
+                  )}
+                </View>
+              </Pressable>
               <View style={styles.ScannerContainer}>
                 <Image source={require('../../../../../assets/png/Scanner.png')} style={styles.imagescanner} />
               </View>

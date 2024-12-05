@@ -176,6 +176,11 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     marginRight:8,
   },
+  comingSoonText: {
+    color: '#522F60',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   Box1Container:{
     backgroundColor:'#BBBCDE',
     marginTop:4,
