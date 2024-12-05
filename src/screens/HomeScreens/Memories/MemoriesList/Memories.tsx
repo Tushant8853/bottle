@@ -32,16 +32,6 @@ const MemorieList: React.FC = () => {
 
   return (
     <View style={styles.StoriesListContainer}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.Backbotton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('Memories')}</Text>
-      </View>
-
       <View style={styles.searchContainer}>
         <Icon
           name="search"

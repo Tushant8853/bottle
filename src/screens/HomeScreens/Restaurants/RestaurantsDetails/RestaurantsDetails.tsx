@@ -623,8 +623,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    top: 55,
-    right: 15,
+    top: 10,
+    right: 10,
     flexDirection: "row",
     gap: 10,
   },

@@ -300,15 +300,6 @@ const RestaurantsList = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesome name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('restaurants')}</Text>
-      </View>
       
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />

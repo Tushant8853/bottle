@@ -181,14 +181,6 @@ const DiscoverWinespages: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headingContainer}>
-                    <Bannericon width={13} height={22} color="#30425F" />
-                    <View style={styles.bannerTextContainer}>
-                        <Text style={styles.bannerTitle}>{t('discoverwines')}</Text>
-                    </View>
-                </View>
-            </View>
 
             <View style={styles.searchContainer}>
                 <FontAwesome name="search" size={16} color="#989999" style={styles.searchIcon} />
