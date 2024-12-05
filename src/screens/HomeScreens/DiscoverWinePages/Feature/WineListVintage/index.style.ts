@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         paddingHorizontal: 18,
         paddingVertical: 1,
-        marginBottom: 4,
+        marginBottom: 14,
         marginVertical: 4,
         borderRadius: 8,
         shadowColor: "#000",
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black',
         fontFamily: 'SF Pro',
-        fontWeight: '400',
     },
     StoriesTitleIMG: {
         flexDirection: 'row',

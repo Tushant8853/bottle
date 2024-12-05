@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "400",
         position: "absolute",
-        bottom: 10,
+        bottom: 7,
         left: 16,
     },
     textContainer: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     descriptionContainer: {
         borderWidth: 1,
         marginHorizontal: 16,
-        marginTop: 8,
+        marginTop: 20,
         borderRadius: 4,
         borderColor: "#522F6080",
         flexDirection: "row",
@@ -245,6 +245,7 @@ const styles = StyleSheet.create({
         fontWeight: "300",
         lineHeight: 21,
         textAlign: "left",
+        color: '#522F60'
     },
     descriptionIcons: {},
     descriptiontextContainer: {},
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         borderWidth: 1,
         borderColor: "#522F6080",
-        marginTop: 4,
+        marginTop: 7,
         height: 30,
         borderRadius: 4,
     },
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
         color: "#522F60",
     },
     picandvideoMainContainer: {
-        marginTop: 4,
+        marginTop: 7,
         marginLeft: 16,
     },
     picandvideo: {

@@ -655,7 +655,7 @@ const MemoriesDetails: React.FC = () => {
                         <Feather
                             style={styles.descriptionIcons}
                             name="file-text"
-                            size={16}
+                            size={18}
                             color="#522F60"
                         />
                     </View>
@@ -682,7 +682,7 @@ const MemoriesDetails: React.FC = () => {
                     <View style={styles.descriptionIconsContainer}>
                         <Ionicons
                             name="calendar-outline"
-                            size={16}
+                            size={18}
                             color="#522F60"
                             style={styles.icon}
                         />

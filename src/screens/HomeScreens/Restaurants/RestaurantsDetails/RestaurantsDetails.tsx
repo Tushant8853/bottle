@@ -597,8 +597,6 @@ const RestaurantsDetails = () => {
           <Text style={styles.hashtags}>{Restaurant.hashtags}</Text>
         </View>
       </View>
-
-      <DiscoverWines />
       <View style={styles.bottom}></View>
     </ScrollView>
   );
@@ -655,7 +653,6 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     borderWidth: 1,
     marginHorizontal: 16,
-    marginTop: 8,
     borderRadius: 4,
     borderColor: "#522F6080",
     flexDirection: "row",
@@ -706,10 +703,10 @@ const styles = StyleSheet.create({
   },
   //////////////////////////////////////////Pic and Video //////////////////////////////////////////
   memoriesContainer: {
-    marginTop: 8,
+    marginTop: 29,
     borderRadius: 4,
     borderColor: "#522F6080",
-    height: 146,
+    height: 140,
   },
   memoriesHeaderContainer: {
     height: 22,
@@ -732,7 +729,7 @@ const styles = StyleSheet.create({
   },
   memoriesHeadertex: {
     color: "grey",
-    left: (width/2)-90,
+    left: (width / 2) - 90,
     height: 100,
     flex: 1,
     justifyContent: "center", // Centers vertically
@@ -767,7 +764,8 @@ const styles = StyleSheet.create({
   rightContent: {},
   memoriesArrowIcons: {},
   ///////////////////////////////////// Map ///////////////////////////////////////////
-  MapContainer: {},
+  MapContainer: {
+  },
   MapIconsContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -804,8 +802,8 @@ const styles = StyleSheet.create({
   mapSDKContainer: {
     marginHorizontal: 16,
     height: 110,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 16,
     borderWidth: 1,
     borderColor: "#522F6080",
@@ -828,14 +826,14 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     marginRight: 4,
     paddingHorizontal: 8,
-    width: "auto",
-    flex: 1,
+    width: 'auto',
+    flex: 1
   },
   contactRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    flex: 1,
+    flex: 1
   },
   contactText: {
     fontSize: 14,
