@@ -52,6 +52,7 @@ import Favouritewines from '../screens/HomeWine/Settings/favourite/Favouritewine
 import DiscoverWines from '../screens/HomeScreens/Wineries/WineriesDetails/Feature/WineEnjoyed';
 // Create stack and tab navigators
 import Icon from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const linking = {
@@ -364,7 +365,19 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="WineDashboard"
                     component={WineDashboard}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Setting',
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="LoginScreen"
@@ -374,7 +387,24 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Language"
                     component={Language}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Language',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Savedmymemories"
@@ -394,18 +424,87 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Profile"
                     component={Profile}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Profile',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="NameAndUser_Handle"
                     component={NameAndUser_Handle}
-                    options={{ headerShown: false }}
+                    options={({ navigation, route }) => ({
+                        title: 'User Handle',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
+                                <Feather name="chevron-left" size={24} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerRight: () => (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    const { handleSave, isButtonDisabled } = route.params || {};
+                                    if (handleSave && !isButtonDisabled) {
+                                        handleSave();
+                                    }
+                                }}
+                                style={{ marginRight: 10, opacity: route.params?.isButtonDisabled ? 0.5 : 1 }}
+                                disabled={route.params?.isButtonDisabled}
+                            >
+                                <Feather name="check" size={20} />
+                            </TouchableOpacity>
+                        ),
+                    })}
                 />
                 <Stack.Screen
                     name="ChangePwd"
                     component={ChangePwd}
-                    options={{ headerShown: false }}
+                    options={({ navigation, route }) => ({
+                        headerShown: true,
+                        title: 'Change Password',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" style={{ marginLeft: 10 }} />
+                            </TouchableOpacity>
+                        ),
+                        headerRight: () => (
+                            <TouchableOpacity
+                                style={{ marginRight: 10 }}
+                                onPress={() => route.params?.handleSavePassword?.()}
+                                disabled={route.params?.isTickDisabled}
+                            >
+                                <Feather
+                                    name="check"
+                                    size={20}
+                                    color={route.params?.isTickDisabled ? "gray" : "black"}
+                                />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    })}
                 />
+
                 <Stack.Screen
                     name="Savedwineries"
                     component={Savedwineries}

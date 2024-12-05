@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -31,51 +31,63 @@ const ChangePwd = () => {
         if (!numberRegex.test(password)) return "Password must contain at least one number";
         return "";
     };
+    useEffect(() => {
+        const isTickDisabled =
+            !newPassword ||
+            !confirmPassword ||
+            newPassword !== confirmPassword ||
+            oldPassword === newPassword;
 
+        // Update route params with state and handler
+        navigation.setParams({
+            isTickDisabled,
+            handleSavePassword,
+        });
+    }, [oldPassword, newPassword, confirmPassword]);
     const handleSavePassword = async () => {
         const storedEmail = await AsyncStorage.getItem("email");
         console.log(storedEmail);
-    
+
         if (newPassword !== confirmPassword) {
             setError("Passwords do not match");
             return;
         }
-    
+
         const validationError = passwordValidation(newPassword);
         if (validationError) {
             setError(validationError);
             return;
         }
-    
+
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
             email: storedEmail ?? "",
             password: oldPassword,
         });
-    
+
         if (signInError || !data.user) {
             setOldPasswordError("Old password is incorrect"); // Set error for old password
             return;
         }
-    
+
         setOldPasswordError(""); // Clear old password error if login is successful
-    
+
         try {
             const { error: updateError } = await supabase.auth.updateUser({
                 password: newPassword,
             });
-    
+
             if (updateError) {
                 setError(updateError.message);
                 return;
             }
-    
+
             navigation.goBack();
         } catch (error) {
             setError("An error occurred while updating the password. Please try again.");
             console.log(error);
         }
     };
-    
+
 
     const handleConfirmPasswordChange = (value: string) => {
         setConfirmPassword(value);
@@ -90,19 +102,6 @@ const ChangePwd = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" size={20} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t('changepassword')}</Text>
-                <TouchableOpacity
-                    style={[styles.CheckButton, isTickDisabled ? styles.disabledButton : null]}
-                    onPress={handleSavePassword}
-                    disabled={isTickDisabled}
-                >
-                    <Feather name="check" size={20} color={isTickDisabled ? "gray" : "black"} />
-                </TouchableOpacity>
-            </View>
 
             <View style={styles.formGroup}>
                 <Text style={styles.label}>{t('oldpassword')}</Text>
@@ -115,7 +114,7 @@ const ChangePwd = () => {
                 />
             </View>
             {oldPasswordError && <Text style={styles.errorMessage}>{oldPasswordError}</Text>}
-            
+
             <View style={styles.formGroup}>
                 <Text style={styles.label}>{t('newpassword')}</Text>
                 <TextInput

@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import Feather from "react-native-vector-icons/Feather";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from 'react-i18next';
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const NameAndUser_Handle = () => {
     const navigation = useNavigation();
-    const [inputValue, setInputValue] = useState("");  // Store the user handle here
-    const [userHandle, setUserHandle] = useState("");  // This will hold the fetched user handle
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true);  // Track if the button should be disabled
+    const route = useRoute();
+    const [inputValue, setInputValue] = useState(""); // Store the user handle here
+    const [userHandle, setUserHandle] = useState(""); // This will hold the fetched user handle
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true); // Track if the button should be disabled
     const { t } = useTranslation();
 
     useEffect(() => {
         fetchUID();
     }, []);
+
+    useEffect(() => {
+        // Pass `handleSave` and `isButtonDisabled` to `route.params`
+        navigation.setParams({
+            handleSave,
+            isButtonDisabled,
+        });
+    }, [isButtonDisabled, inputValue]);
 
     const fetchUID = async () => {
         try {
@@ -36,10 +43,10 @@ const NameAndUser_Handle = () => {
                 if (data?.handle) {
                     setUserHandle(data.handle);
                     setInputValue(data.handle);
-                    setIsButtonDisabled(true);  // Disable button if no change
+                    setIsButtonDisabled(true); // Disable button if no change
                 } else {
                     setInputValue("");
-                    setIsButtonDisabled(false);  // Enable button if handle is empty
+                    setIsButtonDisabled(false); // Enable button if handle is empty
                 }
             } else {
                 console.error("UID is missing from AsyncStorage");
@@ -80,35 +87,20 @@ const NameAndUser_Handle = () => {
         }
     };
 
-    const handleInputChange = (text: string) => {
+    const handleInputChange = (text) => {
         setInputValue(text);
-        setIsButtonDisabled(text.trim() === userHandle.trim());  // Disable button if the handle is unchanged
+        setIsButtonDisabled(text.trim() === userHandle.trim()); // Disable button if the handle is unchanged
     };
-
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" size={20} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t('userhandle')}</Text>
-                <TouchableOpacity
-                    style={[styles.CheckButton, isButtonDisabled && styles.disabledButton]}  // Disable button style
-                    onPress={handleSave}
-                    disabled={isButtonDisabled}
-                >
-                    <Feather name="check" size={20} />
-                </TouchableOpacity>
-            </View>
-
             <View style={styles.formGroup}>
                 <Text style={styles.label}>{t('userhandle')}</Text>
                 <TextInput
                     style={styles.input}
                     placeholder={userHandle ? userHandle : "Please enter a new user handle"}
                     value={inputValue}
-                    onChangeText={handleInputChange}  // Update the handleInputChange function
+                    onChangeText={handleInputChange}
                 />
             </View>
         </View>
@@ -120,32 +112,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
         paddingHorizontal: 16,
-    },
-    header: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: 60,
-        paddingHorizontal: 16,
-        marginTop: 30,
-    },
-    BackButton: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    headerTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#333",
-        textAlign: "center",
-        flex: 1,
-    },
-    CheckButton: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    disabledButton: {
-        opacity: 0.5,
     },
     formGroup: {
         marginVertical: 10,

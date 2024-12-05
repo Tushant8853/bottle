@@ -116,10 +116,6 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('settings')}</Text>
-      </View>
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
