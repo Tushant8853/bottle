@@ -364,7 +364,24 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="EditMyMemories"
                     component={EditMyMemories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Edit My Memories',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="EditMemoryField"
@@ -779,22 +796,90 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="RestaurantsDetails"
                     component={RestaurantsDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Restaurants',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="MemoriesDetails"
                     component={MemoriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Memories',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="StoriesDetail"
                     component={StoriesDetail}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Stories',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineriesDetails"
                     component={WineriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Wineries',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
             </Stack.Navigator>
 
