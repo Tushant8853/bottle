@@ -381,7 +381,7 @@ const WineriesDetails = () => {
               memoriesData.map((memory) => (
                 <Pressable key={memory.id} onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
                   <TwicImg src={memory.file} style={styles.memoriesImage} />
-                  <FontAwesome style={styles.selectIcons} name="circle-o" size={18} color="#FFFFFF" selectionColor={'#FFFFFF'} />
+                  <FontAwesome style={styles.selectIcons} name="circle-o" size={20} color="#FFFFFF" selectionColor={'#FFFFFF'} />
                 </Pressable>
               ))
             ) : (

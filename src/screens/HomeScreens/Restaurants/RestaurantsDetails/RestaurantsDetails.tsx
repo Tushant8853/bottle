@@ -445,7 +445,7 @@ const RestaurantsDetails = () => {
                   <FontAwesome
                     style={styles.selectIcons}
                     name="circle-o"
-                    size={18}
+                    size={20}
                     color="#FFFFFF"
                     selectionColor={"#FFFFFF"}
                   />

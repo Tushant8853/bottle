@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
         color: '#66605E',
         fontFamily: 'SF Pro',
         fontWeight: '700',
-        marginTop: 6
+        marginTop: 6,
+        width: "90%"
     },
     StoriesSubtitle: {
         fontSize: 12,

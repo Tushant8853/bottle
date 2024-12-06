@@ -26,6 +26,7 @@ installTwicPics({
 });
 
 const { width } = Dimensions.get('window');
+const UID = AsyncStorage.getItem("UID");
 
 interface RestaurantData {
   Restaurants_id: number;
@@ -111,7 +112,19 @@ const Restaurants: React.FC = () => {
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
+  const [UID, setUid] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchUID = async () => {
+      const storedUID = await AsyncStorage.getItem("UID");
+      if (storedUID) {
+        setUid(storedUID);
+      } else {
+        console.error("User ID not found");
+      }
+    };
+    fetchUID();
+  }, []);
 
   useEffect(() => {
     fetchRestaurants();
@@ -145,7 +158,6 @@ const Restaurants: React.FC = () => {
 
   useEffect(() => {
     const checkSavedRestaurants = async () => {
-      const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
         console.error("User ID not found");
         return;
@@ -177,8 +189,6 @@ const Restaurants: React.FC = () => {
     const newStatus = [...likedStatus];
     newStatus[index] = !newStatus[index];
     setLikedStatus(newStatus);
-
-    const UID = await AsyncStorage.getItem("UID");
     const restaurantId = restaurants[index].Restaurants_id;
 
     if (newStatus[index]) {

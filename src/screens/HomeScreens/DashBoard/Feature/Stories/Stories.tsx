@@ -81,11 +81,23 @@ const Stories: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const { t } = useTranslation();
+  const [UID, setUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUID = async () => {
+      const storedUID = await AsyncStorage.getItem("UID");
+      if (storedUID) {
+        setUid(storedUID);
+      } else {
+        console.error("User ID not found");
+      }
+    };
+    fetchUID();
+  }, []);
 
 
   const checkIfSaved = async () => {
     try {
-      const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
         console.error("User ID not found");
         return;
@@ -117,7 +129,6 @@ const Stories: React.FC = () => {
     setLikedStatus(newStatus);
 
     try {
-      const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
         console.error("User ID not found");
         return;

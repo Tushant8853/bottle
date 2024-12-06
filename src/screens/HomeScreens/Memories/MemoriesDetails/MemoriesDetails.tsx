@@ -727,9 +727,9 @@ const MemoriesDetails: React.FC = () => {
                                             style={styles.circle}
                                         >
                                             {thumbnail.is_thumbnail ? (
-                                                <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
+                                                <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
                                             ) : (
-                                                <Entypo name="circle" size={18} color="#FFFFFF" />
+                                                <Entypo name="circle" size={20} color="#FFFFFF" />
                                             )}
                                         </Pressable>
                                     </View>
