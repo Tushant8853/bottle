@@ -325,18 +325,19 @@ const RestaurantsList = () => {
           filteredRestaurants.map((restaurant, index) => (
             <Pressable onPress={() => navigation.navigate("RestaurantsDetails", { id: restaurant.Restaurants_id })} key={restaurant.Restaurants_id}>
               <View style={styles.restaurantContainer}>
+
+               <View style={styles.restaurantInfo1}>
                 <View style={styles.restaurantInfo}>
                   <Text style={styles.restaurantName}>
-                    {restaurant.name}  {restaurant.verified && (
-                      <MaterialIcons
-                        name="verified"
-                        size={13}
-                        color="#522F60"
-                      />
-                    )}
-                  </Text>
+                    {restaurant.name}{'  '}
+                    </Text>
+                    <Text style={styles.verified}>
+                        {restaurant.verified && <MaterialIcons name="verified" size={14} color="#522F60"  />}
+                    </Text>
+                  </View>
                   <Text style={styles.restaurantLocation} numberOfLines={2}>{restaurant.hashtags}</Text>
                 </View>
+
 
                 <View style={styles.iconsContainer}>
                   <TouchableOpacity 
@@ -483,19 +484,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
-  restaurantInfo: {
+  restaurantInfo1: {
     flex: 1,
     paddingRight: 10,
+  },
+  restaurantInfo: {
+    paddingRight: 10,
+    flexDirection: 'row',
   },
   restaurantName: {
     fontWeight: '600',
     fontSize: 13,
     color: '#3C3C3C',
   },
+  verified: {
+    marginTop:  2,
+  },
   restaurantLocation: {
     fontWeight: '600',
     fontSize: 13,
     color: '#3C3C3C',
+    paddingTop: 4
   },
   iconsContainer: {
     flexDirection: 'row',

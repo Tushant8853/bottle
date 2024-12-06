@@ -294,17 +294,15 @@ const WineriesList = () => {
             <Pressable onPress={() => navigation.navigate("WineriesDetails", { id: winery.id })} key={winery.id}>
               <View style={styles.wineryContainer}>
                 {/* Winery Info */}
-                <View style={styles.wineryInfo}>
-                  <Text style={styles.wineryName}>
-                    {winery.name} {winery.verified && (
-                      <MaterialIcons
-                        name="verified"
-                        size={13}
-                        color="#522F60"
-                        style={styles.verified}
-                      />
-                    )}
-                  </Text>
+                <View style={styles.wineryInfo1}>
+                 <View style={styles.wineryInfo}>
+                  <Text style={styles.wineryName} numberOfLines={1}>
+                    {winery.name}{'  '}
+                    </Text>
+                   <Text style={styles.verified}>
+                        {winery.verified && <MaterialIcons name="verified" size={14} color="#522F60"  />}
+                    </Text>
+                 </View>
                   <Text style={styles.wineryLocation}>{winery.address}</Text>
                 </View>
 
@@ -418,6 +416,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   wineryInfo: {
+    paddingRight: 10,
+    flexDirection: 'row',
+  },
+  wineryInfo1: {
     flex: 1,
     paddingRight: 10,
   },
@@ -432,10 +434,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#808080',
     paddingTop: 4
+   
   },
   verified: {
-    paddingTop: 8,
-    marginTop:  4
+    marginTop:  2,
   },
   iconsContainer: {
     flexDirection: 'row',

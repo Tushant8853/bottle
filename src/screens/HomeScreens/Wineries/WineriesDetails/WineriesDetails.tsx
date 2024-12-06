@@ -493,9 +493,9 @@ const WineriesDetails = () => {
           <Text style={styles.hashtags}>{winery.hashtags}</Text>
         </View>
       </View>
-
-
-      <WineEnjoyed id={wineryId} />
+      <View>
+      <WineEnjoyed id={wineryId}  />
+      </View>
       <View style={styles.bottom}></View>
     </ScrollView>
   );
@@ -575,6 +575,7 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     lineHeight: 21,
     textAlign: "left",
+    color: "#522F60"
   },
   descriptionIcons: {},
   descriptiontextContainer: {},
@@ -713,7 +714,6 @@ const styles = StyleSheet.create({
   ////////////////////////////////////////// Contact Info //////////////////////////////////////////
   InfoContainer: {
     marginHorizontal: 16,
-    marginVertical: 4,
   },
   infocomponent: {
     flexDirection: "row",

@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
         marginBottom: 100
     },
     header: {
-        marginTop: 40,
+        marginTop: 13,
         backgroundColor: "white",
         height: 22,
         marginBottom: 4,
@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
         color: '#66605E',
         fontFamily: 'SF Pro',
         fontWeight: '700',
-        marginTop: 6
+        marginTop: 6,
+        width: "90%",
     },
     StoriesSubtitle: {
         fontSize: 12,
