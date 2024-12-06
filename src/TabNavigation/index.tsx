@@ -202,7 +202,24 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Thumbnail"
                     component={Thumbnail}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Gallery',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="MemoriesDetails"

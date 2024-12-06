@@ -109,14 +109,6 @@ const Thumbnail: React.FC = () => {
 
   return (
     <View style={styles.ContainerThu}>
-      <View style={styles.header}>
-      <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesome name="chevron-left" size={18} color="black" left={5} />
-        </TouchableOpacity>
-      </View>
       <View style={styles.Maincontainer}>
         <View style={styles.container}>
           <FlatList
@@ -150,7 +142,7 @@ const Thumbnail: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  ContainerThu:{
+  ContainerThu: {
     flex: 1,
     backgroundColor: 'white',
   },
@@ -161,16 +153,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     height: 35 // Ensure there's space between back button and error message
   },
-  backButtonText:{
-    marginLeft:10,
+  backButtonText: {
+    marginLeft: 10,
     color: 'blue',
     textDecorationLine: 'underline',
     fontSize: 16,
   },
   backButton: {
-    width:60,
+    width: 60,
     height: '100%',
-    marginLeft:11,
+    marginLeft: 11,
     flexDirection: 'row',
     alignItems: 'center',
 
@@ -179,9 +171,10 @@ const styles = StyleSheet.create({
   Maincontainer: {
     flex: 1,
     backgroundColor: 'white',
+    marginTop:10,
   },
   container: {
-    
+
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
