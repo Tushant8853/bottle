@@ -471,15 +471,6 @@ const Savedothermemories: React.FC = () => {
 
   return (
     <View>
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.Backbotton}
-        onPress={() => navigation.goBack()}
-      >
-        <FontAwesome name="angle-left" size={20} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.headerTitle}>{t('savedothersmemories')}</Text>
-    </View>
     {filteredMemories.length === 0 ? (
       // Show "No data available" message if there are no saved memories
       <View style={styles.noDataContainer}>
