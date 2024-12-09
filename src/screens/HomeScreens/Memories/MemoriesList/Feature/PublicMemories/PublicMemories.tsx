@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useCallback} from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp,useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 
 interface Memory {
@@ -109,65 +109,68 @@ const PublicMemories: React.FC = () => {
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
 
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const UID = await AsyncStorage.getItem("UID");
+  useFocusEffect(
+    useCallback(() => {
+      fetchMemories();
+    }, [])
+  );
 
-        if (!UID) {
-          console.error("UID is missing from AsyncStorage");
-          setIsLoading(false);
-          return;
-        }
-        const { data: memories, error } = await supabase
-          .from("bottleshock_memories")
-          .select("id, user_id, name, description,star_ratings")
-          .eq("is_public", true);
+  const fetchMemories = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
 
-        if (error) {
-          console.error("Error fetching memories:", error.message);
-          return;
-        }
-        const updatedMemories = await Promise.all(
-          memories.map(async (memory: Memory) => {
-            const { data: gallery, error: galleryError } = await supabase
-              .from("bottleshock_memory_gallery")
-              .select("file")
-              .eq("memory_id", memory.id);
-
-            if (galleryError) {
-              return memory;
-            }
-            if (gallery && gallery.length > 0) {
-              memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
-            }
-            const { data: user, error: userError } = await supabase
-              .from("bottleshock_users")
-              .select("handle")
-              .eq("id", memory.user_id)
-              .single();
-
-            if (userError) {
-              console.error("Error fetching user handle:", userError.message);
-              return memory;
-            }
-            if (user) {
-              memory.handle = user.handle;
-            }
-            return memory;
-          })
-        );
-        setMemories(updatedMemories);
-        await checkSavedMemories(updatedMemories);
-        await checkFavoriteMemories(updatedMemories);
+      if (!UID) {
+        console.error("UID is missing from AsyncStorage");
         setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching memories:", err);
-        setIsLoading(false);
+        return;
       }
-    };
-    fetchMemories();
-  }, []);
+      const { data: memories, error } = await supabase
+        .from("bottleshock_memories")
+        .select("id, user_id, name, description,star_ratings")
+        .eq("is_public", true);
+
+      if (error) {
+        console.error("Error fetching memories:", error.message);
+        return;
+      }
+      const updatedMemories = await Promise.all(
+        memories.map(async (memory: Memory) => {
+          const { data: gallery, error: galleryError } = await supabase
+            .from("bottleshock_memory_gallery")
+            .select("file")
+            .eq("memory_id", memory.id);
+
+          if (galleryError) {
+            return memory;
+          }
+          if (gallery && gallery.length > 0) {
+            memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
+          }
+          const { data: user, error: userError } = await supabase
+            .from("bottleshock_users")
+            .select("handle")
+            .eq("id", memory.user_id)
+            .single();
+
+          if (userError) {
+            console.error("Error fetching user handle:", userError.message);
+            return memory;
+          }
+          if (user) {
+            memory.handle = user.handle;
+          }
+          return memory;
+        })
+      );
+      setMemories(updatedMemories);
+      await checkSavedMemories(updatedMemories);
+      await checkFavoriteMemories(updatedMemories);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching memories:", err);
+      setIsLoading(false);
+    }
+  };
 
   const checkSavedMemories = async (fetchedMemories: Memory[]) => {
     try {
@@ -311,7 +314,7 @@ const PublicMemories: React.FC = () => {
     const fullStars = Math.floor(rating); // Number of full stars
     const hasHalfStar = rating % 1 >= 0.5; // Check if there's a half star
     const starFillWidth = `${(rating / totalStars) * 100}%`; // Percentage width for the filled stars
-  
+
     return (
       <View style={styles.starRating}>
         {/* Render 5 outlined stars as the background */}
@@ -325,7 +328,7 @@ const PublicMemories: React.FC = () => {
               color="grey" // Outline color for stars
             />
           ))}
-  
+
         {/* Render filled stars based on rating */}
         <View style={[styles.starFillContainer, { width: starFillWidth }]}>
           {Array(totalStars)
@@ -370,30 +373,30 @@ const PublicMemories: React.FC = () => {
             </Text>
           </View>
           <View style={styles.actionIcons}>
-          <TouchableOpacity 
-                  onPress={() => handleSavePress(index)}
-                  accessibilityLabel={`Link to ${memory.name}`} 
-                  accessibilityRole="button"
-                >
-                  <Feather
-                    name="paperclip"
-                    size={16}
-                    color={savedStatus[index] ? '#522F60' : 'gray'}
-                    style={styles.Icons}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={() => handleFavoritePress(index)}
-                  accessibilityLabel={`Favorite ${memory.name}`} 
-                  accessibilityRole="button"
-                >
-                  <FontAwesome
-                    name={favoriteStatus[index] ? "heart" : "heart-o"}
-                    size={16}
-                    color='gray'
-                    style={styles.Icons}
-                  />
-                </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleSavePress(index)}
+              accessibilityLabel={`Link to ${memory.name}`}
+              accessibilityRole="button"
+            >
+              <Feather
+                name="paperclip"
+                size={16}
+                color={savedStatus[index] ? '#522F60' : 'gray'}
+                style={styles.Icons}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleFavoritePress(index)}
+              accessibilityLabel={`Favorite ${memory.name}`}
+              accessibilityRole="button"
+            >
+              <FontAwesome
+                name={favoriteStatus[index] ? "heart" : "heart-o"}
+                size={16}
+                color='gray'
+                style={styles.Icons}
+              />
+            </TouchableOpacity>
             <TouchableOpacity>
               <Ionicons
                 style={styles.Icons}
@@ -426,7 +429,7 @@ const PublicMemories: React.FC = () => {
       </View>
 
       <View style={styles.rightContent}>
-        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id ,from: "OtherMemories"})}>
+        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id, from: "OtherMemories" })}>
           {memory.thumbnail ? (
             <TwicImg
               src={memory.thumbnail}
