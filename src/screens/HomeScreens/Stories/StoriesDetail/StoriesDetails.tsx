@@ -250,6 +250,7 @@ const StoriesDetail: React.FC = () => {
       <View style={styles.content}>
         <Markdown style={markdownStyles}>{contentWithoutFirstImage}</Markdown>
       </View>
+      <View style={styles.bottom}></View>
     </ScrollView>
   );
 };
@@ -312,6 +313,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E1E1E1',
     borderRadius: 4,
     marginVertical: 8,
+  },
+  bottom:{
+    marginBottom:100,
   },
 });
 

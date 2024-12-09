@@ -212,7 +212,7 @@ const Stories: React.FC = () => {
           ))
         ) : (
           // Actual content
-          memories.reduce<JSX.Element[][]>((rows, memory, index) => {
+         memories.reduce<JSX.Element[][]>((rows, memory, index) => {
             if (index % 2 === 0) {
               rows.push([]);
             }
