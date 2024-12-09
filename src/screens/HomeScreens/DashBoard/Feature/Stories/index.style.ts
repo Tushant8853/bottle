@@ -71,6 +71,18 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  style0: {
+    borderTopLeftRadius: 8
+  },
+  style1: {
+    borderTopRightRadius: 8
+  },
+  style2: {
+   borderBottomLeftRadius: 8
+  },
+  style3: {
+    borderBottomRightRadius: 8
+  },
 });
 
 export default styles;
