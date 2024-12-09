@@ -92,26 +92,8 @@ const Wineries: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-  const [UID, setUid] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUID = async () => {
-      const storedUID = await AsyncStorage.getItem("UID");
-      if (storedUID) {
-        setUid(storedUID);
-      } else {
-        console.error("User ID not found");
-      }
-    };
-    fetchUID();
-  }, []);
-
 
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
-
-  useEffect(() => {
-    fetchWineries();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -144,8 +126,9 @@ const Wineries: React.FC = () => {
 
   const checkSavedWineries = async (fetchedWineries: WineryData[]) => {
     try {
+      const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
-        console.error("User ID not found.");
+        console.error("User ID not found..");
         return;
       }
 
@@ -172,8 +155,9 @@ const Wineries: React.FC = () => {
 
   const handleSavePress = async (index: number): Promise<void> => {
     try {
+      const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
-        console.error("User ID not found.");
+        console.error("User ID not found....");
         return;
       }
 
