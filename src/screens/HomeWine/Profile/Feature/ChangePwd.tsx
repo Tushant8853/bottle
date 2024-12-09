@@ -18,7 +18,6 @@ const ChangePwd = () => {
     const navigation = useNavigation<NavigationProp<any>>();
     const { t } = useTranslation();
 
-
     const passwordValidation = (password: string) => {
         const minLength = 6;
         const maxLength = 12;
@@ -31,6 +30,7 @@ const ChangePwd = () => {
         if (!numberRegex.test(password)) return "Password must contain at least one number";
         return "";
     };
+
     useEffect(() => {
         const isTickDisabled =
             !newPassword ||
@@ -38,12 +38,24 @@ const ChangePwd = () => {
             newPassword !== confirmPassword ||
             oldPassword === newPassword;
 
-        // Update route params with state and handler
-        navigation.setParams({
-            isTickDisabled,
-            handleSavePassword,
+        // Update header right button dynamically
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ marginRight: 10 }}
+                    onPress={handleSavePassword}
+                    disabled={isTickDisabled}
+                >
+                    <Feather
+                        name="check"
+                        size={20}
+                        color={isTickDisabled ? "gray" : "black"}
+                    />
+                </TouchableOpacity>
+            ),
         });
     }, [oldPassword, newPassword, confirmPassword]);
+
     const handleSavePassword = async () => {
         const storedEmail = await AsyncStorage.getItem("email");
         console.log(storedEmail);
@@ -88,7 +100,6 @@ const ChangePwd = () => {
         }
     };
 
-
     const handleConfirmPasswordChange = (value: string) => {
         setConfirmPassword(value);
         if (value !== newPassword) {
@@ -102,7 +113,6 @@ const ChangePwd = () => {
 
     return (
         <View style={styles.container}>
-
             <View style={styles.formGroup}>
                 <Text style={styles.label}>{t('oldpassword')}</Text>
                 <TextInput

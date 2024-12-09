@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert,TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from "@react-navigation/native";
+import Feather from "react-native-vector-icons/Feather";
 
 const NameAndUser_Handle = () => {
     const navigation = useNavigation();
-    const route = useRoute();
+    const { t } = useTranslation();
     const [inputValue, setInputValue] = useState(""); // Store the user handle here
     const [userHandle, setUserHandle] = useState(""); // This will hold the fetched user handle
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // Track if the button should be disabled
-    const { t } = useTranslation();
 
     useEffect(() => {
         fetchUID();
     }, []);
 
     useEffect(() => {
-        // Pass `handleSave` and `isButtonDisabled` to `route.params`
-        navigation.setParams({
-            handleSave,
-            isButtonDisabled,
+        // Dynamically update the header right button using navigation.setOptions
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => {
+                        if (!isButtonDisabled) {
+                            handleSave(); // Now `handleSave` is called directly inside this component
+                        }
+                    }}
+                    style={{ marginRight: 10, opacity: isButtonDisabled ? 0.5 : 1 }}
+                    disabled={isButtonDisabled}
+                >
+                    <Feather name="check" size={20} />
+                </TouchableOpacity>
+            ),
         });
-    }, [isButtonDisabled, inputValue]);
+    }, [navigation, isButtonDisabled]); // Only update if `isButtonDisabled` changes
 
     const fetchUID = async () => {
         try {
@@ -106,6 +117,7 @@ const NameAndUser_Handle = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
