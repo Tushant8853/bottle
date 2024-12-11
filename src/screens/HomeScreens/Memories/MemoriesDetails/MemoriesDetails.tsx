@@ -81,6 +81,7 @@ const MemoriesDetails: React.FC = () => {
     const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
     const [savedItemsStatus, setSavedItemsStatus] = useState<boolean[]>([]);
     const [favoriteItemsStatus, setFavoriteItemsStatus] = useState<boolean[]>([]); // Specify the type as boolean[]
+    const { MemoriesName } = route.params;
 
     const [UID, setUID] = useState<string | null>(null);
     const { t } = useTranslation();
@@ -403,6 +404,8 @@ const MemoriesDetails: React.FC = () => {
                     })
                 );
                 setMemories(updatedMemories);
+                const memoryName = updatedMemories[0].name;
+                navigation.setOptions({ headerTitle: memoryName });
                 //console.log("Updated Memories:", JSON.stringify(updatedMemories, null, 2));
 
                 await checkSavedMemories(updatedMemories);

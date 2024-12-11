@@ -182,6 +182,7 @@ const WineriesDetails = () => {
             location_lat: wineryData.location_lat,
             location_long: wineryData.location_long,
           });
+          navigation.setOptions({ headerTitle: wineryData.winery_name });
           await checkFavoriteStatus(wineryData.wineries_id);
           await checkSavedStatus(wineryData.wineries_id);
         }

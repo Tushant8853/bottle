@@ -185,7 +185,7 @@ const TabNavigation: React.FC = () => {
                     component={WineriesDetails}
                     options={{
                         headerShown: true,
-                        title: t('wineries'),
+                        title: '',
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Icon name="angle-left" size={20} color="black" />
@@ -229,7 +229,7 @@ const TabNavigation: React.FC = () => {
                     component={MemoriesDetails}
                     options={{
                         headerShown: true,
-                        title: t('Memories'),
+                        title: '',
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Icon name="angle-left" size={20} color="black" />
@@ -273,7 +273,7 @@ const TabNavigation: React.FC = () => {
                     component={RestaurantsDetails}
                     options={{
                         headerShown: true,
-                        title: t('restaurants'),
+                        title: '',
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Icon name="angle-left" size={20} color="black" />
