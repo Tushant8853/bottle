@@ -351,7 +351,7 @@ const WineriesDetails = () => {
           <Image source={HeaderImg} style={styles.headerimage} />
         )}
         <View style={styles.textContainer}>
-          <Text style={styles.titletext}>{winery.name}</Text>
+          <Text style={styles.titletext} numberOfLines={2}>{winery.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={handleSavePress}>
@@ -547,6 +547,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 25,
     left: 16,
+    width:'90%'
   },
   textContainer: {},
   //////////////////////////////////////////descriptionContainer//////////////////////
@@ -666,6 +667,12 @@ const styles = StyleSheet.create({
   memoriesArrowIcons: {},
   ///////////////////////////////////// Map ///////////////////////////////////////////
   MapContainer: {
+    marginTop:16,
+    marginHorizontal: 16,
+    borderWidth:1,
+    borderColor: "#522F6080",
+    borderTopRightRadius:8,
+    borderTopLeftRadius:8,
   },
   MapIconsContainer: {
     alignItems: "center",
@@ -677,13 +684,10 @@ const styles = StyleSheet.create({
   },
   fulladdress: {
     //marginTop:1,
-    marginHorizontal: 16,
     borderRadius: 4,
+    borderTopWidth:1,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    borderLeftWidth: 1,
     borderColor: "#522F6080",
     height: 30,
     flexDirection: "row",
@@ -701,16 +705,13 @@ const styles = StyleSheet.create({
   Mapicon: {},
   ////////////////////////////////
   mapSDKContainer: {
-    marginHorizontal: 16,
     height: 110,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
-    borderWidth: 1,
     borderColor: "#522F6080",
     borderRadius: 8,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    borderBottomRightRadius:0,
+    borderBottomLeftRadius:0,
   },
   ////////////////////////////////////////// Contact Info //////////////////////////////////////////
   InfoContainer: {

@@ -620,7 +620,7 @@ const MemoriesDetails: React.FC = () => {
                             <Image source={HeaderImg} style={styles.image} />
                         )}
                         <View style={styles.textContainer}>
-                            <Text style={styles.text}>{memory.name}</Text>
+                            <Text style={styles.text} numberOfLines={2}>{memory.name}</Text>
                             <Text style={styles.subtext} numberOfLines={1}>{memory.short_description}</Text>
                         </View>
                         <View style={styles.buttonContainer}>

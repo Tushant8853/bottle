@@ -111,7 +111,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -133,7 +133,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -155,7 +155,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -171,13 +171,15 @@ const TabNavigation: React.FC = () => {
                         ),
                         headerStyle: {
                             backgroundColor: 'white',
+                            
                         },
                         headerTitleStyle: {
                             fontSize: 16,
                             fontWeight: "600",
                             color: "#333",
+                            
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -199,7 +201,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -221,7 +223,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -243,7 +245,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -265,7 +267,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -287,7 +289,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -310,7 +312,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: '600',
                             color: '#30425F',
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -333,7 +335,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: '600',
                             color: '#30425F',
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -356,7 +358,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: '600',
                             color: '#30425F',
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -383,7 +385,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -413,7 +415,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -440,7 +442,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -462,7 +464,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -484,7 +486,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -506,7 +508,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -528,7 +530,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -589,7 +591,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     })}
                 />
 
@@ -612,7 +614,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -634,7 +636,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -656,7 +658,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -678,7 +680,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -700,7 +702,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -722,7 +724,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -744,7 +746,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -766,7 +768,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -788,7 +790,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -815,7 +817,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -837,7 +839,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -859,7 +861,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
                 <Stack.Screen
@@ -881,7 +883,7 @@ const TabNavigation: React.FC = () => {
                             fontWeight: "600",
                             color: "#333",
                         },
-                        headerTitleAlign: 'left',
+                        headerTitleAlign: 'center',
                     }}
                 />
             </Stack.Navigator>
