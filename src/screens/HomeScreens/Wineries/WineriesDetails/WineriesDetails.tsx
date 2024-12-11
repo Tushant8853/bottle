@@ -710,6 +710,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: "#522F6080",
     borderRadius: 8,
+    borderBottomRightRadius:0,
+    borderBottomLeftRadius:0,
   },
   ////////////////////////////////////////// Contact Info //////////////////////////////////////////
   InfoContainer: {
