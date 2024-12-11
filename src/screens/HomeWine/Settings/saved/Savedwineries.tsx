@@ -244,15 +244,6 @@ const Savedwineries = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesome name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('savedwineries')}</Text>
-      </View>
 
       {/* List of Wineries */}
       <ScrollView>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useCallback } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import Feather from "react-native-vector-icons/Feather";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp , useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { useTranslation } from 'react-i18next';
 
@@ -112,75 +112,76 @@ const MyMemories: React.FC = () => {
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const { t } = useTranslation();
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchMemories();
+    }, [])
+  );
 
-  useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        const UID = await AsyncStorage.getItem("UID");
+  const fetchMemories = async () => {
+    try {
+      const UID = await AsyncStorage.getItem("UID");
 
-        if (!UID) {
-          console.error("UID is missing from AsyncStorage");
-          setIsLoading(false);
-          return;
-        }
-
-        const { data: memoriesData, error } = await supabase
-          .from("bottleshock_memories")
-          .select("id, user_id, name, description, star_ratings")
-          .eq("user_id", UID);
-
-        if (error) {
-          console.error("Error fetching memories:", error.message);
-          setIsLoading(false);
-          return;
-        }
-
-        const updatedMemories = await Promise.all(
-          memoriesData.map(async (memory: Memory) => {
-            const { data: gallery, error: galleryError } = await supabase
-              .from("bottleshock_memory_gallery")
-              .select("file")
-              .eq("memory_id", memory.id);
-
-            if (galleryError) {
-              console.error("Error fetching gallery:", galleryError.message);
-              return memory;
-            }
-
-            if (gallery && gallery.length > 0) {
-              memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
-            }
-
-            const { data: user, error: userError } = await supabase
-              .from("bottleshock_users")
-              .select("handle")
-              .eq("id", memory.user_id)
-              .single();
-
-            if (userError) {
-              console.error("Error fetching user handle:", userError.message);
-              return memory;
-            }
-
-            if (user) {
-              memory.handle = user.handle;
-            }
-
-            return memory;
-          })
-        );
-        setMemories(updatedMemories);
-        await checkSavedMemories(updatedMemories);
-        await checkFavoriteMemories(updatedMemories);
+      if (!UID) {
+        console.error("UID is missing from AsyncStorage");
         setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching memories:", err);
-        setIsLoading(false);
+        return;
       }
-    };
 
-    fetchMemories();
-  }, []);
+      const { data: memoriesData, error } = await supabase
+        .from("bottleshock_memories")
+        .select("id, user_id, name, description, star_ratings")
+        .eq("user_id", UID);
+
+      if (error) {
+        console.error("Error fetching memories:", error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const updatedMemories = await Promise.all(
+        memoriesData.map(async (memory: Memory) => {
+          const { data: gallery, error: galleryError } = await supabase
+            .from("bottleshock_memory_gallery")
+            .select("file")
+            .eq("memory_id", memory.id);
+
+          if (galleryError) {
+            console.error("Error fetching gallery:", galleryError.message);
+            return memory;
+          }
+
+          if (gallery && gallery.length > 0) {
+            memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
+          }
+
+          const { data: user, error: userError } = await supabase
+            .from("bottleshock_users")
+            .select("handle")
+            .eq("id", memory.user_id)
+            .single();
+
+          if (userError) {
+            console.error("Error fetching user handle:", userError.message);
+            return memory;
+          }
+
+          if (user) {
+            memory.handle = user.handle;
+          }
+
+          return memory;
+        })
+      );
+      setMemories(updatedMemories);
+      await checkSavedMemories(updatedMemories);
+      await checkFavoriteMemories(updatedMemories);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching memories:", err);
+      setIsLoading(false);
+    }
+  };
 
   const checkSavedMemories = async (fetchedMemories: Memory[]) => {
     try {

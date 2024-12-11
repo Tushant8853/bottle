@@ -227,17 +227,6 @@ const StoriesList: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.Backbotton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('Stories')}</Text>
-      </View>
-
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <Icon name="search" size={16} color="#989999" style={styles.searchIcon} />

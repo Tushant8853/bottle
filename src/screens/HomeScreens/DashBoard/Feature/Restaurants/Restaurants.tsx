@@ -112,7 +112,6 @@ const Restaurants: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-
   useEffect(() => {
     fetchRestaurants();
   }, []);
@@ -174,11 +173,10 @@ const Restaurants: React.FC = () => {
   }, [restaurants]);
 
   const handleSavePress = async (index: number): void => {
+    const UID = await AsyncStorage.getItem("UID");
     const newStatus = [...likedStatus];
     newStatus[index] = !newStatus[index];
     setLikedStatus(newStatus);
-
-    const UID = await AsyncStorage.getItem("UID");
     const restaurantId = restaurants[index].Restaurants_id;
 
     if (newStatus[index]) {

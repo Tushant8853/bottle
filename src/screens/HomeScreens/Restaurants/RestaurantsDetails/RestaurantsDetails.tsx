@@ -128,7 +128,7 @@ const SkeletonComponent = () => {
       </View>
 
       <Animated.View style={[styles.skeletonMap, { opacity }]} />
-      
+
       <View style={styles.InfoContainer}>
         {[1, 2, 3, 4].map((i) => (
           <View key={i} style={styles.contactRow}>
@@ -202,6 +202,8 @@ const RestaurantsDetails = () => {
           });
           await checkFavoriteStatus(RestaurantData.Restaurants_id);
           await checkSavedStatus(RestaurantData.Restaurants_id);
+          const memoryName = RestaurantData.restro_name;
+          navigation.setOptions({ headerTitle: memoryName });
         }
 
         // Fetch memories and related images
@@ -445,7 +447,7 @@ const RestaurantsDetails = () => {
                   <FontAwesome
                     style={styles.selectIcons}
                     name="circle-o"
-                    size={18}
+                    size={20}
                     color="#FFFFFF"
                     selectionColor={"#FFFFFF"}
                   />
@@ -454,7 +456,7 @@ const RestaurantsDetails = () => {
             ) : (
               <View style={styles.memoriesHeadertex}>
                 <Text style={styles.memoriesHeaderte}>
-                {t('nomemoriesavailable')}
+                  {t('nomemoriesavailable')}
                 </Text>
               </View>
             )}
@@ -623,8 +625,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    top: 55,
-    right: 15,
+    top: 10,
+    right: 10,
     flexDirection: "row",
     gap: 10,
   },

@@ -15,12 +15,6 @@ const Profile = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.BackButton} onPress={() => navigation.goBack()}>
-                    <Icon1 name="angle-left" size={20} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t('profile')}</Text>
-            </View>
             {/* User Handle */}
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("NameAndUser_Handle")}>
                 <View style={styles.menuIconContainer}>

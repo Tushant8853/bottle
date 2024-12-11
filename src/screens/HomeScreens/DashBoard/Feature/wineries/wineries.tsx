@@ -93,12 +93,7 @@ const Wineries: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-
   const imagePrefix = 'https://bottleshock.twic.pics/file/';
-
-  useEffect(() => {
-    fetchWineries();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -133,7 +128,7 @@ const Wineries: React.FC = () => {
     try {
       const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
-        console.error("User ID not found.");
+        console.error("User ID not found..");
         return;
       }
 
@@ -162,7 +157,7 @@ const Wineries: React.FC = () => {
     try {
       const UID = await AsyncStorage.getItem("UID");
       if (!UID) {
-        console.error("User ID not found.");
+        console.error("User ID not found....");
         return;
       }
 

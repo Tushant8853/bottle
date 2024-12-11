@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     paddingTop: 47,
   },
   headerContainer: {
-    height: 40,
+    height: 55,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

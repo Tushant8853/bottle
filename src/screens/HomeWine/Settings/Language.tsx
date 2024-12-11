@@ -24,15 +24,6 @@ const Language: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.Backbotton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Language</Text>
-      </View>
       <View style={styles.lancontainer}>
       {languages.map((lang) => (
         <TouchableOpacity
@@ -75,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     marginHorizontal: 16,
-    marginTop: 20,
 
   },
   title: {

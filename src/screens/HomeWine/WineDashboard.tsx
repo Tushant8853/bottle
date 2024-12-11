@@ -36,10 +36,10 @@ const SettingsScreen = () => {
     
   const handleOptionPress = (menu: string, option: string) => {
     console.log(`Menu: ${menu}, Selected: ${option}`);
-    if (menu === "saved" && (option === "My Memories" || option === "私の思い出")) {
+    if (menu === "saved" && (option === "My Memories" || option === "自分のメモリーズ")) {
       navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && (option === "Memories from Others" || option === "他の思い出")) {
+    if (menu === "saved" && (option === "Memories from Others" || option === "他のユーザーのメモリーズ")) {
       navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
     }
     if (menu === "saved" && (option === "Restaurants" || option === "レストラン")) {
@@ -48,13 +48,13 @@ const SettingsScreen = () => {
     if (menu === "saved" && (option === "Wineries" || option === "ワイナリー")) {
       navigation.navigate("Savedwineries"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && (option === "Stories" || option === "物語")) {
+    if (menu === "saved" && (option === "Stories" || option === "ストーリーズ")) {
       navigation.navigate("Savedstories"); // Navigate to SavedMemories screen
     }
-    if (menu === "favourite" && (option === "My Memories" || option === "私の思い出")) {
+    if (menu === "favourite" && (option === "My Memories" || option === "自分のメモリーズ")) {
       navigation.navigate("Favouritemymemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "favourite" && (option === "Memories from Others" || option === "他の思い出")) {
+    if (menu === "favourite" && (option === "Memories from Others" || option === "他のユーザーのメモリーズ")) {
       navigation.navigate("Favouriteothersmemories"); // Navigate to SavedMemories screen
     }
     if (menu === "favourite" && (option === "Restaurants" || option === "レストラン")) {
@@ -63,7 +63,7 @@ const SettingsScreen = () => {
     if (menu === "favourite" && (option === "Wineries" || option === "ワイナリー")) {
       navigation.navigate("Favouritewineries"); // Navigate to SavedMemories screen
     }
-    if (menu === "favourite" && (option === "Stories" || option === "物語")) {
+    if (menu === "favourite" && (option === "Stories" || option === "ストーリーズ")) {
       navigation.navigate("Favouritestories"); // Navigate to SavedMemories screen
     }
     if (menu === "saved" && (option === "Wines" || option === "ワイン")) {
@@ -116,10 +116,6 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('settings')}</Text>
-      </View>
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
