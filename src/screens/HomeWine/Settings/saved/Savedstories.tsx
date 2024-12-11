@@ -241,16 +241,6 @@ const Savedstories: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.Backbotton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('savedstories')}</Text>
-      </View>
 
       {/* Stories List */}
       <View style={styles.StoriesListMain}>

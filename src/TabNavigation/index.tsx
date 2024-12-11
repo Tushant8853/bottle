@@ -3,7 +3,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { Image, Platform, View, Text, Pressable } from 'react-native';
+import { Image, Platform, View, Text, Pressable, TouchableOpacity } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
 import { Linking } from 'react-native';
@@ -51,8 +51,12 @@ import Favouritestories from '../screens/HomeWine/Settings/favourite/Favouritest
 import Favouritewines from '../screens/HomeWine/Settings/favourite/Favouritewines';
 import DiscoverWines from '../screens/HomeScreens/Wineries/WineriesDetails/Feature/WineEnjoyed';
 // Create stack and tab navigators
+import Icon from "react-native-vector-icons/FontAwesome";
+import Feather from "react-native-vector-icons/Feather";
+import { useTranslation } from 'react-i18next';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 const linking = {
     prefixes: ['bottleshock://'], // Your app's deep link prefix
     config: {
@@ -65,6 +69,7 @@ const linking = {
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const { t } = useTranslation();
 
     const StackNavigation1: React.FC = () => {
         return (
@@ -91,63 +96,268 @@ const TabNavigation: React.FC = () => {
                     name="StoriesList"
                     component={StoriesList}
                     options={{
-                        headerShown: false
+                        headerShown: true,
+                        title: t('Stories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
                     }}
                 />
                 <Stack.Screen
                     name="StoriesDetail"
                     component={StoriesDetail}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('stories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="MemoriesList"
                     component={MemoriesList}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('Memories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineriesList"
                     component={WineriesList}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('wineries'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineriesDetails"
                     component={WineriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: '',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Thumbnail"
                     component={Thumbnail}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('gallery'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="MemoriesDetails"
                     component={MemoriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: '',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="RestaurantsList"
                     component={RestaurantsList}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('restaurants'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="RestaurantsDetails"
                     component={RestaurantsDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: '',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="DiscoverWinespages"
                     component={DiscoverWinespages}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('discoverwines'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontFamily: 'Hiragino Sans',
+                            fontSize: 13,
+                            fontWeight: '600',
+                            color: '#30425F',
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineListVarietal"
                     component={WineListVarietal}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('winesvarietal'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontFamily: 'Hiragino Sans',
+                            fontSize: 13,
+                            fontWeight: '600',
+                            color: '#30425F',
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineListVintage"
                     component={WineListVintage}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('vintage'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontFamily: 'Hiragino Sans',
+                            fontSize: 13,
+                            fontWeight: '600',
+                            color: '#30425F',
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="WineDetails"
@@ -157,7 +367,24 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="EditMyMemories"
                     component={EditMyMemories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('editmymemory'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="EditMemoryField"
@@ -175,7 +402,19 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="WineDashboard"
                     component={WineDashboard}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('settings'),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="LoginScreen"
@@ -185,109 +424,467 @@ const TabNavigation: React.FC = () => {
                 <Stack.Screen
                     name="Language"
                     component={Language}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: 'Language',
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Savedmymemories"
                     component={Savedmymemories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('savedmymemories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Savedothermemories"
                     component={Savedothermemories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('savedmymemories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Savedrestaurants"
                     component={Savedrestaurants}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('savedrestaurants'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Profile"
                     component={Profile}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('profile'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="NameAndUser_Handle"
                     component={NameAndUser_Handle}
-                    options={{ headerShown: false }}
+                    options={({ navigation, route }) => ({
+                        title: t('userhandle'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
+                                <Feather name="chevron-left" size={24} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerRight: () => (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    const { handleSave, isButtonDisabled } = route.params || {};
+                                    if (handleSave && !isButtonDisabled) {
+                                        handleSave();
+                                    }
+                                }}
+                                style={{ marginRight: 10, opacity: route.params?.isButtonDisabled ? 0.5 : 1 }}
+                                disabled={route.params?.isButtonDisabled}
+                            >
+                                <Feather name="check" size={20} />
+                            </TouchableOpacity>
+                        ),
+                    })}
                 />
                 <Stack.Screen
                     name="ChangePwd"
                     component={ChangePwd}
-                    options={{ headerShown: false }}
+                    options={({ navigation, route }) => ({
+                        headerShown: true,
+                        title: t('changepassword'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" style={{ marginLeft: 10 }} />
+                            </TouchableOpacity>
+                        ),
+                        headerRight: () => (
+                            <TouchableOpacity
+                                style={{ marginRight: 10 }}
+                                onPress={() => route.params?.handleSavePassword?.()}
+                                disabled={route.params?.isTickDisabled}
+                            >
+                                <Feather
+                                    name="check"
+                                    size={20}
+                                    color={route.params?.isTickDisabled ? "gray" : "black"}
+                                />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    })}
                 />
+
                 <Stack.Screen
                     name="Savedwineries"
                     component={Savedwineries}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title:t('savedwineries'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Savedstories"
                     component={Savedstories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('savedstories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Favouritemymemories"
                     component={Favouritemymemories}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('favourite_my_memories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
                 <Stack.Screen
                     name="Favouriteothersmemories"
                     component={Favouriteothersmemories}
-                    options={{ headerShown: false }}
-                /> 
+                    options={{
+                        headerShown: true,
+                        title: t('favourite_my_memories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
                 <Stack.Screen
-                name="Favouriterestaurants"
-                component={Favouriterestaurants}
-                options={{ headerShown: false }}
-            /> 
-            <Stack.Screen
-            name="Favouritestories"
-            component={Favouritestories}
-            options={{ headerShown: false }}
-        />
-        <Stack.Screen
-            name="Favouritewineries"
-            component={Favouritewineries}
-            options={{ headerShown: false }}
-        />
-         <Stack.Screen
-            name="Savedwines"
-            component={Savedwines}
-            options={{ headerShown: false }}
-        />
-        <Stack.Screen
-            name="Favouritewines"
-            component={Favouritewines}
-            options={{ headerShown: false }}
-        />
-          <Stack.Screen
+                    name="Favouriterestaurants"
+                    component={Favouriterestaurants}
+                    options={{
+                        headerShown: true,
+                        title: t('favourite_restaurants'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
+                <Stack.Screen
+                    name="Favouritestories"
+                    component={Favouritestories}
+                    options={{
+                        headerShown: true,
+                        title:t('favourite_stories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
+                <Stack.Screen
+                    name="Favouritewineries"
+                    component={Favouritewineries}
+                    options={{
+                        headerShown: true,
+                        title:t('favourite_wineries'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
+                <Stack.Screen
+                    name="Savedwines"
+                    component={Savedwines}
+                    options={{
+                        headerShown: true,
+                        title: t('savedwines'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
+                <Stack.Screen
+                    name="Favouritewines"
+                    component={Favouritewines}
+                    options={{
+                        headerShown: true,
+                        title: t('favourite_wines'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
+                />
+                <Stack.Screen
                     name="WineDetails"
                     component={WineDetails}
                     options={{ headerShown: false }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="RestaurantsDetails"
                     component={RestaurantsDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('restaurants'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
-                   <Stack.Screen
+                <Stack.Screen
                     name="MemoriesDetails"
                     component={MemoriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('Memories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
-                 <Stack.Screen
+                <Stack.Screen
                     name="StoriesDetail"
                     component={StoriesDetail}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title: t('stories'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
-                  <Stack.Screen
+                <Stack.Screen
                     name="WineriesDetails"
                     component={WineriesDetails}
-                    options={{ headerShown: false }}
+                    options={{
+                        headerShown: true,
+                        title:t('wineries'),
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <Icon name="angle-left" size={20} color="black" />
+                            </TouchableOpacity>
+                        ),
+                        headerStyle: {
+                            backgroundColor: 'white',
+                        },
+                        headerTitleStyle: {
+                            fontSize: 16,
+                            fontWeight: "600",
+                            color: "#333",
+                        },
+                        headerTitleAlign: 'left',
+                    }}
                 />
-          </Stack.Navigator>
+            </Stack.Navigator>
 
         );
     };
@@ -328,7 +925,7 @@ const TabNavigation: React.FC = () => {
                                 lineHeight: 15,
                                 textAlign: 'center',
                                 textDecorationLine: 'none',
-                                color :"#808080",
+                                color: "#808080",
                             }}>
                                 Home
                             </Text>
@@ -370,14 +967,14 @@ const TabNavigation: React.FC = () => {
                                     marginTop: os === 'ios' ? 30 : 0,
                                 }}
                             />
-                             <Text style={{
+                            <Text style={{
                                 fontFamily: 'Hiragino Sans',
                                 fontSize: 10,
                                 fontWeight: '300',
                                 lineHeight: 15,
                                 textAlign: 'center',
                                 textDecorationLine: 'none',
-                                color :"#808080",
+                                color: "#808080",
                             }}>
                                 Me
                             </Text>

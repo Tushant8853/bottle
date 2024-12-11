@@ -244,16 +244,6 @@ const Favouritewineries = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesome name="angle-left" size={20} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('favourite_wineries')}</Text>
-      </View>
-
       {/* List of Wineries */}
       <ScrollView>
         {isLoading ? (

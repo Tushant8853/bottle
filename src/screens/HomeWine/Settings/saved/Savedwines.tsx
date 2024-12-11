@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, StyleSheet, Animated, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, Animated, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Bannericon from '../../../../assets/svg/SvgCodeFile/bannericon';
@@ -197,62 +197,56 @@ const Savedwines: React.FC = () => {
     return (
         <View>
             <View style={styles.container}>
-            <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <FontAwesome name="angle-left" size={20} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('savedwines')}</Text>
-        </View>
                 <ScrollView>
-                {isLoading || isFiltering ? (
-                    <>
-                        <WineSkeletonItem />
-                        <WineSkeletonItem />
-                        <WineSkeletonItem />
-                        <WineSkeletonItem />
-                    </>
+                    {isLoading || isFiltering ? (
+                        <>
+                            <WineSkeletonItem />
+                            <WineSkeletonItem />
+                            <WineSkeletonItem />
+                            <WineSkeletonItem />
+                        </>
                     ) : savedWines.length === 0 ? (
                         <View style={styles.noDataContainer}>
-                          <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
+                            <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
                         </View>
-                ) : (
-                    savedWines.map((wine) => (
-                        <Pressable
-                            key={wine.wines_id}
-                            onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id, winery_varietals_id: wine.winery_varietals_id,  wine_id: wine.wines_id })}                        >
-                            <View style={styles.ListOfStoriesContainer}>
-                                <View style={styles.Stories}>
-                                    <View style={styles.StoriesImgContainer}>
-                                        <Image
-                                            source={{ uri: wine.image }}
-                                            style={styles.StoriesImage}
-                                        />
-                                    </View>
-                                    <View style={styles.StoriesText}>
-                                        <View style={styles.StoriesTitle}>
-                                            <View style={styles.StoriesTitleTextContainer}>
-                                                <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                                    {wine.winery_name}
+                    ) : (
+                        savedWines.map((wine) => (
+                            <Pressable
+                                key={wine.wines_id}
+                                onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id, winery_varietals_id: wine.winery_varietals_id, wine_id: wine.wines_id })}                        >
+                                <View style={styles.ListOfStoriesContainer}>
+                                    <View style={styles.Stories}>
+                                        <View style={styles.StoriesImgContainer}>
+                                            <Image
+                                                source={{ uri: wine.image }}
+                                                style={styles.StoriesImage}
+                                            />
+                                        </View>
+                                        <View style={styles.StoriesText}>
+                                            <View style={styles.StoriesTitle}>
+                                                <View style={styles.StoriesTitleTextContainer}>
+                                                    <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                                        {wine.winery_name}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                                                {wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}
+                                            </Text>
+                                            <View style={styles.StoriesDescriptionConatiner}>
+                                                <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                                    {wine.year}
+                                                </Text>
+                                                <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                                    bottleshock<Text style={styles.boldText}>{wine.bottleshock_rating}</Text>
                                                 </Text>
                                             </View>
                                         </View>
-                                        <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                                            {wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}
-                                        </Text>
-                                        <View style={styles.StoriesDescriptionConatiner}>
-                                            <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                                {wine.year}
-                                            </Text>
-                                            <Text style={styles.StoriesDescription} numberOfLines={1}>
-                                                bottleshock<Text style={styles.boldText}>{wine.bottleshock_rating}</Text>
-                                            </Text>
-                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        </Pressable>
-                    ))
-                )}
+                            </Pressable>
+                        ))
+                    )}
                 </ScrollView>
             </View>
         </View>
@@ -274,7 +268,7 @@ const styles = StyleSheet.create({
     },
     backButton: {
         marginRight: 10, // Add some margin for better spacing
-      },
+    },
     header: {
         flexDirection: "row",
         alignItems: "center",
@@ -282,8 +276,8 @@ const styles = StyleSheet.create({
         paddingTop: 55,
         backgroundColor: "white",
         width: "100%",
-      },
-      headerTitle: {
+    },
+    headerTitle: {
         fontSize: 16,
         fontWeight: "600",
         textAlign: "center",
@@ -291,7 +285,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         width: '100%'
-      },
+    },
     TitleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -300,16 +294,16 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     noDataContainer: {
-   
+
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 120,
-      },
-      noDataText: {
+    },
+    noDataText: {
         fontSize: 16,
         color: '#808080',
         textAlign: 'center',
-      },
+    },
     leftContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -405,7 +399,7 @@ const styles = StyleSheet.create({
     StoriesTitleTextContainer: {
         flex: 1,
     },
-    
+
 });
 
 export default Savedwines;

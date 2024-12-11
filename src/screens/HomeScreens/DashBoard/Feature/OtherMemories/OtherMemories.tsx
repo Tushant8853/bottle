@@ -167,7 +167,7 @@ const OtherMemories: React.FC = () => {
       {item.thumbnail ? null : (
         <Text style={styles.errorText}>Failed to load image</Text>
       )}
-      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
     </Pressable>
   );
 

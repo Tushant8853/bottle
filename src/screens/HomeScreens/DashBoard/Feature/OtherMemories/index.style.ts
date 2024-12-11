@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     marginBottom: 1,
     borderRadius: 11,
-    marginRight: 5,
   },
   cardTitle: {
     fontSize: 14,

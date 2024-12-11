@@ -182,6 +182,7 @@ const WineriesDetails = () => {
             location_lat: wineryData.location_lat,
             location_long: wineryData.location_long,
           });
+          navigation.setOptions({ headerTitle: wineryData.winery_name });
           await checkFavoriteStatus(wineryData.wineries_id);
           await checkSavedStatus(wineryData.wineries_id);
         }
@@ -381,7 +382,7 @@ const WineriesDetails = () => {
               memoriesData.map((memory) => (
                 <Pressable key={memory.id} onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
                   <TwicImg src={memory.file} style={styles.memoriesImage} />
-                  <FontAwesome style={styles.selectIcons} name="circle-o" size={18} color="#FFFFFF" selectionColor={'#FFFFFF'} />
+                  <FontAwesome style={styles.selectIcons} name="circle-o" size={20} color="#FFFFFF" selectionColor={'#FFFFFF'} />
                 </Pressable>
               ))
             ) : (
@@ -493,9 +494,9 @@ const WineriesDetails = () => {
           <Text style={styles.hashtags}>{winery.hashtags}</Text>
         </View>
       </View>
-
-
-      <WineEnjoyed id={wineryId} />
+      <View>
+      <WineEnjoyed id={wineryId}  />
+      </View>
       <View style={styles.bottom}></View>
     </ScrollView>
   );
@@ -522,8 +523,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    top: 55,
-    right: 15,
+    top: 10,
+    right: 10,
     flexDirection: "row",
     gap: 10,
   },
@@ -575,6 +576,7 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     lineHeight: 21,
     textAlign: "left",
+    color: "#522F60"
   },
   descriptionIcons: {},
   descriptiontextContainer: {},
@@ -713,7 +715,6 @@ const styles = StyleSheet.create({
   ////////////////////////////////////////// Contact Info //////////////////////////////////////////
   InfoContainer: {
     marginHorizontal: 16,
-    marginVertical: 4,
   },
   infocomponent: {
     flexDirection: "row",
