@@ -351,7 +351,7 @@ const WineriesDetails = () => {
           <Image source={HeaderImg} style={styles.headerimage} />
         )}
         <View style={styles.textContainer}>
-          <Text style={styles.titletext}>{winery.name}</Text>
+          <Text style={styles.titletext} numberOfLines={2}>{winery.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={handleSavePress}>
@@ -547,6 +547,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 25,
     left: 16,
+    width:'90%'
   },
   textContainer: {},
   //////////////////////////////////////////descriptionContainer//////////////////////

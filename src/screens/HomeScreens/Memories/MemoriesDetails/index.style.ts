@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 25,
         left: 16,
+        width:'90%'
     },
     subtext: {
         width: "40%",
