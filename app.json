@@ -13,7 +13,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.instalane2.bottleshock"
+      "bundleIdentifier": "com.instalane2.bottleshock",
+      "deploymentTarget": 14
     },
     "android": {
       "adaptiveIcon": {
@@ -27,12 +28,13 @@
     },
     "extra": {
       "eas": {
-        "projectId": "7a1e75a6-f78b-4eae-bf0d-bf70a98770c3"
+        "projectId": "b94fb8ac-d851-4c5f-a1fc-d9e6ed08ab20"
       }
     },
     "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/7a1e75a6-f78b-4eae-bf0d-bf70a98770c3"
-    }
+    },
+    "owner": "instalane2"
   }
 }
