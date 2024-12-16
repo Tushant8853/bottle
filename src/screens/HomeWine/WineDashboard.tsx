@@ -95,24 +95,25 @@ const SettingsScreen = () => {
   const handleLogout = async () => {
     try {
       // Clear authentication data (e.g., tokens) from AsyncStorage
-      await AsyncStorage.removeItem('UID'); // Replace with your actual token key
-      // Optionally, clear any other data you might have cached
-
+      await AsyncStorage.removeItem('UID');  // Remove UID from AsyncStorage
+      await AsyncStorage.removeItem('email'); // Optionally remove email
+  
       // Dispatch Redux action to clear user state
-      dispatch(setLoginUserId('')); // Set the userId to empty string to reflect logout in Redux state
-
+      dispatch(setLoginUserId(''));  // Clear user ID in Redux
+  
       // Reset the navigation stack to LoginScreen
-      // This assumes the AuthNavigation will manage the login screen flow
       navigation.reset({
         index: 0,
         routes: [{ name: 'LoginScreen' }],
       });
-
+  
       console.log('User logged out');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+  
+  
 
   return (
     <View style={styles.container}>

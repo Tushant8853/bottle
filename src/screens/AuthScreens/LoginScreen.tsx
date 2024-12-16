@@ -58,35 +58,32 @@ const LoginScreen: React.FC = () => {
       return unsubscribe;
     }, [navigation, i18n.language]);
   
-  const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-  
-    if (error) {
-      Alert.alert(t("login_failed"), t(error.code),  
-      [
+    const handleLogin = async () => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+    
+      if (error) {
+        Alert.alert(t("login_failed"), t(error.code), [
           {
             text: t("ok"),
-          }
-        ]
-      );
-    } else if (data.user) {
-      const UID = data.user.id;
-      try {
-        await AsyncStorage.setItem("UID", UID);
-        await AsyncStorage.setItem("email", email);
-        console.log("UID and email stored successfully:", UID, email);
-      } catch (storageError) {
-        console.error("Error storing UID and password:", storageError);
+          },
+        ]);
+      } else if (data.user) {
+        const UID = data.user.id;
+        try {
+          await AsyncStorage.setItem('UID', UID);  // Store UID in AsyncStorage
+          await AsyncStorage.setItem('email', email);  // Optionally store email
+    
+          // Dispatch Redux action to store userId
+          dispatch(setLoginUserId(UID));
+        } catch (storageError) {
+          console.error("Error storing UID:", storageError);
+        }
       }
-
-      const userId = data.user.id;
-      dispatch(setLoginUserId(userId));
-    }
-  };
-  
+    };
+    
 
   const isButtonDisabled = !(email && password);
 
