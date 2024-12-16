@@ -100,7 +100,6 @@ const LoginScreen: React.FC = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>{t("email")}</Text>
         <TextInput
-          ref={emailInputRef}
           style={styles.input}
           value={email}
           onChangeText={setEmail}

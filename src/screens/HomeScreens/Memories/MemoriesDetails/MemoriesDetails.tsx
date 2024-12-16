@@ -23,7 +23,6 @@ import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
-const HeaderImg = require("../../../../assets/png/HeaderIcon.png");
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 import { useTranslation } from 'react-i18next';
 import SkeletonLoader from "./SkeletonLoader";
@@ -617,7 +616,7 @@ const MemoriesDetails: React.FC = () => {
                         {thumbnailImage ? (
                             <TwicImg src={thumbnailImage.url} style={styles.image} />
                         ) : (
-                            <Image source={HeaderImg} style={styles.image} />
+                            <Text> {t('nomemoriesavailable')}</Text>
                         )}
                         <View style={styles.textContainer}>
                             <Text style={styles.text} numberOfLines={2}>{memory.name}</Text>

@@ -99,8 +99,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('Stories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -121,8 +121,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('stories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -143,8 +143,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('Memories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -165,8 +165,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('wineries'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -189,8 +189,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: '',
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -211,8 +211,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('gallery'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -233,8 +233,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: '',
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -255,8 +255,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('restaurants'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -277,8 +277,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: '',
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}   >
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -299,8 +299,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('discoverwines'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -322,8 +322,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('winesvarietal'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -345,8 +345,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('vintage'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -373,8 +373,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('editmymemory'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -430,8 +430,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: 'Language',
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -452,8 +452,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('savedmymemories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -474,8 +474,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('savedmymemories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -496,8 +496,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('savedrestaurants'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -518,8 +518,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('profile'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -539,7 +539,7 @@ const TabNavigation: React.FC = () => {
                     options={({ navigation, route }) => ({
                         title: t('userhandle'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <Feather name="chevron-left" size={24} color="black" />
                             </TouchableOpacity>
                         ),
@@ -566,7 +566,7 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('changepassword'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <Icon name="angle-left" size={20} color="black" style={{ marginLeft: 10 }} />
                             </TouchableOpacity>
                         ),
@@ -603,7 +603,7 @@ const TabNavigation: React.FC = () => {
                         title:t('savedwineries'),
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -624,8 +624,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('savedstories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -646,8 +646,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('favourite_my_memories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -668,8 +668,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('favourite_my_memories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -690,8 +690,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('favourite_restaurants'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -712,8 +712,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title:t('favourite_stories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -734,8 +734,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title:t('favourite_wineries'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -756,8 +756,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('savedwines'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -778,8 +778,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('favourite_wines'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -805,8 +805,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('restaurants'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -827,8 +827,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('Memories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -849,8 +849,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: t('stories'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
@@ -871,8 +871,8 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title:t('wineries'),
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon name="angle-left" size={20} color="black" />
+                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                                <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
                         headerStyle: {
