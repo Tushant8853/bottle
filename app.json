@@ -35,6 +35,16 @@
     "updates": {
       "url": "https://u.expo.dev/7a1e75a6-f78b-4eae-bf0d-bf70a98770c3"
     },
-    "owner": "instalane2"
+    "owner": "instalane2",
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "bottleshock",
+          "organization": "intln"
+        }
+      ]
+    ]
   }
 }
