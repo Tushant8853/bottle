@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
         color: '#522F60',
         marginTop: 3,
         marginBottom: 2,
+        marginLeft: 4
     },
     ListOfStoriesContainer: {
         marginHorizontal:4,

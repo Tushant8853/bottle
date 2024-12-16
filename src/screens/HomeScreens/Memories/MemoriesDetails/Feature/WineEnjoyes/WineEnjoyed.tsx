@@ -5,7 +5,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from 'react-i18next';
-
+import Bannericon from '../../../../../../assets/svg/SvgCodeFile/bannericon';
 
 interface Wine {
     image: string;
@@ -190,7 +190,7 @@ const DiscoverWines: React.FC = () => {
             <View style={styles.container}>
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
-                        <Image source={require('../../../../../../assets/png/MymemoriesIcon.png')} style={styles.MemoriesImg} />
+                    <Bannericon width={13} height={22} color="#522F60" />
                         <Text style={styles.text}>{t('winesenjoyed')}</Text>
                     </View>
                     <AntDesign name="arrowright" size={20} color="#522F60" />
