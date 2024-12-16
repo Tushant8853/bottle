@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Icons from "react-native-vector-icons/Ionicons";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
@@ -93,8 +93,12 @@ const Savedstories: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchSavedstories();
+    }, [])
+  );
 
-  useEffect(() => {
     const fetchSavedstories = async () => {
       try {
         setIsLoading(true);
@@ -170,9 +174,8 @@ const Savedstories: React.FC = () => {
       }
     };
 
-    fetchSavedstories();
-  }, []);
 
+  
 
   const handleFavoritePress = async (index: number) => {
     try {
@@ -239,6 +242,12 @@ const Savedstories: React.FC = () => {
     await shareDeepLink(title, message, route);
   };
 
+  const removeStory = (storyId: number) => {
+    setStoriesList((prevStories) => prevStories.filter(story => story.id !== storyId));
+    setSavedStatus((prevStatus) => prevStatus.filter((_, index) => storiesList[index].id !== storyId));
+    setFavoriteStatus((prevStatus) => prevStatus.filter((_, index) => storiesList[index].id !== storyId));
+  };
+
   return (
     <View style={styles.container}>
 
@@ -259,7 +268,7 @@ const Savedstories: React.FC = () => {
               <Pressable
                 key={index}
                 onPress={() =>
-                  navigation.navigate("StoriesDetail", { memoryId: story.id })
+                  navigation.navigate("StoriesDetail",{ memoryId: story.id })
                 }
               >
                 <View style={styles.Stories}>
