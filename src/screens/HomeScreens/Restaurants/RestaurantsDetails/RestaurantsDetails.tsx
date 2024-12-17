@@ -419,14 +419,6 @@ const RestaurantsDetails = () => {
             />
             <Text style={styles.memoriesHeadertext}> {t('Memories')}</Text>
           </View>
-          <View style={styles.rightContent}>
-            <AntDesign
-              style={styles.memoriesArrowIcons}
-              name="arrowright"
-              size={20}
-              color="#522F60"
-            />
-          </View>
         </View>
 
         <View style={styles.memoriesMainContainer}>
@@ -444,13 +436,6 @@ const RestaurantsDetails = () => {
                   }
                 >
                   <TwicImg src={memory.file} style={styles.memoriesImage} />
-                  <FontAwesome
-                    style={styles.selectIcons}
-                    name="circle-o"
-                    size={20}
-                    color="#FFFFFF"
-                    selectionColor={"#FFFFFF"}
-                  />
                 </Pressable>
               ))
             ) : (

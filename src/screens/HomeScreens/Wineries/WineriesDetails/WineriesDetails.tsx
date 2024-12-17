@@ -371,9 +371,6 @@ const WineriesDetails = () => {
             <FontAwesome style={styles.memoriesIcons} name="image" size={16} color="#522F60" />
             <Text style={styles.memoriesHeadertext}> {t('Memories')}</Text>
           </View>
-          <View style={styles.rightContent}>
-            <AntDesign style={styles.memoriesArrowIcons} name="arrowright" size={20} color="#522F60" />
-          </View>
         </View>
 
         <View style={styles.memoriesMainContainer}>
@@ -382,7 +379,6 @@ const WineriesDetails = () => {
               memoriesData.map((memory) => (
                 <Pressable key={memory.id} onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id })}>
                   <TwicImg src={memory.file} style={styles.memoriesImage} />
-                  <FontAwesome style={styles.selectIcons} name="circle-o" size={20} color="#FFFFFF" selectionColor={'#FFFFFF'} />
                 </Pressable>
               ))
             ) : (

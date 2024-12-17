@@ -929,7 +929,7 @@ const TabNavigation: React.FC = () => {
                                 textDecorationLine: 'none',
                                 color: "#808080",
                             }}>
-                                Home
+                                {t('home')}
                             </Text>
 
                         </View>
@@ -978,7 +978,7 @@ const TabNavigation: React.FC = () => {
                                 textDecorationLine: 'none',
                                 color: "#808080",
                             }}>
-                                Me
+                                {t('me')}
                             </Text>
                         </View>
                     ),

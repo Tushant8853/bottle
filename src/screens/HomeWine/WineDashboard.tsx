@@ -222,7 +222,8 @@ const SettingsScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Login Section */}
+      <View style={styles.bottom}></View>
+
 
     </View>
   );
@@ -341,6 +342,10 @@ const styles = StyleSheet.create({
   lastSection: {
     marginBottom: 10,
   },
+  bottom:{
+    marginBottom:100,
+  },
+
 });
 
 export default SettingsScreen; ''

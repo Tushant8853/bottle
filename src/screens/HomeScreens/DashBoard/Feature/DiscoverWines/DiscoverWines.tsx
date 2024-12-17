@@ -156,15 +156,15 @@ const DiscoverWines: React.FC = () => {
     return (
         <View>
             <View style={styles.container}>
+            <Pressable onPress={() => navigation.navigate('DiscoverWinespages')}>
                 <View style={styles.TitleContainer}>
                     <View style={styles.leftContainer}>
                         <Bannericon width={13} height={32} color="#522F60" />
                         <Text style={styles.text}>{t('discoverwines')}</Text>
-                    </View>
-                    <Pressable onPress={() => navigation.navigate('DiscoverWinespages')}>
+                    </View>                   
                         <Icon name="chevron-right" size={16} color="#522F60" />
-                    </Pressable>
                 </View>
+            </Pressable>
 
                 {isLoading ? (
                     <>
