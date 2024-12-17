@@ -23,17 +23,17 @@ const SettingsScreen = () => {
   const dispatch = useDispatch();
   const [savedDropdownVisible, setSavedDropdownVisible] = useState(false);
   const [favouriteDropdownVisible, setFavouriteDropdownVisible] = useState(false);
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
 
-    const toggleSavedDropdown = () => {
-      setSavedDropdownVisible(!savedDropdownVisible);
-    };
-    
-    const toggleFavouriteDropdown = () => {
-      setFavouriteDropdownVisible(!favouriteDropdownVisible);
-    };
-    
+  const toggleSavedDropdown = () => {
+    setSavedDropdownVisible(!savedDropdownVisible);
+  };
+
+  const toggleFavouriteDropdown = () => {
+    setFavouriteDropdownVisible(!favouriteDropdownVisible);
+  };
+
   const handleOptionPress = (menu: string, option: string) => {
     console.log(`Menu: ${menu}, Selected: ${option}`);
     if (menu === "saved" && (option === "My Memories" || option === "自分のメモリーズ")) {
@@ -97,23 +97,23 @@ const SettingsScreen = () => {
       // Clear authentication data (e.g., tokens) from AsyncStorage
       await AsyncStorage.removeItem('UID');  // Remove UID from AsyncStorage
       await AsyncStorage.removeItem('email'); // Optionally remove email
-  
+
       // Dispatch Redux action to clear user state
       dispatch(setLoginUserId(''));  // Clear user ID in Redux
-  
+
       // Reset the navigation stack to LoginScreen
       navigation.reset({
         index: 0,
         routes: [{ name: 'LoginScreen' }],
       });
-  
+
       console.log('User logged out');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
-  
-  
+
+
 
   return (
     <View style={styles.container}>
@@ -146,7 +146,7 @@ const SettingsScreen = () => {
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
-   
+
 
         <TouchableOpacity
           style={styles.menuItem}
@@ -160,18 +160,18 @@ const SettingsScreen = () => {
         </TouchableOpacity>
 
         {savedDropdownVisible && (
-  <View style={styles.dropdown}>
-    {savedOptions.map((option, index) => (
-      <TouchableOpacity
-        key={index}
-        style={styles.dropdownItem}
-        onPress={() => handleOptionPress("saved", option)}
-      >
-        <Text style={styles.dropdownText}>{option}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-)}
+          <View style={styles.dropdown}>
+            {savedOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dropdownItem}
+                onPress={() => handleOptionPress("saved", option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {/* Favourite Menu */}
         <TouchableOpacity
@@ -186,18 +186,18 @@ const SettingsScreen = () => {
         </TouchableOpacity>
 
         {favouriteDropdownVisible && (
-  <View style={styles.dropdown}>
-    {favouriteOptions.map((option, index) => (
-      <TouchableOpacity
-        key={index}
-        style={styles.dropdownItem}
-        onPress={() => handleOptionPress("favourite", option)}
-      >
-        <Text style={styles.dropdownText}>{option}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-)}
+          <View style={styles.dropdown}>
+            {favouriteOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dropdownItem}
+                onPress={() => handleOptionPress("favourite", option)}
+              >
+                <Text style={styles.dropdownText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {/* Activities */}
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Language")}>
@@ -208,15 +208,18 @@ const SettingsScreen = () => {
           <Icon name="chevron-forward-outline" size={16} color="black" />
         </TouchableOpacity>
 
-       
 
-      
+
+
         <View style={styles.lastSection}></View>
         <View style={styles.loginSection}>
-          <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.loginOption}>{t('logout')}</Text>
-          </TouchableOpacity>
-        </View>
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <TouchableOpacity onPress={handleLogout}>
+      <Text style={styles.loginOption}>{t('logout')}</Text>
+    </TouchableOpacity>
+    <Text>19</Text>
+  </View>
+</View>
       </ScrollView>
 
       {/* Login Section */}
@@ -340,4 +343,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;''
+export default SettingsScreen; ''
