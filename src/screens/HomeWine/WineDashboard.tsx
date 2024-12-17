@@ -213,13 +213,13 @@ const SettingsScreen = () => {
 
         <View style={styles.lastSection}></View>
         <View style={styles.loginSection}>
-  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-    <TouchableOpacity onPress={handleLogout}>
-      <Text style={styles.loginOption}>{t('logout')}</Text>
-    </TouchableOpacity>
-    <Text>19</Text>
-  </View>
-</View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <TouchableOpacity onPress={handleLogout}>
+              <Text style={styles.loginOption}>{t('logout')}</Text>
+            </TouchableOpacity>
+            <Text>19</Text>
+          </View>
+        </View>
       </ScrollView>
 
       {/* Login Section */}
