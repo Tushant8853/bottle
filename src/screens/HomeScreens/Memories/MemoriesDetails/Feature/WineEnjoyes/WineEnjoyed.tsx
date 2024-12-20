@@ -1,4 +1,4 @@
-import { View, Text, Image, Animated } from 'react-native';
+import { View, Text, Image, Animated ,TouchableOpacity} from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './index.style';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -6,7 +6,8 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from 'react-i18next';
 import Bannericon from '../../../../../../assets/svg/SvgCodeFile/bannericon';
-
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 interface Wine {
     image: string;
     year: number;
@@ -16,6 +17,7 @@ interface Wine {
     bottleshock_rating: number;
     winery_id: number;
     wines_id: number;
+    varietal_id: number;
 }
 
 const SkeletonLoader = () => {
@@ -100,7 +102,7 @@ const DiscoverWines: React.FC = () => {
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const { id } = route.params;
     const { t } = useTranslation();
-
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     useEffect(() => {
         const fetchWines = async () => {
@@ -187,55 +189,58 @@ const DiscoverWines: React.FC = () => {
 
     return (
         <View>
-            <View style={styles.container}>
-                <View style={styles.TitleContainer}>
-                    <View style={styles.leftContainer}>
+        <View style={styles.container}>
+            <View style={styles.TitleContainer}>
+                <View style={styles.leftContainer}>
                     <Bannericon width={13} height={22} color="#522F60" />
-                        <Text style={styles.text}>{t('winesenjoyed')}</Text>
-                    </View>
-                    <AntDesign name="arrowright" size={20} color="#522F60" />
+                    <Text style={styles.text}>{t('winesenjoyed')}</Text>
                 </View>
+                <AntDesign name="arrowright" size={20} color="#522F60" />
+            </View>
 
-                {isLoading ? (
-    <SkeletonLoader />
-) : wines.length > 0 ? (
-    wines.map((wine, index) => (
-        <View key={wine.wines_id || index} style={styles.ListOfStoriesContainer}>
-            <View style={styles.Stories}>
-                <View style={styles.StoriesImgContainer}>
-                    <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
-                </View>
-                <View style={styles.StoriesText}>
-                    <View style={styles.StoriesTitle}>
-                        <View style={styles.StoriesTitleTextContainer}>
-                            <Text style={styles.StoriesSubtitle} numberOfLines={1}>
-                                {wine.winery_name || 'Unknown Winery'}
-                            </Text>
+            {isLoading ? (
+                <SkeletonLoader />
+            ) : wines.length > 0 ? (
+                wines.map((wine, index) => (
+                    <TouchableOpacity
+                        style={styles.ListOfStoriesContainer} 
+                        onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id , winery_varietals_id: wine.varietal_id ,wine_id: wine.wines_id })}
+                    >
+                        <View style={styles.Stories}>
+                            <View style={styles.StoriesImgContainer}>
+                                <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
+                            </View>
+                            <View style={styles.StoriesText}>
+                                <View style={styles.StoriesTitle}>
+                                    <View style={styles.StoriesTitleTextContainer}>
+                                        <Text style={styles.StoriesSubtitle} numberOfLines={1}>
+                                            {wine.winery_name || 'Unknown Winery'}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.StoriesTitleText} numberOfLines={2}>
+                                    {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
+                                </Text>
+                                <View style={styles.StoriesDescriptionConatiner}>
+                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                        {wine.year}
+                                    </Text>
+                                    <Text style={styles.StoriesDescription} numberOfLines={1}>
+                                        bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
+                                    </Text>
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                    <Text style={styles.StoriesTitleText} numberOfLines={2}>
-                        {wine.brand_name ? `${wine.brand_name}, ${wine.varietal_name}` : wine.varietal_name}
-                    </Text>
-                    <View style={styles.StoriesDescriptionConatiner}>
-                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                            {wine.year}
-                        </Text>
-                        <Text style={styles.StoriesDescription} numberOfLines={1}>
-                            bottleshock<Text style={styles.boldText}> {wine.bottleshock_rating}</Text>
-                        </Text>
-                    </View>
+                    </TouchableOpacity>
+                ))
+            ) : (
+                <View style={styles.noDataContainer}>
+                    <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
                 </View>
-            </View>
+            )}
         </View>
-    ))
-) : (
-    <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>{t('Nodataavailable')}</Text>
     </View>
-)}
 
-            </View>
-        </View>
     );
 }
 
