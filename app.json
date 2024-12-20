@@ -45,6 +45,14 @@
           "project": "bottleshock",
           "organization": "intln"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow bottleshock to access your camera",
+          "microphonePermission": "Allow bottleshock to access your microphone",
+          "recordAudioAndroid": true
+        }
       ]
     ]
   }
