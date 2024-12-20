@@ -6,6 +6,7 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import Markdown from 'react-native-markdown-display';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { shareDeepLink } from '../../../../utils/shareUtils';
 
 installTwicPics({
   domain: "https://bottleshock.twic.pics/",
@@ -212,6 +213,14 @@ const StoriesDetail: React.FC = () => {
       console.error('Error handling save press:', error);
     }
   };
+  const handleShare = async (index: number) => {
+  //  const story = story;
+    const title = story.name;
+    const message = story.short_description;
+    const route = `/app/story/${story.id}`;
+
+    await shareDeepLink(title, message, route);
+  };
 
   const extractContentAfterFirstImage = (content: string) => {
     const imagePattern = /!\[.*?\]\(.*?\)/;
@@ -242,7 +251,7 @@ const StoriesDetail: React.FC = () => {
           <Pressable style={styles.button} onPress={handleFavoritePress}>
             <Ionicons name={favoriteStatus ? "heart" : "heart-outline"} size={24} />
           </Pressable>
-          <Pressable style={styles.button}>
+          <Pressable style={styles.button} onPress={() => handleShare(story.id)}>
             <Ionicons name="share-outline" size={24} />
           </Pressable>
         </View>

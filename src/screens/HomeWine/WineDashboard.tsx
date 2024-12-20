@@ -217,7 +217,7 @@ const SettingsScreen = () => {
             <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.loginOption}>{t('logout')}</Text>
             </TouchableOpacity>
-            <Text>19</Text>
+            <Text>21</Text>
           </View>
         </View>
       </ScrollView>

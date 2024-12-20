@@ -14,7 +14,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.instalane2.bottleshock",
-      "deploymentTarget": 14
+      "deploymentTarget": 14,
+      "associatedDomains": ["applinks:www.bottleshock.wine"]
     },
     "android": {
       "adaptiveIcon": {

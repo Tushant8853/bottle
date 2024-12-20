@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 68,
         justifyContent: 'center',
+        paddingTop: 8
         // justifyContent: 'space-evenly',
     },
     StoriesTitle: {
