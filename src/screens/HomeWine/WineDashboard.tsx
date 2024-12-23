@@ -217,11 +217,10 @@ const SettingsScreen = () => {
             <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.loginOption}>{t('logout')}</Text>
             </TouchableOpacity>
-            <Text>21</Text>
           </View>
         </View>
       </ScrollView>
-
+      <Text style={styles.versiontext}>Version: 1.0.40</Text>
       <View style={styles.bottom}></View>
 
 
@@ -332,6 +331,12 @@ const styles = StyleSheet.create({
     color: '"black"',
     fontSize: 14,
     marginBottom: 10,
+  },
+  versiontext: {
+    padding: 10,
+    color: 'grey',
+    marginLeft: 10,
+    fontSize: 12,
   },
   loginOption: {
     color: '#522F60',
