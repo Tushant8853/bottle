@@ -194,11 +194,12 @@ const styles = StyleSheet.create({
   },
   bottomText: {
     fontFamily: 'Hiragino Sans',
-    fontSize: 15,
     fontWeight: '600',
     lineHeight: 24,
     textAlign: 'center',
-    color:'#522F60'
+    color:'#522F60',
+    flex: 1,
+    marginTop:5,
   },
   ScannerContainer:{
     marginTop:31,
