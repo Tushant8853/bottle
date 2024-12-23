@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-
+  const isFocused = useIsFocused();
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
@@ -28,13 +29,15 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      {isFocused && (
+        <CameraView style={styles.camera} facing={facing} active={true}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
     </View>
   );
 }
