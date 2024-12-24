@@ -125,7 +125,7 @@ const TabNavigation: React.FC = () => {
                     component={StoriesDetail}
                     options={{
                         headerShown: true,
-                        title: t('stories'),
+                        title: t('Stories'),
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <Icon name="angle-left" size={25} color="black" />
@@ -853,7 +853,7 @@ const TabNavigation: React.FC = () => {
                     component={StoriesDetail}
                     options={{
                         headerShown: true,
-                        title: t('stories'),
+                        title: t('Stories'),
                         headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <Icon name="angle-left" size={25} color="black" />
