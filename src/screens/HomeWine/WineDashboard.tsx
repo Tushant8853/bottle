@@ -48,7 +48,7 @@ const SettingsScreen = () => {
     if (menu === "saved" && (option === "Wineries" || option === "ワイナリー")) {
       navigation.navigate("Savedwineries"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && (option === "Stories" || option === "ストーリーズ")) {
+    if (menu === "saved" && (option === "Stories" || option === "ストーリー")) {
       navigation.navigate("Savedstories"); // Navigate to SavedMemories screen
     }
     if (menu === "favourite" && (option === "My Memories" || option === "自分のメモリーズ")) {
@@ -63,7 +63,7 @@ const SettingsScreen = () => {
     if (menu === "favourite" && (option === "Wineries" || option === "ワイナリー")) {
       navigation.navigate("Favouritewineries"); // Navigate to SavedMemories screen
     }
-    if (menu === "favourite" && (option === "Stories" || option === "ストーリーズ")) {
+    if (menu === "favourite" && (option === "Stories" || option === "ストーリー")) {
       navigation.navigate("Favouritestories"); // Navigate to SavedMemories screen
     }
     if (menu === "saved" && (option === "Wines" || option === "ワイン")) {
@@ -79,7 +79,7 @@ const SettingsScreen = () => {
     t("othermemories"),
     t("restaurants"),
     t("wineries"),
-    t("stories"),
+    t("Stories"),
     t("wines"),
   ];
 
@@ -88,7 +88,7 @@ const SettingsScreen = () => {
     t("othermemories"),
     t("restaurants"),
     t("wineries"),
-    t("stories"),
+    t("Stories"),
     t("wines"),
   ];
 
