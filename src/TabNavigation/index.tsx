@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, Platform, View, Text, Pressable, TouchableOpacity } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './navigationTypes';
@@ -57,19 +57,26 @@ import { useTranslation } from 'react-i18next';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const linking = {
-    prefixes: ['bottleshock://'], // Your app's deep link prefix
-    config: {
-        screens: {
-            StoriesList: '',
-            StoriesDetail: 'story/:id', // Handle the deep link like `bottleshock://story/2`
-        },
+const linkingConfig = {
+  prefixes: ['bottleshock://app', 'https://www.bottleshock.wine/app'],
+  config: {
+    screens: {
+      LoginScreen: '/login',
+      SignUpScreen: '/signup',
+      StoriesList: '/story',
+      StoriesDetail: '/story/:id',
+      RestaurantsList: '/restaurantslist',
+      Home: '/home', // Flattened path for Home
+      Profile: '/profile', // Flattened path for Profile
     },
+  },
 };
+
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const { t } = useTranslation();
+
 
     const StackNavigation1: React.FC = () => {
         return (
@@ -80,7 +87,6 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
-
         );
     };
 
@@ -394,12 +400,12 @@ const TabNavigation: React.FC = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>
-
         );
     };
 
     const StackNavigation3: React.FC = () => {
         return (
+           
             <Stack.Navigator initialRouteName="WineDashboard">
                 <Stack.Screen
                     name="WineDashboard"
@@ -887,6 +893,7 @@ const TabNavigation: React.FC = () => {
                     }}
                 />
             </Stack.Navigator>
+      
 
         );
     };
@@ -894,6 +901,7 @@ const TabNavigation: React.FC = () => {
     const os = Platform.OS;
 
     return (
+
         <Tab.Navigator
             initialRouteName="UserDashboard"
             screenOptions={{
@@ -944,13 +952,14 @@ const TabNavigation: React.FC = () => {
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                             <SVGComponent
+                            width={72} height={72}
                                 style={{
                                     width: 72,
                                     height: 72,
                                     marginTop: os === 'ios' ? 30 : 0,
                                     marginBottom: 24,
-                                }} />
-
+                                }} 
+                                />
                         </View>
                     ),
                     headerShown: false,

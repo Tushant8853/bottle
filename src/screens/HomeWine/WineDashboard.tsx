@@ -39,7 +39,7 @@ const SettingsScreen = () => {
     if (menu === "saved" && (option === "My Memories" || option === "自分のメモリーズ")) {
       navigation.navigate("Savedmymemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "saved" && (option === "Memories from Others" || option === "他のユーザーのメモリーズ")) {
+    if (menu === "saved" && (option === "Memories from Others" || option === "他のbottleshockerのメモリーズ")) {
       navigation.navigate("Savedothermemories"); // Navigate to SavedMemories screen
     }
     if (menu === "saved" && (option === "Restaurants" || option === "レストラン")) {
@@ -54,7 +54,7 @@ const SettingsScreen = () => {
     if (menu === "favourite" && (option === "My Memories" || option === "自分のメモリーズ")) {
       navigation.navigate("Favouritemymemories"); // Navigate to SavedMemories screen
     }
-    if (menu === "favourite" && (option === "Memories from Others" || option === "他のユーザーのメモリーズ")) {
+    if (menu === "favourite" && (option === "Memories from Others" || option === "他のbottleshockerのメモリーズ")) {
       navigation.navigate("Favouriteothersmemories"); // Navigate to SavedMemories screen
     }
     if (menu === "favourite" && (option === "Restaurants" || option === "レストラン")) {
@@ -220,7 +220,7 @@ const SettingsScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <Text style={styles.versiontext}>Version: 1.0.40</Text>
+      <Text style={styles.versiontext}>Version: 1.0.42</Text>
       <View style={styles.bottom}></View>
 
 

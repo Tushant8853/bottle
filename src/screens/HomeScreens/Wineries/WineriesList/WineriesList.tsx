@@ -276,7 +276,7 @@ const WineriesList = () => {
         />
         {showComingSoon && (
           <View style={styles.comingSoonContainer}>
-            <Text style={styles.comingSoonText}>{t('Coming soon')}</Text>
+            <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
           </View>
         )}
         <FontAwesome name="microphone" size={16} color="#989999" />

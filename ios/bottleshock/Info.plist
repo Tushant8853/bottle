@@ -27,12 +27,17 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>bottleshock</string>
           <string>com.instalane2.bottleshock</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>bottleshock</string>
+    </array>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
