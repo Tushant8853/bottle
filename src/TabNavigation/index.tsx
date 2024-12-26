@@ -57,28 +57,20 @@ import { useTranslation } from 'react-i18next';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const linkingConfig = {
-  prefixes: ['bottleshock://app', 'https://www.bottleshock.wine/app'],
-  config: {
-    screens: {
-      LoginScreen: '/login',
-      SignUpScreen: '/signup',
-      StoriesList: '/story',
-      StoriesDetail: '/story/:id',
-      RestaurantsList: '/restaurantslist',
-      Home: '/home', // Flattened path for Home
-      Profile: '/profile', // Flattened path for Profile
-    },
-  },
-};
-
 
 const TabNavigation: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const { t } = useTranslation();
+    const handleGoBack = () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('Dashboard'); // Replace 'Home' with your default screen name
+        }
+      };
 
 
-    const StackNavigation1: React.FC = () => {
+    const Home: React.FC = () => {
         return (
             <Stack.Navigator initialRouteName="Dashboard">
                 <Stack.Screen
@@ -90,9 +82,9 @@ const TabNavigation: React.FC = () => {
         );
     };
 
-    const StackNavigation2: React.FC = () => {
+    const UserDashboard: React.FC = () => {
         return (
-            <Stack.Navigator initialRouteName="UserDashboard">
+            <Stack.Navigator initialRouteName="Dashboard">
                 <Stack.Screen
                     name="Dashboard"
                     component={Dashboard}
@@ -195,7 +187,7 @@ const TabNavigation: React.FC = () => {
                         headerShown: true,
                         title: '',
                         headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                            <TouchableOpacity onPress={handleGoBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                                 <Icon name="angle-left" size={25} color="black" />
                             </TouchableOpacity>
                         ),
@@ -403,9 +395,8 @@ const TabNavigation: React.FC = () => {
         );
     };
 
-    const StackNavigation3: React.FC = () => {
+    const WineGroup: React.FC = () => {
         return (
-           
             <Stack.Navigator initialRouteName="WineDashboard">
                 <Stack.Screen
                     name="WineDashboard"
@@ -917,10 +908,10 @@ const TabNavigation: React.FC = () => {
         >
             <Tab.Screen
                 name="UserDashboard"
-                component={StackNavigation2}
+                component={UserDashboard}
                 options={{
                     tabBarIcon: ({ focused }) => (
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }} >
                             <SVGComponentWine
                                 style={{
                                     width: 72,
@@ -939,7 +930,6 @@ const TabNavigation: React.FC = () => {
                             }}>
                                 {t('home')}
                             </Text>
-
                         </View>
                     ),
                     headerShown: false,
@@ -947,7 +937,7 @@ const TabNavigation: React.FC = () => {
             />
             <Tab.Screen
                 name="Home"
-                component={StackNavigation1}
+                component={Home}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -967,7 +957,7 @@ const TabNavigation: React.FC = () => {
             />
             <Tab.Screen
                 name="WineGroup"
-                component={StackNavigation3}
+                component={WineGroup}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>

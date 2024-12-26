@@ -78,7 +78,6 @@ const SkeletonLoader = () => {
 const StoriesDetail: React.FC = () => {
   const route = useRoute();
   const { memoryId } = route.params as RouteParams;
-
   const [story, setStory] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [favoriteStatus, setFavoriteStatus] = useState(false);
@@ -217,8 +216,7 @@ const StoriesDetail: React.FC = () => {
   //  const story = story;
     const title = story.name;
     const message = story.short_description;
-    const route = `/app/story/${story.id}`;
-
+    const route = `story/${story.id}`;
     await shareDeepLink(title, message, route);
   };
 

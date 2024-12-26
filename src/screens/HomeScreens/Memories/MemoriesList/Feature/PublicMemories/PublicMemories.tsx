@@ -16,6 +16,7 @@ import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp,useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import { shareDeepLink } from "../../../../../../utils/shareUtils";
 
 interface Memory {
   id: string;
@@ -362,6 +363,12 @@ const PublicMemories: React.FC = () => {
       </View>
     );
   };
+   const handleShare = async ({ item: memory}: { item: Memory}) => {
+        const title = memory.name;
+        const message = 'checkout public memories';
+        const route = `memories`;
+        await shareDeepLink(title, message, route);
+      };
 
   const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => (
     <View key={memory.id} style={styles.container}>
@@ -397,7 +404,7 @@ const PublicMemories: React.FC = () => {
                 style={styles.Icons}
               />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleShare({ item: memory })}>
               <Ionicons
                 style={styles.Icons}
                 name="share-outline"

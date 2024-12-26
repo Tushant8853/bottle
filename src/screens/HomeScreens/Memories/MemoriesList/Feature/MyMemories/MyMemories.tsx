@@ -17,6 +17,7 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp , useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from "../../../../../../utils/shareUtils";
 
 
 interface Memory {
@@ -373,6 +374,13 @@ const MyMemories: React.FC = () => {
       </View>
     );
   };
+
+   const handleShare = async ({ item: memory}: { item: Memory}) => {
+      const title = memory.name;
+      const message = memory.description;
+      const route = `memories`;
+      await shareDeepLink(title, message, route);
+    };
   
   const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
@@ -408,7 +416,7 @@ const MyMemories: React.FC = () => {
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleShare({ item: memory })}>
               <Ionicons
                 style={styles.Icons}
                 name="share-outline"

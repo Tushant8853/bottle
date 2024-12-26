@@ -22,10 +22,11 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../../navigationTypes";
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 import { useTranslation } from 'react-i18next';
 import SkeletonLoader from "./SkeletonLoader";
+import { shareDeepLink } from "../../../../utils/shareUtils";
 
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
@@ -64,13 +65,12 @@ const formatDate = (dateString: string) => {
 };
 type MemoriesDetailsRouteParams = {
     id: string;
-    from: string;
 };
 
 const MemoriesDetails: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<{ params: MemoriesDetailsRouteParams }, 'params'>>();
-    const { id, from } = route.params;
+    const { id } = route.params;
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const [memories, setMemories] = useState<Memory[]>([]);
     const [expandedMemory, setExpandedMemory] = useState<string | null>(null); // State to track expanded description
@@ -80,12 +80,11 @@ const MemoriesDetails: React.FC = () => {
     const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
     const [savedItemsStatus, setSavedItemsStatus] = useState<boolean[]>([]);
     const [favoriteItemsStatus, setFavoriteItemsStatus] = useState<boolean[]>([]); // Specify the type as boolean[]
-    const { MemoriesName } = route.params;
-
     const [UID, setUID] = useState<string | null>(null);
     const { t } = useTranslation();
+    const [from, setfrom] = useState<string | null>(null);
 
-
+    
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
     };
@@ -99,7 +98,6 @@ const MemoriesDetails: React.FC = () => {
                 console.error('Error fetching UID from AsyncStorage:', error);
             }
         };
-
         fetchUID();
     }, []);
 
@@ -121,6 +119,8 @@ const MemoriesDetails: React.FC = () => {
                     const savedRestaurants = savedRestaurantsResponse.data.map(row => row.restaurant_id);
 
                     const status = memories.map((memory) => {
+                        const memoryType = UID === memory.user_id ? 'MyMemories' : 'othermemories22';
+                        setfrom(memoryType);
                         if (memory.winery_id) {
                             return savedWineries.includes(memory.winery_id);
                         }
@@ -605,6 +605,13 @@ const MemoriesDetails: React.FC = () => {
     if (isLoading) {
         return <SkeletonLoader />;
     }
+  const handleShare = async ({ item: memory}: { item: Memory}) => {
+      const title = memory.name;
+      const message = memory.description;
+      const route = `memories/${memory.id}`;
+      await shareDeepLink(title, message, route);
+    };
+
 
     return (
         <ScrollView style={styles.container}>
@@ -643,7 +650,7 @@ const MemoriesDetails: React.FC = () => {
                                     size={24}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button}>
+                            <TouchableOpacity style={styles.button} onPress={() => handleShare({ item: memory })}>
                                 <Ionicons name="share-outline" size={24} />
                             </TouchableOpacity>
                         </View>

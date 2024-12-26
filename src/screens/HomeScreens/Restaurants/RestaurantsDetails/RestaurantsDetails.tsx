@@ -25,6 +25,7 @@ import MapView, { Marker } from "react-native-maps";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from "../../../../utils/shareUtils";
 
 
 const { width } = Dimensions.get("window");
@@ -376,6 +377,13 @@ const RestaurantsDetails = () => {
       </View>
     );
   }
+    const handleShare = async () => {
+        const title = Restaurant.name;
+        const message = Restaurant.description;
+        const route = `restaurant/${Restaurant.id}`;
+        await shareDeepLink(title, message, route);
+      };
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -403,7 +411,7 @@ const RestaurantsDetails = () => {
               size={24}
             />
           </Pressable>
-          <Pressable style={styles.button}>
+          <Pressable style={styles.button} onPress={() => handleShare()}>
             <Ionicons name="share-outline" size={24} />
           </Pressable>
         </View>

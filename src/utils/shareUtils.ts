@@ -11,14 +11,13 @@ export const shareDeepLink = async (
   message: string,
   route: string
 ) => {
-  const baseURL = 'https://www.bottleshock.wine';
+  const baseURL = 'https://www.bottleshock.wine/app/';
   const webLink = `${baseURL}${route}`;
 
   const playStoreLink = `https://play.google.com/store/apps/details?id=com.instalane2.bottleshock`;
   const appStoreLink = `https://apps.apple.com/us/app/id1234567890`;
 
   try {
-    // Construct the deep link for the app
     const appLink = `bottleshock://app${route}`;
     const isAppInstalled = await Linking.canOpenURL(appLink);
 
@@ -29,13 +28,12 @@ export const shareDeepLink = async (
         message: `${message}\n\nOpen in App: ${appLink}\nView Online: ${webLink}`,
       });
     } else {
-      // Fallback to web and app store links if the app is not installed
       const storeLink = Platform.OS === 'android' ? playStoreLink : appStoreLink;
       await Share.share({
         title,
         message: `${message}\n\nView Online: ${webLink}\nDownload App: ${storeLink}`,
       });
-    }
+     }
   } catch (error) {
     console.error('Error sharing link:', error);
   }

@@ -9,7 +9,7 @@ export type RootStackParamList = {
     WineriesList: undefined;
     UserDashboardScreen: undefined;
     WineDashboardScreen: undefined;
-    MemoriesDetails: { id: string; from: string };
+    MemoriesDetails: { id: string};
     RestaurantsList: undefined;
     RestaurantsDetails: { id: number };
     WineriesDetails: { id: number };
@@ -36,4 +36,7 @@ export type RootStackParamList = {
     Favouriterestaurants: undefined;
     Favouritestories: undefined;
     Favouritewines: undefined;
+    SignUpScreen: undefined;
+    LoginScreen: undefined;
+    TabNavigation: undefined;
 };

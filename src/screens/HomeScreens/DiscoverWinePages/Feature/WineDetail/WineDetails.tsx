@@ -10,6 +10,7 @@ import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import WineDetailsSkeleton from './WineDetailsSkeleton';
+import { shareDeepLink } from '../../../../../utils/shareUtils';
 
 type WineDetailsRouteProp = RouteProp<{
   params: {
@@ -251,6 +252,14 @@ const WineDetails: React.FC = () => {
   if (isLoading) {
     return <WineDetailsSkeleton />;
   }
+   const handleShare = async () => {
+    const title = t('Wine_Details'); // Use translation for the title if applicable
+    const message = t('Check_out_this_wine'); // Use translation for the message if applicable
+    const route = `wine/${winery_id}/${winery_varietals_id}/${wine_id}`;
+
+    await shareDeepLink(title, message, route);
+          };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -275,7 +284,7 @@ const WineDetails: React.FC = () => {
           />
         </Pressable>
         {/* Share Icon */}
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity style={styles.iconContainer} onPress={handleShare}>
           <Ionicons name="share-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>

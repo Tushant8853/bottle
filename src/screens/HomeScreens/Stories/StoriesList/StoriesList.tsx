@@ -87,7 +87,6 @@ const SkeletonLoader = () => {
 const StoriesList: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const imagePrefix = "https://bottleshock.twic.pics/file/";
-
   const [search, setSearch] = useState<string>("");
   const [storiesList, setStoriesList] = useState<Story[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
@@ -220,8 +219,7 @@ const StoriesList: React.FC = () => {
     const story = storiesList[index];
     const title = story.name;
     const message = story.short_description;
-    const route = `/app/story/${story.id}`;
-
+    const route = `stories`;
     await shareDeepLink(title, message, route);
   };
 
