@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
         lineHeight: 22,
     },
     ButtonContainer: {
-        borderTopWidth: 1,
+        borderTopWidth:0.33,
+        borderColor: '#3C3C435C',
         width: '100%',
     }
 });
