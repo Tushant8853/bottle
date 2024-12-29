@@ -21,11 +21,6 @@ const Stack = createNativeStackNavigator();
 const linking = {
   prefixes: ['bottleshock://app', 'https://www.bottleshock.wine/app'],
   config: {
-    initialRouteName:{
-      screens:{
-        DashBoard
-      },
-    },
     screens: {
       UserDashboard: {
         screens: {
