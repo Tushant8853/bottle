@@ -1,4 +1,4 @@
-import { View, Text, Image, Animated ,TouchableOpacity} from 'react-native';
+import { View, Text, Image, Animated, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import styles from './index.style';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Bannericon from '../../../../../../assets/svg/SvgCodeFile/bannericon';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+
 interface Wine {
     image: string;
     year: number;
@@ -188,7 +189,6 @@ const DiscoverWines: React.FC = () => {
     }, [id]);
 
     return (
-        <View>
         <View style={styles.container}>
             <View style={styles.TitleContainer}>
                 <View style={styles.leftContainer}>
@@ -203,8 +203,9 @@ const DiscoverWines: React.FC = () => {
             ) : wines.length > 0 ? (
                 wines.map((wine, index) => (
                     <TouchableOpacity
+                        key={index}
                         style={styles.ListOfStoriesContainer} 
-                        onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id , winery_varietals_id: wine.varietal_id ,wine_id: wine.wines_id })}
+                        onPress={() => navigation.navigate("WineDetails", { winery_id: wine.winery_id, winery_varietals_id: wine.varietal_id, wine_id: wine.wines_id })}
                     >
                         <View style={styles.Stories}>
                             <View style={styles.StoriesImgContainer}>
@@ -239,8 +240,6 @@ const DiscoverWines: React.FC = () => {
                 </View>
             )}
         </View>
-    </View>
-
     );
 }
 
