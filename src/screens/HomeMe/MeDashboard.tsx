@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
-import { Button, StyleSheet, Text, Pressable, View, Modal } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, Image, Button, Pressable, ActivityIndicator } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useIsFocused } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import CameraConfirmationModal from './Modal/Modal1';
 import CameraSVG from '../../assets/svg/SvgCodeFile/camera';
 import Icon from "react-native-vector-icons/Feather";
 import Entypo from "react-native-vector-icons/Entypo";
-import CameraConfirmationModal from './Modal/Modal1';
+import { Ionicons } from '@expo/vector-icons';
+
 export default function App() {
-  const [facing, setFacing] = useState<CameraType>('back');
+  const [cameraType, setCameraType] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [capturedImage, setCapturedImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
+  const [firstValue, setFirstValue] = useState("");
+  const cameraRef = useRef(null);
 
   if (!permission) {
     return <View />;
@@ -20,24 +23,119 @@ export default function App() {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>We need your permission to access the camera</Text>
         <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
+  interface File {
+    uri: string;
+    type: string;
+    name: string;
   }
 
-  function handleCameraClick() {
-    setIsModalVisible(true);
+  interface WineLabels {
+    [key: string]: string;
   }
+
+  interface ObjectRecognitionResponse {
+    data: {
+      wine_labels: WineLabels;
+    };
+  }
+
+  const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
+    console.log("Inside the object recognition API...");
+    const formData = new FormData();
+
+    const file: File = {
+      uri: imageUri,
+      type: "image/jpeg",
+      name: "photo.jpg",
+    };
+    formData.append("image", {
+      uri: file.uri,
+      type: file.type,
+      name: file.name,
+    } as any);
+
+    try {
+      const response = await fetch(
+        "https://ehvzjahhgmpwbobyyfwy.supabase.co/functions/v1/objectRecognition",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodnpqYWhoZ21wd2JvYnl5Znd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEzNjQ5MTQsImV4cCI6MjAyNjk0MDkxNH0.nrJFwPUqd1e0BCGkgIh7Lra-HQapr7mU-hWYj6aQeo4`,
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        console.error("Error response body:", errorDetails);
+      }
+      const jsonResponse: ObjectRecognitionResponse = await response.json();
+      console.log("Object recognition response:", jsonResponse);
+      const wineLabels = jsonResponse.data.wine_labels;
+      const first = Object.values(wineLabels).slice(0, 1)[0];
+      console.log("First value:", first);
+      setFirstValue(first as string);
+      return jsonResponse;
+    } catch (error) {
+      console.error("Error recognizing object:", error);
+      return null;
+    }
+  };
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync();
+        setCapturedImage(photo.uri);
+        setLoading(true);
+
+        console.log("Calling object recognition API...");
+        const result = await callObjectRecognitionAPI(photo.uri);
+        setLoading(false);
+        setIsModalVisible(true);
+      } catch (error) {
+        console.error("Error during recognition:", error);
+        setLoading(false);
+      }
+    }
+  };
+
+
+  const resetImage = () => {
+    setCapturedImage(null);
+    setIsModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
-      {isFocused && (
-        <CameraView style={styles.camera} facing={facing} active={true}>
+      {capturedImage ? (
+        <View style={styles.previewContainer}>
+          <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+          {loading && (
+            <View style={styles.loaderOverlay}>
+              <View style={styles.loaderBox}>
+                <ActivityIndicator size="large" color="#fff" />
+                <Text style={styles.loaderText}>Loading</Text>
+                <Pressable style={styles.loaderCloseButton} onPress={resetImage}>
+                  <Text style={styles.loaderCancleText}>Cancel</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
+      ) : (
+        <CameraView
+          ref={cameraRef}
+          style={styles.camera}
+          facing={cameraType}
+        >
           <View style={styles.overlay}>
             <Pressable style={[styles.circleButton, styles.closeButton]}>
               <Ionicons name="close" size={20} color="white" />
@@ -46,7 +144,9 @@ export default function App() {
             <View style={styles.cameravideContainer}>
               <Pressable
                 style={[styles.circleButtoncamer, styles.cameraButton]}
-                onPress={handleCameraClick}
+                onPress={() => {
+                  takePicture();
+                }}
               >
                 <Entypo name="camera" size={47} color="white" />
               </Pressable>
@@ -61,12 +161,16 @@ export default function App() {
             </Pressable>
           </View>
         </CameraView>
-      )}
+      )
+      }
       <CameraConfirmationModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
+        onRetake={resetImage}
+        onCancel={resetImage}
+        firstTwoValues={firstValue}
       />
-    </View>
+    </View >
   );
 }
 
@@ -74,6 +178,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  loaderOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 100,
+  },
+  loaderBox: {
+    width: 150,
+    height: 150,
+    borderRadius: 15,
+    backgroundColor: '#B3B3B3D1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  loaderText: {
+    marginTop: 20,
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  loaderCloseButton: {
+    borderTopWidth: 0.33,
+    borderColor: '#3C3C435C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    width: 150,
+  },
+  loaderCancleText: {
+    fontSize: 12,
+    color: '#fff',
+    marginTop: 4
   },
   message: {
     textAlign: 'center',
@@ -138,5 +285,17 @@ const styles = StyleSheet.create({
   customButton: {
     borderWidth: 3,
     borderColor: 'white',
+  },
+  previewContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  capturedImage: {
+    width: '90%',
+    height: '70%',
+    borderRadius: 10,
   },
 });

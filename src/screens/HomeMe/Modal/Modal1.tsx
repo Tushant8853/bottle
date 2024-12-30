@@ -6,13 +6,21 @@ import CameraInputModal from './Modal2';  // Import the new modal
 interface Props {
     visible: boolean;
     onClose: () => void;
+    onRetake: () => void;
+    onCancel: () => void;
+    firstTwoValues:string;
 }
 
-const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose }) => {
+const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel,firstTwoValues}) => {
     const [isInputModalVisible, setInputModalVisible] = useState(false);
 
     const handleNoClick = () => {
-        setInputModalVisible(true); 
+        setInputModalVisible(true);
+        onClose();
+    };
+
+    const handleRetake = () => {
+        onRetake();
         onClose();
     };
 
@@ -29,7 +37,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose }) => {
                         <View style={styles.ModalConfirmationContainer} >
                             <View style={styles.iosModalTitleContainer}>
                                 <Text style={styles.iosModalTitle}>
-                                    Is this Hertelendy Vineyards Cabernet Sauvignon 2013?
+                                    Is this {firstTwoValues} Cabernet Sauvignon 2013?
                                 </Text>
                             </View>
                             <View style={styles.iosModalMessageContainer}>
@@ -43,6 +51,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose }) => {
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
                                     onClose();
+                                    onRetake();
                                 }}
                             >
                                 <Text style={styles.iosButtonText}>Yes!</Text>
@@ -55,19 +64,23 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose }) => {
                             </Pressable>
                             <Pressable
                                 style={[styles.iosButton, styles.iosCancelButton]}
-                                onPress={onClose}
+                                onPress={() => {
+                                    onCancel();
+                                    onClose();
+                                }}// Only closes the modal
                             >
                                 <Text style={styles.iosCancelButtonText}>Cancel</Text>
                             </Pressable>
                         </View>
                     </View>
                 </View>
-            </Modal>
+            </Modal >
 
             {/* The second modal */}
-            <CameraInputModal 
-                visible={isInputModalVisible} 
-                onClose={() => setInputModalVisible(false)} 
+            <CameraInputModal
+                visible={isInputModalVisible}
+                onClose={() => setInputModalVisible(false)}
+                onRetake={onRetake}
             />
         </>
     );
@@ -98,7 +111,7 @@ const styles = StyleSheet.create({
         height: 44,
     },
     iosModalMessageContainer: {
-        marginTop:14,
+        marginTop: 14,
         width: '100%',
         height: 18,
     },
@@ -120,7 +133,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     iosButton: {
-        borderTopWidth:0.33,
+        borderTopWidth: 0.33,
         borderColor: '#3C3C435C',
         paddingVertical: 12,
         alignItems: 'center',

@@ -5,13 +5,14 @@ import ThankYouModal from './Modal4';
 interface Props {
     visible: boolean;
     onClose: () => void;
+    onRetake: () => void;
 }
 
-const WineReviewModal: React.FC<Props> = ({ visible, onClose }) => {
+const WineReviewModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
     const [thankYouVisible, setThankYouVisible] = useState(false);
 
     const handleButtonPress = () => {
-        setThankYouVisible(true); 
+        setThankYouVisible(true);
         onClose();
     };
 
@@ -56,7 +57,11 @@ const WineReviewModal: React.FC<Props> = ({ visible, onClose }) => {
                     </View>
                 </View>
             </Modal>
-            <ThankYouModal visible={thankYouVisible} onClose={closeThankYouModal} />
+            <ThankYouModal
+                visible={thankYouVisible}
+                onClose={closeThankYouModal}
+                onRetake={onRetake}
+            />
         </>
     );
 };

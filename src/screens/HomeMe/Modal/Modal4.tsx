@@ -1,12 +1,24 @@
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
+import { RootStackParamList } from "../../../TabNavigation/navigationTypes"
 interface Props {
     visible: boolean;
     onClose: () => void;
+    onRetake: () => void;
+
 }
 
-const ThankYouModal: React.FC<Props> = ({ visible, onClose }) => {
+const ThankYouModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const handleOkPress = () => {
+        onClose();
+        onRetake();
+        // navigation.navigate('Dashboard');
+        onClose();
+        onRetake();
+    };
+
     return (
         <Modal
             transparent={true}
@@ -21,7 +33,7 @@ const ThankYouModal: React.FC<Props> = ({ visible, onClose }) => {
                     </View>
 
                     <View style={styles.ButtonContainer}>
-                        <Pressable style={styles.okButton} onPress={onClose}>
+                        <Pressable style={styles.okButton} onPress={handleOkPress} >
                             <Text style={styles.okButtonText}>OK</Text>
                         </Pressable>
                     </View>
@@ -47,7 +59,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         height: 166,
     },
-    MessageContainer:{
+    MessageContainer: {
         height: 101,
     },
     message: {
@@ -74,7 +86,7 @@ const styles = StyleSheet.create({
         lineHeight: 22,
     },
     ButtonContainer: {
-        borderTopWidth:0.33,
+        borderTopWidth: 0.33,
         borderColor: '#3C3C435C',
         width: '100%',
     }
