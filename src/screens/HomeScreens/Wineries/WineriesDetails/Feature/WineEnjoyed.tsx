@@ -16,6 +16,7 @@ import { supabase } from "../../../../../../backend/supabase/supabaseClient";
 import styles from './index.style';
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { useTranslation } from 'react-i18next';
+import React from 'react';
 
 
 interface Wine {

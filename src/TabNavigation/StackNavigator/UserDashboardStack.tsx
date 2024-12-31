@@ -139,7 +139,7 @@ const UserDashboardStack: React.FC = () => {
             headerShown: true,
             title: '',
             headerLeft: () => (
-                <TouchableOpacity onPress={handleGoBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                     <Icon name="angle-left" size={25} color="black" />
                 </TouchableOpacity>
             ),
