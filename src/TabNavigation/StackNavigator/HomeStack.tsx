@@ -1,8 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from './navigationTypes';
-import MeDashboard from '../screens/HomeMe/MeDashboard';
+import { RootStackParamList } from '../navigationTypes';
+import MeDashboard from '../../screens/HomeMe/MeDashboard';
 import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator();

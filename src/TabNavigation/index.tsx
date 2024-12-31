@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform, View, Text } from 'react-native';
-import UserDashboardStack from './UserDashboardStack';
-import HomeStack from './HomeStack';
-import WineGroupStack from './WineGroupStack';
+import UserDashboardStack from './StackNavigator/UserDashboardStack';
+import HomeStack from './StackNavigator/HomeStack';
+import WineGroupStack from './StackNavigator/WineGroupStack';
 import SVGComponent from '../assets/svg/SvgCodeFile/bottleTabIcon';
 import SVGComponentWine from '../assets/svg/SvgCodeFile/WineIconTab';
 import SVGComponentPerson from '../assets/svg/SvgCodeFile/PersoneTabIcon';
