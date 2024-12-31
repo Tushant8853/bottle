@@ -6,8 +6,11 @@ import CameraSVG from '../../assets/svg/SvgCodeFile/camera';
 import Icon from "react-native-vector-icons/Feather";
 import Entypo from "react-native-vector-icons/Entypo";
 import { Ionicons } from '@expo/vector-icons';
+import { RootStackParamList } from "../../TabNavigation/navigationTypes";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 export default function App() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [cameraType, setCameraType] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedImage, setCapturedImage] = useState(null);
@@ -76,12 +79,13 @@ export default function App() {
         const errorDetails = await response.text();
         console.error("Error response body:", errorDetails);
       }
-      const jsonResponse: ObjectRecognitionResponse = await response.json();
+      const jsonResponse = await response.json();
       console.log("Object recognition response:", jsonResponse);
-      const wineLabels = jsonResponse.data.wine_labels;
-      const first = Object.values(wineLabels).slice(0, 1)[0];
-      console.log("First value:", first);
-      setFirstValue(first as string);
+      const data = jsonResponse.data as Record<string, string>;
+      const firstKey = Object.keys(data)[0];
+      const firstValue = data[firstKey];
+      console.log("First value:", firstValue);
+      setFirstValue(firstValue);
       return jsonResponse;
     } catch (error) {
       console.error("Error recognizing object:", error);
@@ -156,7 +160,9 @@ export default function App() {
               </Pressable>
             </View>
 
-            <Pressable style={[styles.circleButton, styles.customButton]}>
+            <Pressable
+              onPress={() => navigation.navigate("DisplaySavedData")}
+              style={[styles.circleButton, styles.customButton]}>
               <CameraSVG size={25} color="black" />
             </Pressable>
           </View>

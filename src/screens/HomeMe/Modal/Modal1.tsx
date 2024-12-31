@@ -8,10 +8,10 @@ interface Props {
     onClose: () => void;
     onRetake: () => void;
     onCancel: () => void;
-    firstTwoValues:string;
+    firstTwoValues: string;
 }
 
-const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel,firstTwoValues}) => {
+const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, firstTwoValues }) => {
     const [isInputModalVisible, setInputModalVisible] = useState(false);
 
     const handleNoClick = () => {
@@ -37,7 +37,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         <View style={styles.ModalConfirmationContainer} >
                             <View style={styles.iosModalTitleContainer}>
                                 <Text style={styles.iosModalTitle}>
-                                    Is this {firstTwoValues} Cabernet Sauvignon 2013?
+                                    Is this {JSON.stringify(firstTwoValues)}?
                                 </Text>
                             </View>
                             <View style={styles.iosModalMessageContainer}>
