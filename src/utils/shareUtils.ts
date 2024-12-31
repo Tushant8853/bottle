@@ -21,19 +21,19 @@ export const shareDeepLink = async (
     const appLink = `bottleshock://app${route}`;
     const isAppInstalled = await Linking.canOpenURL(appLink);
 
-    if (isAppInstalled) {
-      // Share the deep link if the app is installed
-      await Share.share({
-        title,
-        message: `${message}\n\nOpen in App: ${appLink}\nView Online: ${webLink}`,
-      });
-    } else {
+    // if (isAppInstalled) {
+    //   // Share the deep link if the app is installed
+    //   await Share.share({
+    //     title,
+    //     message: `${message}\n\nOpen in App: ${appLink}\nView Online: ${webLink}`,
+    //   });
+    // } else {
       const storeLink = Platform.OS === 'android' ? playStoreLink : appStoreLink;
       await Share.share({
         title,
         message: `${message}\n\nView Online: ${webLink}\nDownload App: ${storeLink}`,
       });
-     }
+    //  }
   } catch (error) {
     console.error('Error sharing link:', error);
   }
