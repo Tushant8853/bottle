@@ -195,7 +195,6 @@ const DiscoverWines: React.FC = () => {
                     <Bannericon width={13} height={22} color="#522F60" />
                     <Text style={styles.text}>{t('winesenjoyed')}</Text>
                 </View>
-                <AntDesign name="arrowright" size={20} color="#522F60" />
             </View>
 
             {isLoading ? (

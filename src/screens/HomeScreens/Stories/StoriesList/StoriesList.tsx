@@ -300,6 +300,7 @@ const StoriesList: React.FC = () => {
               </Pressable>
             ))
           )}
+           <View style={styles.bottom}></View>
         </ScrollView>
       </View>
     </View>
@@ -461,5 +462,8 @@ comingSoonText: {
     color: '#522F60',
     fontSize: 14,
     fontWeight: 'bold',
+},
+bottom:{
+  marginBottom:100,
 },
 });
