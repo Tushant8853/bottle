@@ -161,7 +161,7 @@ export default function App() {
         >
           <View style={styles.overlay}>
             <Pressable
-              onPress={() => navigation.navigate("Dashboard")}
+              onPress={() => navigation.navigate("UserDashboard")}
               style={[styles.circleButton, styles.closeButton]}>
               <Ionicons name="close" size={20} color="white" />
             </Pressable>
