@@ -15,7 +15,7 @@ export const shareDeepLink = async (
   const webLink = `${baseURL}${route}`;
 
   const playStoreLink = `https://play.google.com/store/apps/details?id=com.instalane2.bottleshock`;
-  const appStoreLink = `https://apps.apple.com/us/app/id1234567890`;
+  const appStoreLink = `https://apps.apple.com/us/app/id`;
 
   try {
     const appLink = `bottleshock://app${route}`;
@@ -31,7 +31,7 @@ export const shareDeepLink = async (
       const storeLink = Platform.OS === 'android' ? playStoreLink : appStoreLink;
       await Share.share({
         title,
-        message: `${message}\n\nView Online: ${webLink}\nDownload App: ${storeLink}`,
+        message: `${message}\n\nBottleshock Link: ${webLink}`,
       });
     //  }
   } catch (error) {
