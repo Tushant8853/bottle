@@ -73,10 +73,8 @@ const LoginScreen: React.FC = () => {
       } else if (data.user) {
         const UID = data.user.id;
         try {
-          await AsyncStorage.setItem('UID', UID);  // Store UID in AsyncStorage
-          await AsyncStorage.setItem('email', email);  // Optionally store email
-    
-          // Dispatch Redux action to store userId
+          await AsyncStorage.setItem('UID', UID);
+          await AsyncStorage.setItem('email', email);
           dispatch(setLoginUserId(UID));
         } catch (storageError) {
           console.error("Error storing UID:", storageError);

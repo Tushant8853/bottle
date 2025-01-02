@@ -7,7 +7,7 @@ import i18n from './i18n';
 import * as Sentry from '@sentry/react-native';
 import { Linking } from 'react-native';
 import AuthNavigation from './src/AuthNavigation/index';
-
+import { uploadImagesToS3 } from './src/screens/HomeMe/Upload_S3/Upload_S3';
 
 // Initialize Sentry for error monitoring
 Sentry.init({
@@ -36,15 +36,17 @@ const App: React.FC = () => {
     handleInitialLink();
 
     return () => {
-      subscription.remove(); // Cleanup event listener
+      subscription.remove();
     };
   }, []);
-
+  useEffect(() => {
+    console.log('Calling s3 upload');
+    uploadImagesToS3();
+  }, []);
   return (
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
-          <AuthNavigation />
-
+        <AuthNavigation />
       </I18nextProvider>
     </Provider>
   );

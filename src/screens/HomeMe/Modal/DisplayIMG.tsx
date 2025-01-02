@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, FlatList, StyleSheet, Text } from 'react-native';
+import { View, Image, FlatList, StyleSheet, Text, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system'; // Ensure to import expo-file-system
+import uuid from 'react-native-uuid'; // Ensure to import uuid
 
 const DisplaySavedImages = () => {
   const [savedImages, setSavedImages] = useState<string[]>([]);
@@ -17,6 +19,21 @@ const DisplaySavedImages = () => {
     fetchSavedImages();
   }, []);
 
+  const handleDelete = async (uri: string) => {
+    try {
+      // Remove the image from AsyncStorage
+      const updatedImages = savedImages.filter(image => image !== uri);
+      await AsyncStorage.setItem('savedImages', JSON.stringify(updatedImages));
+      setSavedImages(updatedImages);
+
+      // Delete the image from file system
+      await FileSystem.deleteAsync(uri);
+      console.log('Image deleted:', uri);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {savedImages.length > 0 ? (
@@ -24,11 +41,14 @@ const DisplaySavedImages = () => {
           data={savedImages}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <Image source={{ uri: item }} style={styles.image} />
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: item }} style={styles.image} />
+              <Button title="Delete" onPress={() => handleDelete(item)} />
+            </View>
           )}
         />
       ) : (
-        <Text>No  images found.</Text>
+        <Text>No images found.</Text>
       )}
     </View>
   );
@@ -40,10 +60,14 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
   },
+  imageContainer: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
   image: {
     width: '100%',
     height: 200,
-    marginVertical: 10,
+    marginBottom: 10,
     borderRadius: 10,
   },
 });
