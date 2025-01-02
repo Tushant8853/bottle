@@ -47,8 +47,7 @@
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
-    "url-parse": "^1.5.10",
-    "uuid": "^11.0.3"
+    "url-parse": "^1.5.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

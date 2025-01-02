@@ -28,7 +28,7 @@ const DisplaySavedImages = () => {
           )}
         />
       ) : (
-        <Text>No saved images found.</Text>
+        <Text>No  images found.</Text>
       )}
     </View>
   );
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 200,
     marginVertical: 10,
     borderRadius: 10,
   },

@@ -10,6 +10,7 @@ import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
 
 export default function App() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -52,31 +53,36 @@ export default function App() {
 
   const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
     console.log("Inside the object recognition API...");
-
     const formData = new FormData();
-    formData.append("image", {
+    const file: File = {
       uri: imageUri,
       type: "image/jpeg",
       name: "photo.jpg",
-    });
-
+    };
+    formData.append("image", {
+      uri: file.uri,
+      type: file.type,
+      name: file.name,
+    } as any);
     try {
       const response = await fetch(
-        "https://ehvzjahhgmpwbobyyfwy.supabase.co/functions/v1/objectRecognition",
+        'https://ehvzjahhgmpwbobyyfwy.supabase.co/functions/v1/objectRecognition',
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer <your_token>`,
+            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodnpqYWhoZ21wd2JvYnl5Znd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEzNjQ5MTQsImV4cCI6MjAyNjk0MDkxNH0.nrJFwPUqd1e0BCGkgIh7Lra-HQapr7mU-hWYj6aQeo4`,
+            "Content-Type": "multipart/form-data",
           },
           body: formData,
         }
       );
-
       if (!response.ok) {
         const errorDetails = await response.text();
         console.error("Error response body:", errorDetails);
-        return null;
       }
+
+      console.log("Image URI:", imageUri);
+      console.log("FormData content:", formData);
 
       const jsonResponse = await response.json();
       console.log("Object recognition response:", jsonResponse);
@@ -87,35 +93,18 @@ export default function App() {
       setFirstValue(firstValue);
       return jsonResponse;
     } catch (error) {
+      console.log("Image URI:", imageUri);
+      console.log("FormData content:", formData);
       console.error("Error recognizing object:", error);
       return null;
     }
   };
 
-
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      try {
-        const photo = await cameraRef.current.takePictureAsync();
-        setCapturedImage(photo.uri);
-        setLoading(true);
-
-        console.log("Saving image locally...");
-        await saveImageToLocalStorage(photo.uri);
-        console.log("Calling object recognition API...");
-        await callObjectRecognitionAPI(photo.uri);
-        setLoading(false);
-        setIsModalVisible(true);
-      } catch (error) {
-        console.error("Error during recognition:", error);
-        setLoading(false);
-      }
-    }
-  };
-
   const saveImageToLocalStorage = async (uri: string) => {
     try {
-      const fileName = `photo_${Date.now()}.jpg`; // Unique filename
+      const testUUID = uuid.v4();
+      const fileName = `${testUUID}.jpg`;
+      console.log("Image - UUID:", fileName);
       const destPath = `${FileSystem.documentDirectory}${fileName}`;
       await FileSystem.moveAsync({
         from: uri,
@@ -130,6 +119,30 @@ export default function App() {
       console.error("Error saving image:", error);
     }
   };
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync();
+        setCapturedImage(photo.uri);
+        setLoading(true);
+
+        ////////////////////////////////////// Object Recognition API////////////////////////////////////////
+        console.log("Calling object recognition API...");
+        await callObjectRecognitionAPI(photo.uri);
+        ////////////////////////////////////// Saving image locally////////////////////////////////////////
+        console.log("Saving image locally...");
+        await saveImageToLocalStorage(photo.uri);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        setLoading(false);
+        setIsModalVisible(true);
+      } catch (error) {
+        console.error("Error during recognition:", error);
+        setLoading(false);
+      }
+    }
+  };
+
+
 
   const resetImage = () => {
     setCapturedImage(null);
