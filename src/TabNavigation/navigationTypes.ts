@@ -1,6 +1,7 @@
 // navigationTypes.ts
 export type RootStackParamList = {
     Dashboard: undefined;
+    DisplaySavedData: undefined;
     WineDashboard: undefined;
     StoriesList: undefined;
     StoriesDetail: { memoryId: number };

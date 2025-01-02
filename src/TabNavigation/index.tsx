@@ -58,6 +58,7 @@ const TabNavigation: React.FC = () => {
             </View>
           ),
           headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tab.Screen

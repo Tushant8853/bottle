@@ -8,6 +8,8 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -50,18 +52,13 @@ export default function App() {
 
   const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
     console.log("Inside the object recognition API...");
-    const formData = new FormData();
 
-    const file: File = {
+    const formData = new FormData();
+    formData.append("image", {
       uri: imageUri,
       type: "image/jpeg",
       name: "photo.jpg",
-    };
-    formData.append("image", {
-      uri: file.uri,
-      type: file.type,
-      name: file.name,
-    } as any);
+    });
 
     try {
       const response = await fetch(
@@ -69,16 +66,18 @@ export default function App() {
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVodnpqYWhoZ21wd2JvYnl5Znd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEzNjQ5MTQsImV4cCI6MjAyNjk0MDkxNH0.nrJFwPUqd1e0BCGkgIh7Lra-HQapr7mU-hWYj6aQeo4`,
-            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer <your_token>`,
           },
           body: formData,
         }
       );
+
       if (!response.ok) {
         const errorDetails = await response.text();
         console.error("Error response body:", errorDetails);
+        return null;
       }
+
       const jsonResponse = await response.json();
       console.log("Object recognition response:", jsonResponse);
       const data = jsonResponse.data as Record<string, string>;
@@ -93,6 +92,7 @@ export default function App() {
     }
   };
 
+
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
@@ -100,8 +100,10 @@ export default function App() {
         setCapturedImage(photo.uri);
         setLoading(true);
 
+        console.log("Saving image locally...");
+        await saveImageToLocalStorage(photo.uri);
         console.log("Calling object recognition API...");
-        const result = await callObjectRecognitionAPI(photo.uri);
+        await callObjectRecognitionAPI(photo.uri);
         setLoading(false);
         setIsModalVisible(true);
       } catch (error) {
@@ -111,6 +113,23 @@ export default function App() {
     }
   };
 
+  const saveImageToLocalStorage = async (uri: string) => {
+    try {
+      const fileName = `photo_${Date.now()}.jpg`; // Unique filename
+      const destPath = `${FileSystem.documentDirectory}${fileName}`;
+      await FileSystem.moveAsync({
+        from: uri,
+        to: destPath,
+      });
+      console.log("Image saved to:", destPath);
+      const savedImages = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+      savedImages.push(destPath);
+      await AsyncStorage.setItem('savedImages', JSON.stringify(savedImages));
+      return destPath;
+    } catch (error) {
+      console.error("Error saving image:", error);
+    }
+  };
 
   const resetImage = () => {
     setCapturedImage(null);
@@ -141,7 +160,9 @@ export default function App() {
           facing={cameraType}
         >
           <View style={styles.overlay}>
-            <Pressable style={[styles.circleButton, styles.closeButton]}>
+            <Pressable
+              onPress={() => navigation.navigate("Dashboard")}
+              style={[styles.circleButton, styles.closeButton]}>
               <Ionicons name="close" size={20} color="white" />
             </Pressable>
 
@@ -238,7 +259,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     position: 'absolute',
-    bottom: 120,
+    bottom: 30,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
