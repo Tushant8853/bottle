@@ -227,6 +227,24 @@ const MemoriesDetails: React.FC = () => {
         }
     };
 
+    const handleSharewr = async ({ item: memory}: { item: Memory}) => {
+        try {
+            if (memory.winery_id) {
+                const title = '';
+                const message = '';
+                const route = `winery/${memory.winery_id}`;
+                await shareDeepLink(title, message, route);
+            } else if (memory.restaurant_id) {
+                const title = '';
+                const message = '';
+                const route = `restaurant/${memory.restaurant_id}`;
+                await shareDeepLink(title, message, route);
+            }
+        } catch (error) {
+            console.error('Error sharing link: ', error);
+        }
+      };
+
     // Save Winery to Supabase
     const saveWinery = async (UID: string, wineryId: string) => {
         try {
@@ -791,11 +809,13 @@ const MemoriesDetails: React.FC = () => {
                                             />
                                         </TouchableOpacity>
                                     </View>
+                                    <View style={styles.fourContent}>
+                                <TouchableOpacity onPress={() => handleSharewr({ item: memory })}>
+                                <Ionicons name="share-outline" size={18} />
+                                </TouchableOpacity>
+                            </View>
                                 </>
                             ) : null}
-                            <View style={styles.fourContent}>
-                                <Ionicons name="share-outline" size={18} />
-                            </View>
                         </View>
                     </View>
 
