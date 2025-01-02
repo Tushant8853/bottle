@@ -35,13 +35,6 @@ const Stack = createNativeStackNavigator();
 const WineGroupStack: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
       const { t } = useTranslation();
-      const handleGoBack = () => {
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-          } else {
-            navigation.navigate('Dashboard'); // Replace 'Home' with your default screen name
-          }
-        };
 
   return (
     <Stack.Navigator initialRouteName="WineDashboard">

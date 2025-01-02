@@ -366,7 +366,7 @@ const PublicMemories: React.FC = () => {
    const handleShare = async ({ item: memory}: { item: Memory}) => {
         const title = memory.name;
         const message = 'checkout public memories';
-        const route = `memories`;
+        const route = `memories/${memory.id}`;
         await shareDeepLink(title, message, route);
       };
 

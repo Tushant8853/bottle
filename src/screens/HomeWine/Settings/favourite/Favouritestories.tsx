@@ -223,7 +223,7 @@ const Favouritestories: React.FC = () => {
     const story = storiesList[index];
     const title = story.name;
     const message = story.short_description;
-    const route = `/story/${story.id}`;
+    const route = `story/${story.id}`;
 
     await shareDeepLink(title, message, route);
   };

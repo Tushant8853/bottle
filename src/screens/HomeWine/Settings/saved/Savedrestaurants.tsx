@@ -15,6 +15,7 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from '../../../../utils/shareUtils';
 
 // Configure TwicPics
 installTwicPics({
@@ -272,6 +273,12 @@ const Savedrestaurants = () => {
         console.error("Error handling favorite press:", error);
       }
     };
+     const handleShare = async (Restaurant: any) => {
+              const title = Restaurant.name;
+              const message = Restaurant.description;
+              const route = `restaurant/${Restaurant.Restaurants_id}`;
+              await shareDeepLink(title, message, route);
+            };
   
     return (
       <View style={styles.container}>
@@ -316,7 +323,7 @@ const Savedrestaurants = () => {
                         style={styles.icon}
                       />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity  onPress={() => handleShare(restaurant)} >
                       <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
                     </TouchableOpacity>
                   </View>

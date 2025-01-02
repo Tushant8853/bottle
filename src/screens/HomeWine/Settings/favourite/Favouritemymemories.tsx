@@ -17,6 +17,7 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from "../../../../utils/shareUtils";
 
 
 interface Memory {
@@ -374,6 +375,13 @@ const Favouritemymemories: React.FC = () => {
   };
   const filteredMemories = memories.filter((_, index) => favoriteStatus[index]);
 
+   const handleShare = async ({ item: memory}: { item: Memory}) => {
+      const title = memory.name;
+      const message = memory.description;
+      const route = `memories/${memory.id}`;
+      await shareDeepLink(title, message, route);
+    };
+
   
   const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
     <View key={memory.id} style={styles.container}>
@@ -409,7 +417,7 @@ const Favouritemymemories: React.FC = () => {
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleShare({ item: memory })}>
               <Ionicons
                 style={styles.Icons}
                 name="share-outline"

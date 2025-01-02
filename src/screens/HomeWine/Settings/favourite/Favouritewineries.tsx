@@ -16,6 +16,7 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { shareDeepLink } from '../../../../utils/shareUtils';
 
 
 // Configure TwicPics
@@ -241,6 +242,13 @@ const Favouritewineries = () => {
     }
   };
 
+    const handleShare = async (winery: any) => {
+          const title = '';
+          const message = '';
+          const route = `winery/${winery.id}`;
+          await shareDeepLink(title, message, route);
+        };
+
 
   return (
     <View style={styles.container}>
@@ -302,6 +310,7 @@ const Favouritewineries = () => {
                   <TouchableOpacity 
                     accessibilityLabel={`Share ${winery.name}`} 
                     accessibilityRole="button"
+                    onPress={() => handleShare(winery)}
                   >
                     <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
                   </TouchableOpacity>

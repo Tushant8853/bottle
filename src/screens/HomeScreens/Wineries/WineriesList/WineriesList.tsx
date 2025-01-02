@@ -262,10 +262,10 @@ const WineriesList = () => {
   const filteredWineries = wineries.filter((winery) =>
     winery.name.toLowerCase().includes(searchText.toLowerCase())
   );
-    const handleShare = async () => {
+  const handleShare = async (winery: any) => {
         const title = '';
         const message = '';
-        const route = `wineries`;
+        const route = `winery/${winery.id}`;
         await shareDeepLink(title, message, route);
       };
 
@@ -342,7 +342,7 @@ const WineriesList = () => {
                   <TouchableOpacity 
                     accessibilityLabel={`Share ${winery.name}`} 
                     accessibilityRole="button"
-                    onPress={() => handleShare()}
+                    onPress={() => handleShare(winery)}
                   >
                     <Ionicons name="share-outline" size={16} color="gray" style={styles.icon} />
                   </TouchableOpacity>

@@ -233,14 +233,13 @@ const Savedstories: React.FC = () => {
     return contentWithoutImages.trim();
   };
  
-  const handleShare = async (index: number) => {
-    const story = storiesList[index];
-    const title = story.name;
-    const message = story.short_description;
-    const route = `/story/${story.id}`;
-
-    await shareDeepLink(title, message, route);
-  };
+   const handleShare = async (index: number) => {
+     const story = storiesList[index];
+     const title = story.name;
+     const message = story.short_description;
+     const route = `story/${story.id}`;
+     await shareDeepLink(title, message, route);
+   };
 
   const removeStory = (storyId: number) => {
     setStoriesList((prevStories) => prevStories.filter(story => story.id !== storyId));
