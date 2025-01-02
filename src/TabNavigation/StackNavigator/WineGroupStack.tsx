@@ -29,12 +29,16 @@ import Favouritewines from '../../screens/HomeWine/Settings/favourite/Favouritew
 import Icon from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 import { useTranslation } from 'react-i18next';
+import { useNavigationState } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 
 const WineGroupStack: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
       const { t } = useTranslation();
+      const state = useNavigationState(state => state);
+
+      console.log('Navigation State:', state);
 
   return (
     <Stack.Navigator initialRouteName="WineDashboard">
@@ -63,7 +67,7 @@ const WineGroupStack: React.FC = () => {
     <Stack.Screen
         name="Language"
         component={Language}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: 'Language',
             headerLeft: () => (
@@ -80,12 +84,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Savedmymemories"
         component={Savedmymemories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('savedmymemories'),
             headerLeft: () => (
@@ -102,12 +106,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Savedothermemories"
         component={Savedothermemories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('savedmymemories'),
             headerLeft: () => (
@@ -124,12 +128,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Savedrestaurants"
         component={Savedrestaurants}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('savedrestaurants'),
             headerLeft: () => (
@@ -146,12 +150,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Profile"
         component={Profile}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('profile'),
             headerLeft: () => (
@@ -168,7 +172,7 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="NameAndUser_Handle"
@@ -235,7 +239,7 @@ const WineGroupStack: React.FC = () => {
     <Stack.Screen
         name="Savedwineries"
         component={Savedwineries}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title:t('savedwineries'),
             headerLeft: () => (
@@ -252,12 +256,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Savedstories"
         component={Savedstories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('savedstories'),
             headerLeft: () => (
@@ -274,12 +278,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouritemymemories"
         component={Favouritemymemories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('favourite_my_memories'),
             headerLeft: () => (
@@ -296,12 +300,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouriteothersmemories"
         component={Favouriteothersmemories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('favourite_my_memories'),
             headerLeft: () => (
@@ -318,12 +322,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouriterestaurants"
         component={Favouriterestaurants}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('favourite_restaurants'),
             headerLeft: () => (
@@ -340,12 +344,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouritestories"
         component={Favouritestories}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title:t('favourite_stories'),
             headerLeft: () => (
@@ -362,12 +366,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouritewineries"
         component={Favouritewineries}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title:t('favourite_wineries'),
             headerLeft: () => (
@@ -384,12 +388,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Savedwines"
         component={Savedwines}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('savedwines'),
             headerLeft: () => (
@@ -406,12 +410,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="Favouritewines"
         component={Favouritewines}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('favourite_wines'),
             headerLeft: () => (
@@ -428,7 +432,7 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="WineDetails"
@@ -438,7 +442,7 @@ const WineGroupStack: React.FC = () => {
     <Stack.Screen
         name="RestaurantsDetails"
         component={RestaurantsDetails}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('restaurants'),
             headerLeft: () => (
@@ -455,12 +459,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="MemoriesDetails"
         component={MemoriesDetails}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('Memories'),
             headerLeft: () => (
@@ -477,12 +481,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="StoriesDetail"
         component={StoriesDetail}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title: t('Stories'),
             headerLeft: () => (
@@ -499,12 +503,12 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
     <Stack.Screen
         name="WineriesDetails"
         component={WineriesDetails}
-        options={{
+        options={({ navigation, route }) => ({
             headerShown: true,
             title:t('wineries'),
             headerLeft: () => (
@@ -521,7 +525,7 @@ const WineGroupStack: React.FC = () => {
                 color: "#333",
             },
             headerTitleAlign: 'center',
-        }}
+        })}
     />
 </Stack.Navigator>
 

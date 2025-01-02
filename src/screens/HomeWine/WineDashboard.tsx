@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { setLoginUserId } from '../../../redux/actions';
 import { useTranslation } from 'react-i18next';
 
-const SettingsScreen = () => {
+const WineDashboard = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
   const [savedDropdownVisible, setSavedDropdownVisible] = useState(false);
@@ -353,4 +353,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default SettingsScreen; ''
+export default WineDashboard;

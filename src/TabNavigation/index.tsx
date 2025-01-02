@@ -62,7 +62,7 @@ const TabNavigation: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="WineGroup"
+        name="WineGroupStack"
         component={WineGroupStack}
         options={{
           tabBarIcon: ({ focused }) => (
