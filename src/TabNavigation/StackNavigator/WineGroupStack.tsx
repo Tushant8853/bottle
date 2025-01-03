@@ -36,9 +36,6 @@ const Stack = createNativeStackNavigator();
 const WineGroupStack: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
       const { t } = useTranslation();
-      const state = useNavigationState(state => state);
-
-      console.log('Navigation State:', state);
 
   return (
     <Stack.Navigator initialRouteName="WineDashboard">
