@@ -128,7 +128,7 @@ export default function App() {
         for (const value of Object.values(obj)) {
           if (typeof value === "object") {
             search(value);
-          } else if (values.includes(value)) {
+          } else if (typeof value === 'string' && values.includes(value)) {
             results.push(value); // Add only the value
           }
         }
@@ -169,7 +169,7 @@ export default function App() {
         await callObjectRecognitionAPI(photo.uri);
         ////////////////////////////////////// Saving image locally////////////////////////////////////////
         console.log("Saving image locally...");
-        await saveImageToLocalStorage(photo.uri);
+        // await saveImageToLocalStorage(photo.uri);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         setLoading(false);
         setIsModalVisible(true);
@@ -247,6 +247,7 @@ export default function App() {
         onRetake={resetImage}
         onCancel={resetImage}
         firstTwoValues={firstValue}
+        photoUri={capturedImage}
       />
     </View >
   );

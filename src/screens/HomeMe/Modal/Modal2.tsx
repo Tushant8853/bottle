@@ -3,13 +3,16 @@ import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-nativ
 import WineReviewModal from './Modal3';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
+import uuid from 'react-native-uuid';
 interface Props {
     visible: boolean;
     onClose: () => void;
     onRetake: () => void;
+    photoUri: string;
 }
 
-const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
+const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUri }) => {
     const [input1, setInput1] = useState('');
     const [input2, setInput2] = useState('');
     const [input3, setInput3] = useState('');
@@ -19,7 +22,18 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
     const [doneModalVisible, setDoneModalVisible] = useState(false);
 
     const handleSave = async () => {
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        console.log(savedFilePath);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        console.log("Extracted filename:", fileName);
+        
         const UID = await AsyncStorage.getItem("UID");
+        const Memory_id = uuid.v4();
+        console.log("Photo URI ::::::::::::::",photoUri);
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
         if (!isValid) {
             setError1(input1.trim() === '');
@@ -27,24 +41,60 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
             setError3(input3.trim() === '');
             return;
         }
-        const { data, error } = await supabase.from('bottleshock_memory_wines').insert([
+
+        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
+            {
+                name: 'Untitled memory',
+                location_lat: 8853,
+                location_long: 8853,
+                user_id: UID,
+                id: Memory_id,
+                is_public: true,
+                shared_with_friends: true
+
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memoriesError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
+        }
+        
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
             {
                 eye_brand: input1,
                 eye_varietal: input2,
                 eye_vintage: input3,
-                user_id:UID,
-                user_photo: 'abcd',
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: Memory_id,
             },
         ]);
 
-        if (error) {
-            console.error('Error saving data:', error);
-        } else {
-            console.log('Data saved successfully:', data);
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
         }
 
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: Memory_id,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+
+        
         onClose();
         setDoneModalVisible(true);
+
     };
 
     return (

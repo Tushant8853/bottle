@@ -2,18 +2,20 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
-
+import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
+import WineReviewModal from './Modal3';
 interface Props {
     visible: boolean;
     onClose: () => void;
     onRetake: () => void;
     onCancel: () => void;
     firstTwoValues: string;
+    photoUri: string;
 }
 
-const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, firstTwoValues }) => {
+const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, firstTwoValues,photoUri }) => {
     const [isInputModalVisible, setInputModalVisible] = useState(false);
-
+    const [doneModalVisible, setDoneModalVisible] = useState(false);
     const handleNoClick = () => {
         setInputModalVisible(true);
         onClose();
@@ -50,8 +52,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
+                                    saveImageToLocalStorage(photoUri);
                                     onClose();
-                                    onRetake();
+                                    setDoneModalVisible(true);
                                 }}
                             >
                                 <Text style={styles.iosButtonText}>Yes!</Text>
@@ -67,7 +70,8 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                 onPress={() => {
                                     onCancel();
                                     onClose();
-                                }}// Only closes the modal
+                                    onRetake();
+                                }}
                             >
                                 <Text style={styles.iosCancelButtonText}>Cancel</Text>
                             </Pressable>
@@ -80,6 +84,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             <CameraInputModal
                 visible={isInputModalVisible}
                 onClose={() => setInputModalVisible(false)}
+                onRetake={onRetake}
+                photoUri={photoUri}
+            />
+            <WineReviewModal
+                visible={doneModalVisible}
+                onClose={() => setDoneModalVisible(false)}
                 onRetake={onRetake}
             />
         </>

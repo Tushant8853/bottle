@@ -6,8 +6,6 @@ const API_URL = 'https://ehvzjahhgmpwbobyyfwy.supabase.co/functions/v1/getPreSig
 
 export const uploadImagesToS3 = async () => {
     try {
-
-        console.log('Uploading images to S3...');
         const savedImages = JSON.parse((await AsyncStorage.getItem('savedImages')) || '[]');
         for (const uri of savedImages) {
             const presignedURL = await getPresignedURL(uri.split('/').pop());
@@ -27,7 +25,6 @@ const getPresignedURL = async (fileName: string): Promise<string | null> => {
     try {
         const sessionResponse = await supabase.auth.getSession();
         const accessToken = sessionResponse.data.session?.access_token;
-        console.log('Access Token::::::::::::', accessToken);
         if (!accessToken) {
             console.error('No active session or access token found');
             return null;
@@ -63,37 +60,18 @@ const getPresignedURL = async (fileName: string): Promise<string | null> => {
     }
 };
 
-const getContentType = (uri: string): string => {
-    const extension = uri.split('.').pop()?.toLowerCase();
-    switch (extension) {
-        case 'jpg':
-        case 'jpeg':
-            return 'image/jpeg';
-        case 'png':
-            return 'image/png';
-        case 'gif':
-            return 'image/gif';
-        default:
-            return 'application/octet-stream';
-    }
-};
-
 const uploadImageToS3 = async (uri: string, presignedURL: string): Promise<boolean> => {
     try {
-        // Read the file as binary
         const file = await FileSystem.readAsStringAsync(uri, {
             encoding: FileSystem.EncodingType.Base64,
         });
-
-        // Convert Base64 to binary data
         const binaryData = Uint8Array.from(atob(file), (char) => char.charCodeAt(0));
 
         const response = await fetch(presignedURL, {
             method: 'PUT',
             headers: { 'Content-Type': 'image/jpg' },
-            body: binaryData, // Pass the binary data
+            body: binaryData,
         });
-
         return response.ok;
     } catch (error) {
         console.error('Error uploading image to S3:', error);
@@ -104,7 +82,7 @@ const uploadImageToS3 = async (uri: string, presignedURL: string): Promise<boole
 const deleteLocalImage = async (uri: string) => {
     try {
         const savedImages = JSON.parse((await AsyncStorage.getItem('savedImages')) || '[]');
-        const updatedImages = savedImages.filter(image => image !== uri);
+        const updatedImages = savedImages.filter((image: string) => image !== uri);
         await AsyncStorage.setItem('savedImages', JSON.stringify(updatedImages));
         await FileSystem.deleteAsync(uri);
         console.log('Image deleted locally:', uri);

@@ -40,7 +40,7 @@ const App: React.FC = () => {
     };
   }, []);
   useEffect(() => {
-    console.log('Calling s3 upload');
+    console.log('Saving Image in S3...');
     uploadImagesToS3();
   }, []);
   return (
