@@ -21,6 +21,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [firstValue, setFirstValue] = useState("");
   const cameraRef = useRef(null);
+  const searchValues = ["Xander Soren", "Ludeon"];
 
   if (!permission) {
     return <View />;
@@ -28,9 +29,11 @@ export default function App() {
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <View style={styles.Permissioncontainer}>
         <Text style={styles.message}>We need your permission to access the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Pressable onPress={requestPermission} style={styles.button}>
+          <Text style={styles.buttonText}>Grant Permission</Text>
+        </Pressable>
       </View>
     );
   }
@@ -76,6 +79,7 @@ export default function App() {
           body: formData,
         }
       );
+      console.log("Response status::::::::::::::::::", response);
       if (!response.ok) {
         const errorDetails = await response.text();
         console.error("Error response body:", errorDetails);
@@ -85,13 +89,31 @@ export default function App() {
       console.log("FormData content:", formData);
 
       const jsonResponse = await response.json();
-      console.log("Object recognition response:", jsonResponse);
       const data = jsonResponse.data as Record<string, string>;
-      const firstKey = Object.keys(data)[0];
-      const firstValue = data[firstKey];
-      console.log("First value:", firstValue);
-      setFirstValue(firstValue);
+      console.log("Object recognition response:", jsonResponse);
+
+      ////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////
+      const matchingValues: string[] = [];
+      findValues(jsonResponse, searchValues, matchingValues);
+
+      if (matchingValues.length > 0) {
+        ////////////////////////////////////////////////////////////////////////////////
+        console.log("Matching values:", matchingValues);
+        const firstValue = matchingValues.join(" ");
+        console.log("First value:", firstValue);
+        setFirstValue(firstValue);
+        ////////////////////////////////////////////////////////////////////////////////
+      } else {
+        ////////////////////////////////////////////////////////////////////////////////
+        const firstKey = Object.keys(data)[0];
+        const firstValue = data[firstKey]; 
+        console.log("First value:::::::::::::::::::", firstValue);
+        setFirstValue(firstValue);
+        ////////////////////////////////////////////////////////////////////////////////
+      }
       return jsonResponse;
+      ////////////////////////////////////////////////////////////////////////////////
     } catch (error) {
       console.log("Image URI:", imageUri);
       console.log("FormData content:", formData);
@@ -99,6 +121,22 @@ export default function App() {
       return null;
     }
   };
+
+  function findValues(response: any, values: string[], results: string[]): void {
+    function search(obj: any): void {
+      if (typeof obj === "object" && obj !== null) {
+        for (const value of Object.values(obj)) {
+          if (typeof value === "object") {
+            search(value);
+          } else if (values.includes(value)) {
+            results.push(value); // Add only the value
+          }
+        }
+      }
+    }
+
+    search(response);
+  }
 
   const saveImageToLocalStorage = async (uri: string) => {
     try {
@@ -219,6 +257,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
+  Permissioncontainer: {
+    borderWidth: 1,
+    borderColor: 'black',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  message: {
+    fontFamily: 'SF Pro',
+    fontSize: 17,
+    fontWeight: '400',
+    textAlign: 'center',
+    color: 'white',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#B3B3B3D1', // iOS blue button color
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  buttonText: {
+    fontFamily: 'SF Pro',
+    fontSize: 17,
+    fontWeight: '400',
+    textAlign: 'center',
+    color: '#000000'
+  },
   loaderOverlay: {
     position: 'absolute',
     top: 0,
@@ -261,11 +328,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fff',
     marginTop: 4
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-    color: 'white',
   },
   camera: {
     flex: 1,
@@ -334,8 +396,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   capturedImage: {
-    width: '90%',
-    height: '70%',
+    width: '100%',
+    height: '100%',
     borderRadius: 10,
   },
 });

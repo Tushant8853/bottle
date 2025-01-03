@@ -7,7 +7,7 @@ import i18n from './i18n';
 import * as Sentry from '@sentry/react-native';
 import { Linking } from 'react-native';
 import AuthNavigation from './src/AuthNavigation/index';
-import { uploadImagesToS3 } from './src/screens/HomeMe/Upload_S3/Upload_S3';
+import { uploadImagesToS3 } from './src/screens/HomeMe/Upload/Upload_S3';
 
 // Initialize Sentry for error monitoring
 Sentry.init({
