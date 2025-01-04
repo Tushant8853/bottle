@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import WineReviewModal from './Modal3';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import uuid from 'react-native-uuid';
+import * as Location from 'expo-location';
+
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -20,7 +22,31 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     const [error2, setError2] = useState(false);
     const [error3, setError3] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
+    const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
+    useEffect(() => {
+        fetchLocation();
+    }, []);
+    const fetchLocation = async () => {
+        try {
+            const coords = await getLocation();
+            setLocation(coords);
+        } catch (error: any) {
+            console.error(error.message || 'Something went wrong');
+        }
+    };
+    const getLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            throw new Error('Permission to access location was denied');
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        return {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+        };
+    };
     const handleSave = async () => {
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         console.log(savedFilePath);
@@ -30,10 +56,10 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         }
         const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
         console.log("Extracted filename:", fileName);
-        
+
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
-        console.log("Photo URI ::::::::::::::",photoUri);
+        console.log("Photo URI ::::::::::::::", photoUri);
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
         if (!isValid) {
             setError1(input1.trim() === '');
@@ -42,11 +68,16 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             return;
         }
 
+        if (!location) {
+            console.error('Error: location is null');
+            return;
+        }
+
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
-                location_lat: 8853,
-                location_long: 8853,
+                location_lat: location.latitude,
+                location_long: location.longitude,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -59,7 +90,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         if (bottleshock_memoriesError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
         }
-        
+
         const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
             {
                 eye_brand: input1,
@@ -91,7 +122,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
 
-        
+
         onClose();
         setDoneModalVisible(true);
 

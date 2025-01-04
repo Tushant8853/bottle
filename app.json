@@ -53,6 +53,12 @@
           "microphonePermission": "Allow bottleshock to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow bottleshock to use your location."
+        }
       ]
     ]
   }
