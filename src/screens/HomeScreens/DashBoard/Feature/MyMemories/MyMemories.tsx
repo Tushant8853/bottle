@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, Pressable, FlatList, Animated } from "react-native";
+import { View, Text, Pressable, FlatList, Animated ,Image } from "react-native";
 import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
@@ -96,13 +96,26 @@ const MyMemories: React.FC = () => {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
-
+  const [savedImages, setSavedImages] = useState<string[]>([]);
+  // const [localFiles, setLocalFiles] = useState([]);
   useFocusEffect(
     useCallback(() => {
       fetchMemories();
+      fetchSavedImages();
     }, [])
   );
 
+  const fetchSavedImages = async () => {
+    try {
+      const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+      console.log(images);
+      const fileNames = images.map((path: string) => path.split('/').pop());
+      setSavedImages(fileNames);
+
+    } catch (error) {
+      console.error("Error fetching saved images:", error);
+    }
+  };
   const fetchMemories = async () => {
     setIsLoading(true);
     try {
@@ -152,23 +165,41 @@ const MyMemories: React.FC = () => {
     navigation.navigate("MemoriesList" as never);
   };
 
-  const renderItem = ({ item }: { item: Memory }) => (
-    <Pressable
-      key={item.id}
-      onPress={() => navigation.navigate("MemoriesDetails", { id: item.id, from: "MyMemories" })}
-    >
-      <TwicImg
-        src={item.thumbnail || ""}
-        style={styles.cardIcon}
-        ratio="16/9"
-        mode="cover"
-      />
-      {item.thumbnail ? null : (
-        <Text style={styles.errorText}>Failed to load image</Text>
-      )}
-      <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
-    </Pressable>
-  );
+
+  const renderItem = ({ item }: { item: Memory }) => {
+    const filename = item.thumbnail ? item.thumbnail.split('/').pop() : 'No thumbnail available';
+    const localImage = savedImages.find((image) => image === filename); // Find the matching image
+  
+    // If a matching local image is found, build the file path
+    const FinalImage = localImage 
+      ? `file:///data/user/0/host.exp.exponent/files/${localImage}` 
+      : null;
+  
+    console.log("Local Image::::::::", FinalImage); // Log the final image path
+  
+    return (
+      <Pressable
+        key={item.id}
+        onPress={() => navigation.navigate("MemoriesDetails", { id: item.id })}
+      >
+        {FinalImage ? (
+          <Image source={{ uri: FinalImage }} style={styles.IamgecardTitle} />
+        ) : (
+          <TwicImg
+            src={item.thumbnail || ""}
+            style={styles.cardIcon}
+            ratio="16/9"
+            mode="cover"
+          />
+        )}
+        {item.thumbnail ? null : (
+          <Text style={styles.errorText}>Failed to load image</Text>
+        )}
+        <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
+      </Pressable>
+    );
+  };
+  
 
   return (
     <View>

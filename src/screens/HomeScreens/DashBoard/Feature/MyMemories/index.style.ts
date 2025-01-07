@@ -73,6 +73,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#522F60',
     marginTop:40,
+  },
+  IamgecardTitle:{
+    borderColor: "blue",
+    width: 160,
+    height: 90,
+    marginTop: 10,
+    marginLeft: 12,
+    marginBottom: 1,
+    borderRadius: 11,
   }
 });
 
