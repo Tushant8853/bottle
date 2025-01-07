@@ -55,7 +55,6 @@ export default function App() {
   }
 
   const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
-    console.log("Inside the object recognition API...");
     const formData = new FormData();
     const file: File = {
       uri: imageUri,
@@ -79,18 +78,12 @@ export default function App() {
           body: formData,
         }
       );
-      console.log("Response status::::::::::::::::::", response);
       if (!response.ok) {
         const errorDetails = await response.text();
         console.error("Error response body:", errorDetails);
       }
-
-      console.log("Image URI:", imageUri);
-      console.log("FormData content:", formData);
-
       const jsonResponse = await response.json();
       const data = jsonResponse.data as Record<string, string>;
-      console.log("Object recognition response:", jsonResponse);
 
       ////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////
@@ -99,24 +92,19 @@ export default function App() {
 
       if (matchingValues.length > 0) {
         ////////////////////////////////////////////////////////////////////////////////
-        console.log("Matching values:", matchingValues);
         const firstValue = matchingValues.join(" ");
-        console.log("First value:", firstValue);
         setFirstValue(firstValue);
         ////////////////////////////////////////////////////////////////////////////////
       } else {
         ////////////////////////////////////////////////////////////////////////////////
         const firstKey = Object.keys(data)[0];
         const firstValue = data[firstKey]; 
-        console.log("First value:::::::::::::::::::", firstValue);
         setFirstValue(firstValue);
         ////////////////////////////////////////////////////////////////////////////////
       }
       return jsonResponse;
       ////////////////////////////////////////////////////////////////////////////////
     } catch (error) {
-      console.log("Image URI:", imageUri);
-      console.log("FormData content:", formData);
       console.error("Error recognizing object:", error);
       return null;
     }
@@ -137,26 +125,6 @@ export default function App() {
 
     search(response);
   }
-
-  const saveImageToLocalStorage = async (uri: string) => {
-    try {
-      const testUUID = uuid.v4();
-      const fileName = `${testUUID}.jpg`;
-      console.log("Image - UUID:", fileName);
-      const destPath = `${FileSystem.documentDirectory}${fileName}`;
-      await FileSystem.moveAsync({
-        from: uri,
-        to: destPath,
-      });
-      console.log("Image saved to:", destPath);
-      const savedImages = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
-      savedImages.push(destPath);
-      await AsyncStorage.setItem('savedImages', JSON.stringify(savedImages));
-      return destPath;
-    } catch (error) {
-      console.error("Error saving image:", error);
-    }
-  };
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
@@ -165,10 +133,8 @@ export default function App() {
         setLoading(true);
 
         ////////////////////////////////////// Object Recognition API////////////////////////////////////////
-        console.log("Calling object recognition API...");
         await callObjectRecognitionAPI(photo.uri);
         ////////////////////////////////////// Saving image locally////////////////////////////////////////
-        console.log("Saving image locally...");
         // await saveImageToLocalStorage(photo.uri);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         setLoading(false);

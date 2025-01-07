@@ -38,8 +38,6 @@ const getPresignedURL = async (fileName: string): Promise<string | null> => {
             body: JSON.stringify({ fileName }),
         });
 
-        //console.log('Response Object:', response);
-
         if (!response.ok) {
             console.error(
                 `Failed to fetch presigned URL: ${response.status} ${response.statusText}`
@@ -52,7 +50,6 @@ const getPresignedURL = async (fileName: string): Promise<string | null> => {
             console.error('Presigned URL not found in the response body');
             return null;
         }
-        //console.log('Presigned URL:', presignedURL);
         return presignedURL;
     } catch (error) {
         console.error('Error fetching presigned URL:', error);
@@ -79,14 +76,3 @@ const uploadImageToS3 = async (uri: string, presignedURL: string): Promise<boole
     }
 };
 
-// const deleteLocalImage = async (uri: string) => {
-//     try {
-//         const savedImages = JSON.parse((await AsyncStorage.getItem('savedImages')) || '[]');
-//         const updatedImages = savedImages.filter((image: string) => image !== uri);
-//         await AsyncStorage.setItem('savedImages', JSON.stringify(updatedImages));
-//         await FileSystem.deleteAsync(uri);
-//         console.log('Image deleted locally:', uri);
-//     } catch (error) {
-//         console.error('Error deleting local image:', error);
-//     }
-// };

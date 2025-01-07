@@ -9,7 +9,8 @@ import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes
 import Bannericon from "../../../../../assets/svg/SvgCodeFile/bannericon";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTranslation } from 'react-i18next';
-
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 interface Memory {
   id: string;
   name: string;
@@ -97,7 +98,6 @@ const MyMemories: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const [savedImages, setSavedImages] = useState<string[]>([]);
-  // const [localFiles, setLocalFiles] = useState([]);
   useFocusEffect(
     useCallback(() => {
       fetchMemories();
@@ -168,15 +168,14 @@ const MyMemories: React.FC = () => {
 
   const renderItem = ({ item }: { item: Memory }) => {
     const filename = item.thumbnail ? item.thumbnail.split('/').pop() : 'No thumbnail available';
-    const localImage = savedImages.find((image) => image === filename); // Find the matching image
+    const localImage = savedImages.find((image) => image === filename);
   
-    // If a matching local image is found, build the file path
-    const FinalImage = localImage 
-      ? `file:///data/user/0/host.exp.exponent/files/${localImage}` 
-      : null;
+    // Dynamic prefix based on the platform
+    const PREFIX = Platform.OS === 'ios'
+      ? FileSystem.documentDirectory
+      : 'file:///data/user/0/host.exp.exponent/files/';
   
-    console.log("Local Image::::::::", FinalImage); // Log the final image path
-  
+    const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
     return (
       <Pressable
         key={item.id}

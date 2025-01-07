@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, FlatList, StyleSheet, Text, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system'; // Ensure to import expo-file-system
-import uuid from 'react-native-uuid'; // Ensure to import uuid
+import * as FileSystem from 'expo-file-system';
 
 const DisplaySavedImages = () => {
   const [savedImages, setSavedImages] = useState<string[]>([]);
@@ -21,14 +20,10 @@ const DisplaySavedImages = () => {
 
   const handleDelete = async (uri: string) => {
     try {
-      // Remove the image from AsyncStorage
       const updatedImages = savedImages.filter(image => image !== uri);
       await AsyncStorage.setItem('savedImages', JSON.stringify(updatedImages));
       setSavedImages(updatedImages);
-
-      // Delete the image from file system
       await FileSystem.deleteAsync(uri);
-      console.log('Image deleted:', uri);
     } catch (error) {
       console.error("Error deleting image:", error);
     }

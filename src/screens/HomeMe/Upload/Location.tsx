@@ -10,7 +10,6 @@ export const getLocation = async () => {
       accuracy: Location.Accuracy.High,
     });
     const { latitude, longitude } = location.coords;
-    console.log("Location:::::::::::::: ", latitude, longitude);
     return { latitude, longitude };
   } catch (error) {
     console.error("Error fetching location: ", error);

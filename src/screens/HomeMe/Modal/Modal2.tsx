@@ -49,17 +49,14 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     };
     const handleSave = async () => {
         const savedFilePath = await saveImageToLocalStorage(photoUri);
-        console.log(savedFilePath);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
             return;
         }
         const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-        console.log("Extracted filename:", fileName);
 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
-        console.log("Photo URI ::::::::::::::", photoUri);
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
         if (!isValid) {
             setError1(input1.trim() === '');

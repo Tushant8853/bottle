@@ -27,7 +27,6 @@ const App: React.FC = () => {
     };
 
     const handleLinkEvent = (event: { url: string }) => {
-      console.log('Deep Link Event URL:', event.url);
       Sentry.captureMessage(`Deep Link Event URL: ${event.url}`);
     };
 
@@ -39,7 +38,6 @@ const App: React.FC = () => {
     };
   }, []);
   useEffect(() => {
-    console.log('Calling s3 upload');
     uploadImagesToS3();
   }, []);
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
