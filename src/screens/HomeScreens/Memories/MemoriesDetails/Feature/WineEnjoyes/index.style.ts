@@ -62,6 +62,23 @@ const styles = StyleSheet.create({
         height: '90%',
         resizeMode: 'contain',
     },
+    StoriesImgContainer1: {
+        backgroundColor: 'white',
+        height: 80,
+        width: 80,
+        alignContent: 'center',
+        borderColor: '#522F6080',
+        borderWidth: 1,
+        marginRight: 16,
+        borderRadius: 8,
+        justifyContent: 'center',
+    },
+    StoriesImage1: {
+        borderRadius: 8,
+        width: '100%',
+        height: '100%',
+       // resizeMode: 'contain',
+    },
     StoriesText: {
         flex: 1,
         height: 68,
