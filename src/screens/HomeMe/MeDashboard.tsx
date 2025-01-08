@@ -8,6 +8,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { saveImageToLocalStorage } from './Upload/Uplaod_Local';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
@@ -19,9 +20,10 @@ export default function App() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [firstValue, setFirstValue] = useState("");
+  const [WineValue, setWineValue] = useState<string | null>(null);
+  const [DishValue, setDishValue] = useState<string | null>(null);
+  const [NullValue, setNullValue] = useState<string | null>(null);
   const cameraRef = useRef(null);
-  const searchValues = ["Xander Soren", "Ludeon"];
 
   if (!permission) {
     return <View />;
@@ -83,60 +85,40 @@ export default function App() {
         console.error("Error response body:", errorDetails);
       }
       const jsonResponse = await response.json();
-      const data = jsonResponse.data as Record<string, string>;
-
-      ////////////////////////////////////////////////////////////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////
-      const matchingValues: string[] = [];
-      findValues(jsonResponse, searchValues, matchingValues);
-
-      if (matchingValues.length > 0) {
-        ////////////////////////////////////////////////////////////////////////////////
-        const firstValue = matchingValues.join(" ");
-        setFirstValue(firstValue);
-        ////////////////////////////////////////////////////////////////////////////////
+      console.log("Object recognition response:", jsonResponse);
+      const wineLabels = jsonResponse?.data?.data?.wineName;
+      const dishName = jsonResponse?.data?.data?.dishName;
+      if (wineLabels && wineLabels !== "null") {
+        const searchValues = "Pinot Noir";
+        if (wineLabels.includes(searchValues)) {
+          setWineValue("Pinot Noir");
+        } else {
+          setWineValue(wineLabels);
+          setDishValue(null);
+          setNullValue(null);
+        }
+      } else if (dishName && dishName != "null") {
+        setDishValue(dishName);
+        setWineValue(null);
+        setNullValue(null);
       } else {
-        ////////////////////////////////////////////////////////////////////////////////
-        const firstKey = Object.keys(data)[0];
-        const firstValue = data[firstKey]; 
-        setFirstValue(firstValue);
-        ////////////////////////////////////////////////////////////////////////////////
+        setWineValue(null);
+        setDishValue(null);
       }
       return jsonResponse;
-      ////////////////////////////////////////////////////////////////////////////////
     } catch (error) {
       console.error("Error recognizing object:", error);
       return null;
     }
   };
 
-  function findValues(response: any, values: string[], results: string[]): void {
-    function search(obj: any): void {
-      if (typeof obj === "object" && obj !== null) {
-        for (const value of Object.values(obj)) {
-          if (typeof value === "object") {
-            search(value);
-          } else if (typeof value === 'string' && values.includes(value)) {
-            results.push(value); // Add only the value
-          }
-        }
-      }
-    }
-
-    search(response);
-  }
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
         setCapturedImage(photo.uri);
         setLoading(true);
-
-        ////////////////////////////////////// Object Recognition API////////////////////////////////////////
         await callObjectRecognitionAPI(photo.uri);
-        ////////////////////////////////////// Saving image locally////////////////////////////////////////
-        // await saveImageToLocalStorage(photo.uri);
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
         setLoading(false);
         setIsModalVisible(true);
       } catch (error) {
@@ -145,8 +127,6 @@ export default function App() {
       }
     }
   };
-
-
 
   const resetImage = () => {
     setCapturedImage(null);
@@ -212,7 +192,9 @@ export default function App() {
         onClose={() => setIsModalVisible(false)}
         onRetake={resetImage}
         onCancel={resetImage}
-        firstTwoValues={firstValue}
+        Wine_Values={WineValue}
+        Dish_Values={DishValue}
+        Null_Values={NullValue}
         photoUri={capturedImage}
       />
     </View >

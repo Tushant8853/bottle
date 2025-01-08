@@ -4,16 +4,22 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import WineReviewModal from './Modal3';
+import uuid from 'react-native-uuid';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getLocation } from '../Upload/Location';
+import { supabase } from "../../../../backend/supabase/supabaseClient";
 interface Props {
     visible: boolean;
     onClose: () => void;
     onRetake: () => void;
     onCancel: () => void;
-    firstTwoValues: string;
-    photoUri: string;
+    Wine_Values: string | null;
+    Dish_Values: string | null;
+    Null_Values: string | null;
+    photoUri: string | null;
 }
 
-const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, firstTwoValues,photoUri }) => {
+const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
     const handleNoClick = () => {
@@ -21,11 +27,243 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
     };
 
-    const handleRetake = () => {
-        onRetake();
+    const handleXanderSave = async () => {
+        console.log('Inside handleSave');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+
+        const UID = await AsyncStorage.getItem("UID");
+        const Memory_id = uuid.v4();
+        const location = await getLocation();
+
+        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
+            {
+                name: 'Untitled memory',
+                location_lat: location.latitude,
+                location_long: location.longitude,
+                user_id: UID,
+                id: Memory_id,
+                is_public: true,
+                shared_with_friends: true
+
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memoriesError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
+        }
+
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_brand: "Xander",
+                eye_varietal: "Pinot Noir",
+                eye_vintage: 2020,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: Memory_id,
+                wine_id: 28,
+            },
+        ]);
+
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: Memory_id,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
         onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSaveDish = async () => {
+        console.log('Inside Dish');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+
+        const UID = await AsyncStorage.getItem("UID");
+        const Memory_id = uuid.v4();
+        const location = await getLocation();
+
+        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
+            {
+                name: 'Untitled memory',
+                location_lat: location.latitude,
+                location_long: location.longitude,
+                user_id: UID,
+                id: Memory_id,
+                is_public: true,
+                shared_with_friends: true
+
+            },
+        ])
+            .select();
+
+        if (bottleshock_memoriesError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: Memory_id,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSaveNull = async () => {
+        console.log('Inside Null');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+
+        const UID = await AsyncStorage.getItem("UID");
+        const Memory_id = uuid.v4();
+        const location = await getLocation();
+
+        const { error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
+            {
+                name: 'Untitled memory',
+                location_lat: location.latitude,
+                location_long: location.longitude,
+                user_id: UID,
+                id: Memory_id,
+                is_public: true,
+                shared_with_friends: true
+
+            },
+        ])
+            .select();
+
+        if (bottleshock_memoriesError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
+        }
+
+        const { error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: Memory_id,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSaveWine = async (Wine_Values: string) => {
+        console.log('Inside handleSaveWine');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+
+        const UID = await AsyncStorage.getItem("UID");
+        const Memory_id = uuid.v4();
+        const location = await getLocation();
+
+        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
+            {
+                name: 'Untitled memory',
+                location_lat: location.latitude,
+                location_long: location.longitude,
+                user_id: UID,
+                id: Memory_id,
+                is_public: true,
+                shared_with_friends: true
+
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memoriesError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
+        }
+
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_varietal: Wine_Values,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: Memory_id,
+            },
+        ]);
+
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: Memory_id,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
     };
 
+    const getTitleText = () => {
+        if (Wine_Values != null) {
+            if (Wine_Values === "Pinot Noir") {
+                return "Is this Xander Pinot Noir?";
+            } else {
+                return `Is this ${Wine_Values}?`;
+            }
+        }
+        if (Dish_Values != null) {
+            return `Is this ${Dish_Values}?`;
+        }
+        return "No wine and dish found in this image";
+    };
     return (
         <>
             <Modal
@@ -38,9 +276,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     <View style={styles.iosModal}>
                         <View style={styles.ModalConfirmationContainer} >
                             <View style={styles.iosModalTitleContainer}>
-                                <Text style={styles.iosModalTitle}>
-                                    Is this {JSON.stringify(firstTwoValues)}?
-                                </Text>
+                                <Text style={styles.iosModalTitle}>{getTitleText()}</Text>
                             </View>
                             <View style={styles.iosModalMessageContainer}>
                                 <Text style={styles.iosModalMessage}>
@@ -52,9 +288,21 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
-                                    saveImageToLocalStorage(photoUri);
-                                    onClose();
-                                    setDoneModalVisible(true);
+                                    if (Wine_Values === "Xander Pinot Noir") {
+                                        console.log('Inside Xander Pinot Noir');
+                                        handleXanderSave();
+                                    }
+                                    else if (Dish_Values === null) {
+                                        if (Wine_Values) {
+                                            handleSaveWine(Wine_Values);
+                                        }
+                                    }
+                                    else if (Wine_Values === null) {
+                                        handleSaveDish();
+                                    }
+                                    else {
+                                        handleSaveNull();
+                                    }
                                 }}
                             >
                                 <Text style={styles.iosButtonText}>Yes!</Text>
