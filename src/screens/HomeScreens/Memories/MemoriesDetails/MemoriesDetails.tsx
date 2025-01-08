@@ -27,6 +27,9 @@ import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 import { useTranslation } from 'react-i18next';
 import SkeletonLoader from "./SkeletonLoader";
 import { shareDeepLink } from "../../../../utils/shareUtils";
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
 
 installTwicPics({
     domain: 'https://bottleshock.twic.pics/',
@@ -70,7 +73,7 @@ type MemoriesDetailsRouteParams = {
 const MemoriesDetails: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const route = useRoute<RouteProp<{ params: MemoriesDetailsRouteParams }, 'params'>>();
-    const { id } = route.params;
+    const { id, FinalImage }: { id: string; FinalImage?: string } = route.params || {};
     const imagePrefix = "https://bottleshock.twic.pics/file/";
     const [memories, setMemories] = useState<Memory[]>([]);
     const [expandedMemory, setExpandedMemory] = useState<string | null>(null); // State to track expanded description
@@ -83,6 +86,7 @@ const MemoriesDetails: React.FC = () => {
     const [UID, setUID] = useState<string | null>(null);
     const { t } = useTranslation();
     const [from, setfrom] = useState<string | null>(null);
+    const [savedImages, setSavedImages] = useState<string[]>([]);
 
     
     const handleToggleDescription = (id: string) => {
@@ -99,7 +103,20 @@ const MemoriesDetails: React.FC = () => {
             }
         };
         fetchUID();
+        fetchSavedImages();
     }, []);
+
+    const fetchSavedImages = async () => {
+        try {
+          const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+          console.log('fetchSavedImages:::::::',images);
+          const fileNames = images.map((path: string) => path.split('/').pop());
+          setSavedImages(fileNames);
+    
+        } catch (error) {
+          console.error("Error fetching saved images:", error);
+        }
+      };
 
     useEffect(() => {
         if (UID) {
@@ -629,20 +646,24 @@ const MemoriesDetails: React.FC = () => {
       const route = `memories/${memory.id}`;
       await shareDeepLink(title, message, route);
     };
+    
+
 
 
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
             {memories.map((memory, index) => {
-                const thumbnailImage = memory.thumbnails?.find(thumbnail => thumbnail.is_thumbnail === true);
+                 const thumbnailImage = memory.thumbnails?.find(thumbnail => thumbnail.is_thumbnail === true);
                 return (
                     <View key={`memory-header-${memory.id}`} style={styles.imageContainer}>
-                        {thumbnailImage ? (
-                            <TwicImg src={thumbnailImage.url} style={styles.image} />
-                        ) : (
-                            <Text> {t('nomemoriesavailable')}</Text>
-                        )}
+            {FinalImage ? (
+                       <Image source={{ uri: FinalImage }} style={styles.image} />
+                 ) : thumbnailImage ? (
+                <TwicImg src={thumbnailImage.url} style={styles.image} />
+                 ) : (
+                     <Text>{t('nomemoriesavailable')}</Text>
+                    )}
                         <View style={styles.textContainer}>
                             <Text style={styles.text} numberOfLines={2}>{memory.name}</Text>
                             <Text style={styles.subtext} numberOfLines={1}>{memory.short_description}</Text>
@@ -747,7 +768,13 @@ const MemoriesDetails: React.FC = () => {
                                             onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
                                             style={styles.picandvideoImage} // Ensure that image is still styled correctly
                                         >
+                                             {FinalImage ? (
+                                              <Image source={{ uri: FinalImage }} style={styles.picandvideoImage} />
+                                          ) : thumbnail ? (
                                             <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                                          ) : (
+                                         <Text>{t('nomemoriesavailable')}</Text>
+                                       )}
                                         </Pressable>
                                         <Pressable
                                             onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)} // Clicking the circle still triggers the same function
@@ -857,7 +884,7 @@ const MemoriesDetails: React.FC = () => {
                 </View>
             ))}
 
-            <DiscoverWines id={id} />
+            <DiscoverWines id={id} FinalImage={FinalImage} />
             {from === "MyMemories" && <ShareWithFriends id={id} />}
             <View style={styles.bottom}></View>
         </ScrollView >

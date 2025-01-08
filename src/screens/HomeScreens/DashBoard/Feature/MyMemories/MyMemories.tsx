@@ -167,19 +167,23 @@ const MyMemories: React.FC = () => {
 
 
   const renderItem = ({ item }: { item: Memory }) => {
+    console.log('::::::item:::::',item)
     const filename = item.thumbnail ? item.thumbnail.split('/').pop() : 'No thumbnail available';
     const localImage = savedImages.find((image) => image === filename);
-  
+    console.log('localImage',localImage)
+
     // Dynamic prefix based on the platform
     const PREFIX = Platform.OS === 'ios'
       ? FileSystem.documentDirectory
       : 'file:///data/user/0/host.exp.exponent/files/';
   
     const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
+    console.log('::::::::::::FinalImage:::::::::::::::::::::::::::',FinalImage)
+
     return (
       <Pressable
         key={item.id}
-        onPress={() => navigation.navigate("MemoriesDetails", { id: item.id })}
+        onPress={() => navigation.navigate("MemoriesDetails", { id: item.id, FinalImage })}
       >
         {FinalImage ? (
           <Image source={{ uri: FinalImage }} style={styles.IamgecardTitle} />

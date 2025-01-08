@@ -11,7 +11,7 @@ export type RootStackParamList = {
     WineriesList: undefined;
     UserDashboardScreen: undefined;
     WineDashboardScreen: undefined;
-    MemoriesDetails: { id: string};
+    MemoriesDetails: { id: string; FinalImage?: string };
     RestaurantsList: undefined;
     RestaurantsDetails: { id: number };
     WineriesDetails: { id: number };

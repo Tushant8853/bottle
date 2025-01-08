@@ -165,9 +165,15 @@ const styles = StyleSheet.create({
         left: 75,
     },
     image: {
-        height: 320,
+        height: 220,
         width: "100%",
-        resizeMode: "cover",
+     //  resizeMode: "cover",
+        justifyContent: "flex-end",
+    },
+    imagetusha: {
+        height: 220,
+        width: "100%",
+     //  resizeMode: "cover",
         justifyContent: "flex-end",
     },
     buttonContainer: {

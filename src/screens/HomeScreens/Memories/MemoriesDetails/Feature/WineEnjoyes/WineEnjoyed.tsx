@@ -125,7 +125,7 @@ const DiscoverWines: React.FC = () => {
   const [wines, setWines] = useState<Wine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const imagePrefix = "https://bottleshock.twic.pics/file/";
-  const { id } = route.params;
+  const { id, FinalImage }: { id: string; FinalImage?: string } = route.params || {};
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -274,7 +274,7 @@ const DiscoverWines: React.FC = () => {
             <View key={index} style={styles.ListOfStoriesContainer}>
                 <View style={styles.Stories}>
                     <View style={styles.StoriesImgContainer1}>
-                        <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage1} />
+                        <Image source={{ uri: FinalImage }} style={styles.StoriesImage1} />
                     </View>
                     <View style={styles.StoriesText}>
                         <View style={styles.StoriesTitle}>
