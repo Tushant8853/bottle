@@ -21,7 +21,7 @@ import { RootStackParamList } from "../../../../TabNavigation/navigationTypes";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from 'react-i18next';
@@ -486,6 +486,7 @@ const RestaurantsDetails = () => {
       <View style={styles.MapContainer}>
         <MapView
           style={styles.mapSDKContainer}
+          provider={PROVIDER_GOOGLE}
           initialRegion={{
             latitude: Restaurant.location_lat,
             longitude: Restaurant.location_long,

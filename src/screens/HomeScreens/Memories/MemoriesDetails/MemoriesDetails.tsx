@@ -20,7 +20,7 @@ import DiscoverWines from "./Feature/WineEnjoyes/WineEnjoyed";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../navigationTypes";
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
@@ -822,6 +822,7 @@ const MemoriesDetails: React.FC = () => {
 
                     <MapView
                         style={styles.mapSDKContainer}
+                        provider={PROVIDER_GOOGLE}
                         initialRegion={{
                             latitude: memory.location_lat,
                             longitude: memory.location_long,

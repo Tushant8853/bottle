@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import WineDetailsSkeleton from './WineDetailsSkeleton';
 import { shareDeepLink } from '../../../../../utils/shareUtils';
+import QRCode from 'react-native-qrcode-svg';
 
 type WineDetailsRouteProp = RouteProp<{
   params: {
@@ -362,8 +363,11 @@ const WineDetails: React.FC = () => {
                 </View>
               </Pressable>
               <View style={styles.ScannerContainer}>
-                <Image source={require('../../../../../assets/png/Scanner.png')} style={styles.imagescanner} />
-              </View>
+  <QRCode
+    value={`https://www.bottleshock.wine/app/wine/${winery_id}/${winery_varietals_id}/${wine_id}`}
+    size={80} // Adjust the size as needed
+  />
+</View>
             </View>
             <View style={styles.bottom}></View>
           </ScrollView>
