@@ -1,25 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import styles from './index.style';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import styles from "./index.style";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../backend/supabase/supabaseClient";
-import Markdown from 'react-native-markdown-display';
+import Markdown from "react-native-markdown-display";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../TabNavigation/navigationTypes";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
-import WineDetailsSkeleton from './WineDetailsSkeleton';
-import { shareDeepLink } from '../../../../../utils/shareUtils';
-import QRCode from 'react-native-qrcode-svg';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
+import WineDetailsSkeleton from "./WineDetailsSkeleton";
+import { shareDeepLink } from "../../../../../utils/shareUtils";
+import QRCode from "react-native-qrcode-svg";
 
-type WineDetailsRouteProp = RouteProp<{
-  params: {
-    winery_id: number;
-    winery_varietals_id: number;
-    wine_id: number;
-  };
-}, 'params'>;
+type WineDetailsRouteProp = RouteProp<
+  {
+    params: {
+      winery_id: number;
+      winery_varietals_id: number;
+      wine_id: number;
+    };
+  },
+  "params"
+>;
 
 type Wine = {
   winery_name: string;
@@ -34,9 +45,9 @@ type Wine = {
   ws_rating: number;
   year: string;
   description: string;
-  jp_winery_name: string,
-  jp_name: string,
-  jp_vintage_name: string,
+  jp_winery_name: string;
+  jp_name: string;
+  jp_vintage_name: string;
 };
 
 const WineDetails: React.FC = () => {
@@ -63,10 +74,11 @@ const WineDetails: React.FC = () => {
     const fetchWines = async () => {
       setIsLoading(true);
       try {
-        const { data: bottleshock_wineries_Data, error: wineriesError } = await supabase
-          .from("bottleshock_wineries")
-          .select("wineries_id, winery_name ,jp_winery_name")
-          .eq("wineries_id", winery_id);
+        const { data: bottleshock_wineries_Data, error: wineriesError } =
+          await supabase
+            .from("bottleshock_wineries")
+            .select("wineries_id, winery_name ,jp_winery_name")
+            .eq("wineries_id", winery_id);
         if (wineriesError) {
           console.error("Error fetching wineries:", wineriesError.message);
           return;
@@ -74,24 +86,35 @@ const WineDetails: React.FC = () => {
         if (bottleshock_wineries_Data) {
           const bottleshock_winery_varietals_Details = await Promise.all(
             bottleshock_wineries_Data.map(async (winery) => {
-              const { data: varietalsData, error: varietalsError } = await supabase
-                .from("bottleshock_winery_varietals")
-                .select("varietal_name, brand_name, winery_varietals_id , jp_name")
-                .eq("winery_id", winery.wineries_id)
-                .eq("winery_varietals_id", winery_varietals_id);
+              const { data: varietalsData, error: varietalsError } =
+                await supabase
+                  .from("bottleshock_winery_varietals")
+                  .select(
+                    "varietal_name, brand_name, winery_varietals_id , jp_name"
+                  )
+                  .eq("winery_id", winery.wineries_id)
+                  .eq("winery_varietals_id", winery_varietals_id);
               if (varietalsError) {
-                console.error("Error fetching varietals:", varietalsError.message);
+                console.error(
+                  "Error fetching varietals:",
+                  varietalsError.message
+                );
                 return [];
               }
               const winesData = await Promise.all(
                 (varietalsData || []).map(async (varietal) => {
                   const { data: wineDetails, error: wineError } = await supabase
                     .from("bottleshock_wines")
-                    .select("year, image, wines_id, varietal_id, rp_rating, jd_rating, we_rating, ws_rating ,description , jp_vintage_name")
+                    .select(
+                      "year, image, wines_id, varietal_id, rp_rating, jd_rating, we_rating, ws_rating ,description , jp_vintage_name"
+                    )
                     .eq("varietal_id", varietal.winery_varietals_id)
                     .eq("wines_id", wine_id);
                   if (wineError) {
-                    console.error(`Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`, wineError.message);
+                    console.error(
+                      `Error fetching wine details for varietal_id ${varietal.winery_varietals_id}:`,
+                      wineError.message
+                    );
                     return [];
                   }
                   return (wineDetails || []).map((wine) => ({
@@ -122,8 +145,7 @@ const WineDetails: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching wines data:", error);
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -191,15 +213,13 @@ const WineDetails: React.FC = () => {
           return;
         }
       } else {
-        const { error } = await supabase
-          .from("bottleshock_fav_wines")
-          .insert([
-            {
-              user_id: UID,
-              wine_id,
-              created_at: new Date().toISOString(),
-            },
-          ]);
+        const { error } = await supabase.from("bottleshock_fav_wines").insert([
+          {
+            user_id: UID,
+            wine_id,
+            created_at: new Date().toISOString(),
+          },
+        ]);
 
         if (error) {
           console.error("Error favoriting wine:", error.message);
@@ -253,19 +273,22 @@ const WineDetails: React.FC = () => {
   if (isLoading) {
     return <WineDetailsSkeleton />;
   }
-   const handleShare = async () => {
-    const title = t('Wine_Details'); // Use translation for the title if applicable
-    const message = t('Check_out_this_wine'); // Use translation for the message if applicable
+  const handleShare = async () => {
+    const title = t("Wine_Details"); // Use translation for the title if applicable
+    const message = t("Check_out_this_wine"); // Use translation for the message if applicable
     const route = `wine/${winery_id}/${winery_varietals_id}/${wine_id}`;
 
     await shareDeepLink(title, message, route);
-          };
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         {/* Back Arrow */}
-        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.spacer} />
@@ -292,21 +315,25 @@ const WineDetails: React.FC = () => {
       {wines.map((wine, index) => (
         <View style={styles.SubContainer} key={wine.wines_id}>
           <View style={styles.ImgContainer}>
-            <Image
-              source={{ uri: wine.image }}
-              style={styles.image}
-            />
+            <Image source={{ uri: wine.image }} style={styles.image} />
           </View>
           <ScrollView>
             <View style={styles.ScrollViewContainer}>
               <View style={styles.detailsContainer}>
                 <View style={styles.wineryNameContainer}>
                   <Text style={styles.wineryName}>{wine.winery_name}</Text>
-                  <Text style={styles.wineryNameJapanese}>{wine.jp_winery_name}</Text>
+                  <Text style={styles.wineryNameJapanese}>
+                    {wine.jp_winery_name}
+                  </Text>
                 </View>
                 <View style={styles.wineNameContainer}>
-                  <Text style={styles.wineName} numberOfLines={2}>{wine.varietal_name}{wine.brand_name ? `, ${wine.brand_name}` : ""}</Text>
-                  <Text style={styles.wineNameJapanese}>{wine.jp_vintage_name}</Text>
+                  <Text style={styles.wineName} numberOfLines={2}>
+                    {wine.varietal_name}
+                    {wine.brand_name ? `, ${wine.brand_name}` : ""}
+                  </Text>
+                  <Text style={styles.wineNameJapanese}>
+                    {wine.jp_vintage_name}
+                  </Text>
                 </View>
                 <View style={styles.vintageContainer}>
                   <Text style={styles.vintage}>{wine.year}</Text>
@@ -345,29 +372,31 @@ const WineDetails: React.FC = () => {
             {/* box and scanner */}
             <View style={styles.BoxAndScannerContainer}>
               <Pressable onPress={handlePress} style={styles.Box1Container}>
-                <View >
+                <View>
                   {showText ? (
-                    <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
+                    <Text style={styles.comingSoonText}>{t("comingsoon")}</Text>
                   ) : (
-                    <Text style={styles.bottomText}>{t('Restaurants_which_have_this_wine')}</Text>
+                    <Text style={styles.bottomText}>
+                      {t("Restaurants_which_have_this_wine")}
+                    </Text>
                   )}
-                </View >
+                </View>
               </Pressable>
               <Pressable onPress={handlePress2} style={styles.Box1Container}>
-                <View >
+                <View>
                   {showText2 ? (
-                    <Text style={styles.comingSoonText}>{t('comingsoon')}</Text>
+                    <Text style={styles.comingSoonText}>{t("comingsoon")}</Text>
                   ) : (
-                    <Text style={styles.bottomText}>{t('Buy_wine')}</Text>
+                    <Text style={styles.bottomText}>{t("Buy_wine")}</Text>
                   )}
                 </View>
               </Pressable>
               <View style={styles.ScannerContainer}>
-  <QRCode
-    value={`https://www.bottleshock.wine/app/wine/${winery_id}/${winery_varietals_id}/${wine_id}`}
-    size={80} // Adjust the size as needed
-  />
-</View>
+                <QRCode
+                  value={`https://www.bottleshock.wine/app/wine/${winery_id}/${winery_varietals_id}/${wine_id}`}
+                  size={80} // Adjust the size as needed
+                />
+              </View>
             </View>
             <View style={styles.bottom}></View>
           </ScrollView>
@@ -381,17 +410,17 @@ export default WineDetails;
 
 const markdownStyles = StyleSheet.create({
   heading: {
-    fontFamily: 'Hiragino Kaku Gothic Pro',
+    fontFamily: "Hiragino Kaku Gothic Pro",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 24,
-    textAlign: 'left',
+    textAlign: "left",
   },
   paragraph: {
-    fontFamily: 'Hiragino Kaku Gothic Pro',
+    fontFamily: "Hiragino Kaku Gothic Pro",
     fontSize: 16,
-    fontWeight: '300',
+    fontWeight: "300",
     lineHeight: 24,
-    textAlign: 'left',
+    textAlign: "left",
   },
 });
