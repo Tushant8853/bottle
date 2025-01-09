@@ -23,9 +23,9 @@ export const getLocation = async () => {
     // Extract the name of the location from the reverse geocode result
     const locationName =
       reverseGeocode.length > 0
-        ? `${reverseGeocode[0].city || reverseGeocode[0].region},  ${
+        ? `${reverseGeocode[0].city || reverseGeocode[0].region}, ${
             reverseGeocode[0].country 
-          },  ${
+          }, ${
             reverseGeocode[0].postalCode 
           } `
         : 'Unknown location';
