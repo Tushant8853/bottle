@@ -25,7 +25,7 @@ const linking = {
       UserDashboard: {
         screens: {
           MemoriesList: 'memories',
-          MemoriesDetails: 'memories/:id',
+          MemoriesDetails: 'memories/:id/:FinalImage',
           StoriesList: 'stories',
           StoriesDetail: 'story/:memoryId',
           RestaurantsList: 'restaurants',

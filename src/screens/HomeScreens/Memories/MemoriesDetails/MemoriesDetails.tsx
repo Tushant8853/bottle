@@ -643,7 +643,7 @@ const MemoriesDetails: React.FC = () => {
   const handleShare = async ({ item: memory}: { item: Memory}) => {
       const title = memory.name;
       const message = memory.description;
-      const route = `memories/${memory.id}`;
+      const route = `memories/${memory.id}/null`;
       await shareDeepLink(title, message, route);
     };
     
