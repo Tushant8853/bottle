@@ -102,6 +102,7 @@ export default function App() {
         setWineValue(null);
         setNullValue(null);
       } else {
+        setNullValue("No wine or dish detected.");
         setWineValue(null);
         setDishValue(null);
       }

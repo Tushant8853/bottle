@@ -16,10 +16,13 @@ interface Props {
     Wine_Values: string | null;
     Dish_Values: string | null;
     Null_Values: string | null;
-    photoUri: string | null;
+    photoUri: string;
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
+    console.log("Wine -> ",Wine_Values)
+    console.log("Dish -> ",Dish_Values)
+    console.log("Null -> ",Null_Values !=null)
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
     const handleNoClick = () => {
@@ -289,18 +292,22 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
                                     if (Wine_Values === "Xander Pinot Noir") {
+                                        console.log("Xander Pinot")
                                         console.log('Inside Xander Pinot Noir');
                                         handleXanderSave();
                                     }
-                                    else if (Dish_Values === null) {
+                                    else if (Dish_Values === null && Wine_Values !=null ) {
+                                        console.log("Wine")
                                         if (Wine_Values) {
                                             handleSaveWine(Wine_Values);
                                         }
                                     }
-                                    else if (Wine_Values === null) {
+                                    else if (Wine_Values === null && Dish_Values != null) {
+                                        console.log("Dish")
                                         handleSaveDish();
                                     }
-                                    else {
+                                    else if ( Null_Values ) {
+                                        console.log('Inside Else part ::::::::');
                                         handleSaveNull();
                                     }
                                 }}
