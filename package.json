@@ -19,6 +19,7 @@
     "@sentry/react-native": "^6.4.0",
     "@supabase/supabase-js": "^2.45.4",
     "@twicpics/components": "^0.30.0",
+    "axios": "^1.7.9",
     "expo": "~51.0.39",
     "expo-camera": "~15.0.16",
     "expo-file-system": "~17.0.1",
