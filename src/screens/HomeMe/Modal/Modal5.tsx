@@ -20,15 +20,8 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
-    console.log("Wine -> ",Wine_Values)
-    console.log("Dish -> ",Dish_Values)
-    console.log("Null -> ",Null_Values !=null)
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
-    const handleNoClick = () => {
-        setInputModalVisible(true);
-        onClose();
-    };
 
     const handleXanderSave = async () => {
         console.log('Inside handleSave');
@@ -70,71 +63,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                 user_photo: fileName,
                 memory_id: Memory_id,
                 wine_id: 28,
-            },
-        ]);
-
-        if (memoryWinesError) {
-            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
-            return;
-        }
-
-        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: Memory_id,
-                content_type: 'PHOTO',
-                is_thumbnail: true,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select(); // To get the inserted data or error
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
-        }
-        onClose();
-        setDoneModalVisible(true);
-    };
-    const handleHertelendySave = async () => {
-        console.log('Inside HertelendySave');
-        const savedFilePath = await saveImageToLocalStorage(photoUri);
-        if (!savedFilePath) {
-            console.error('Error: savedFilePath is undefined');
-            return;
-        }
-        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-
-        const UID = await AsyncStorage.getItem("UID");
-        const Memory_id = uuid.v4();
-        const location = await getLocation();
-
-        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
-            {
-                name: 'Untitled memory',
-                location_lat: location.latitude,
-                location_long: location.longitude,
-                user_id: UID,
-                id: Memory_id,
-                is_public: true,
-                shared_with_friends: true
-
-            },
-        ])
-            .select(); // To get the inserted data or error
-
-        if (bottleshock_memoriesError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
-        }
-
-        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
-            {
-                eye_brand: "Hertelendy",
-                eye_varietal: "Audere",
-                eye_vintage: 1997,
-                user_id: UID,
-                user_photo: fileName,
-                memory_id: Memory_id,
-                wine_id: 36,
             },
         ]);
 
@@ -328,9 +256,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
         }
         if (Dish_Values != null) {
-            return `Is this ${Dish_Values}?`;
+            return `${Dish_Values} identified ?`;
         }
-        return "No wine and dish found in this image";
+        return "No food/wine identified";
     };
     return (
         <>
@@ -346,11 +274,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             <View style={styles.iosModalTitleContainer}>
                                 <Text style={styles.iosModalTitle}>{getTitleText()}</Text>
                             </View>
-                            <View style={styles.iosModalMessageContainer}>
-                                <Text style={styles.iosModalMessage}>
-                                    If not correct please tell us which one this is
-                                </Text>
-                            </View>
                         </View>
                         <View style={styles.iosButtonGroup}>
                             <Pressable
@@ -360,11 +283,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                         console.log("Xander Pinot")
                                         console.log('Inside Xander Pinot Noir');
                                         handleXanderSave();
-                                    }
-                                    else if (Wine_Values === "Hertelendy Audere") {
-                                        console.log("Hertelendy Audere")
-                                        console.log('Inside Hertelendy Audere');
-                                        handleHertelendySave();
                                     }
                                     else if (Dish_Values === null && Wine_Values !=null ) {
                                         console.log("Wine")
@@ -382,23 +300,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                     }
                                 }}
                             >
-                                <Text style={styles.iosButtonText}>Yes!</Text>
-                            </Pressable>
-                            <Pressable
-                                style={[styles.iosButton, styles.iosDefaultButton]}
-                                onPress={handleNoClick}
-                            >
-                                <Text style={styles.iosButtonText2}>No</Text>
-                            </Pressable>
-                            <Pressable
-                                style={[styles.iosButton, styles.iosCancelButton]}
-                                onPress={() => {
-                                    onCancel();
-                                    onClose();
-                                    onRetake();
-                                }}
-                            >
-                                <Text style={styles.iosCancelButtonText}>Cancel</Text>
+                                <Text style={styles.iosButtonText}>Ok</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -432,14 +334,14 @@ const styles = StyleSheet.create({
     iosModal: {
         backgroundColor: '#B3B3B3D1',
         width: '80%',
-        height: 254,
+        height: 110,
         borderRadius: 14,
         paddingVertical: 14,
         alignItems: 'center',
     },
     ModalConfirmationContainer: {
         width: '100%',
-        height: 101,
+        height: 50,
     },
     iosModalTitleContainer: {
         width: '100%',

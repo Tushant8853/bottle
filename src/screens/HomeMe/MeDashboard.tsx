@@ -8,10 +8,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { saveImageToLocalStorage } from './Upload/Uplaod_Local';
-import * as FileSystem from 'expo-file-system';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import uuid from 'react-native-uuid';
+import DishModal from './Modal/Modal5';
 
 export default function App() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -19,6 +16,7 @@ export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const [capturedImage, setCapturedImage] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [DishVisible, setDishVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [WineValue, setWineValue] = useState<string | null>(null);
   const [DishValue, setDishValue] = useState<string | null>(null);
@@ -90,21 +88,36 @@ export default function App() {
       const dishName = jsonResponse?.data?.data?.dishName;
       if (wineLabels && wineLabels !== "null") {
         const searchValues = "Pinot Noir";
+        const searchValues2 = "Audere";
         if (wineLabels.includes(searchValues)) {
           setWineValue("Pinot Noir");
-        } else {
+          setLoading(false);
+          setIsModalVisible(true);
+        } 
+        if (wineLabels.includes(searchValues2)) {
+          setWineValue("Hertelendy Audere");
+          setLoading(false);
+          setIsModalVisible(true);
+        } 
+        else {
           setWineValue(wineLabels);
           setDishValue(null);
           setNullValue(null);
+          setLoading(false);
+          setIsModalVisible(true);
         }
       } else if (dishName && dishName != "null") {
         setDishValue(dishName);
         setWineValue(null);
         setNullValue(null);
+        setLoading(false);
+        setDishVisible(true);
       } else {
         setNullValue("No wine or dish detected.");
         setWineValue(null);
         setDishValue(null);
+        setLoading(false);
+        setDishVisible(true);
       }
       return jsonResponse;
     } catch (error) {
@@ -120,8 +133,6 @@ export default function App() {
         setCapturedImage(photo.uri);
         setLoading(true);
         await callObjectRecognitionAPI(photo.uri);
-        setLoading(false);
-        setIsModalVisible(true);
       } catch (error) {
         console.error("Error during recognition:", error);
         setLoading(false);
@@ -191,6 +202,16 @@ export default function App() {
       <CameraConfirmationModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
+        onRetake={resetImage}
+        onCancel={resetImage}
+        Wine_Values={WineValue}
+        Dish_Values={DishValue}
+        Null_Values={NullValue}
+        photoUri={capturedImage}
+      />
+      <DishModal
+        visible={DishVisible}
+        onClose={() => setDishVisible(false)}
         onRetake={resetImage}
         onCancel={resetImage}
         Wine_Values={WineValue}
