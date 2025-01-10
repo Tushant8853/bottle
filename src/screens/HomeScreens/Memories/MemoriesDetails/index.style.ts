@@ -413,11 +413,16 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         justifyContent: "center",
     },
+    fulladdressTextscroll: {
+        flexDirection: "row",
+    },
     fulladdressText: {
         fontFamily: "SF Pro",
         fontSize: 14,
         fontWeight: "200",
         color: "#522F60",
+        justifyContent: "center",
+        paddingTop: 6
     },
 });
 

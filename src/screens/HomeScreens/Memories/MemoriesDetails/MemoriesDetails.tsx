@@ -876,9 +876,13 @@ const MemoriesDetails: React.FC = () => {
                             />
                         </View>
                         <View style={styles.fulladdressTextContainer}>
+                            <ScrollView  horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false} >
                             <Text style={styles.fulladdressText} numberOfLines={1}>
                                 {memory.address}
                             </Text>
+                            </ScrollView>
                         </View>
                     </View>
                 </View>
