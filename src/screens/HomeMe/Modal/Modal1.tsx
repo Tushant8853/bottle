@@ -21,43 +21,12 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
-    console.log("Wine -> ",Wine_Values)
-    console.log("Dish -> ",Dish_Values)
-    console.log("Null -> ",Null_Values !=null)
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
     const handleNoClick = () => {
         setInputModalVisible(true);
         onClose();
-    };
-
-    const getLocationNameFromGoogleMaps = async (latitude, longitude) => {
-        try {
-            const GOOGLE_MAPS_API_KEY = 'AIzaSyCmi08U5TNZAx_QLc2ASR7lkEJTT6Z9_Qs'; // Replace with your API key
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
-    
-            console.log('Fetching location name from URL:', geocodeUrl);
-    
-            // Make the API call
-            const response = await axios.get(geocodeUrl);
-            const data = response.data;
-    
-            // Check if the API response is valid
-            if (data.status === "OK" && data.results.length > 0) {
-                const locationName = data.results[0].formatted_address; // Extract formatted address
-                console.log('Location name:', locationName);
-                return locationName;
-            } else {
-                console.warn('Geocoding API returned unexpected status:', data.status);
-                return 'Unknown Location'; // Default fallback
-            }
-        } catch (error) {
-            console.error('Error fetching location name from Google Maps:', error.message);
-            return 'Unknown Location'; // Default fallback in case of an error
-        }
-    };
-    
-
+    };    
     const handleXanderSave = async () => {
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -136,14 +105,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
-        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
+
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: locationName,
+                address: location.locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -203,14 +172,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
-        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: locationName,
+                address: location.locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -253,14 +221,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
-        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: locationName,
+                address: location.locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -303,14 +270,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
-        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: locationName,
+                address: location.locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -355,7 +321,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
         setDoneModalVisible(true);
     };
-
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {

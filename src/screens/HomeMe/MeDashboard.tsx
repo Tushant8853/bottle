@@ -26,7 +26,6 @@ export default function App() {
   if (!permission) {
     return <View />;
   }
-
   if (!permission.granted) {
     return (
       <View style={styles.Permissioncontainer}>
@@ -37,23 +36,19 @@ export default function App() {
       </View>
     );
   }
-
   interface File {
     uri: string;
     type: string;
     name: string;
   }
-
   interface WineLabels {
     [key: string]: string;
   }
-
   interface ObjectRecognitionResponse {
     data: {
       wine_labels: WineLabels;
     };
   }
-
   const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
     const formData = new FormData();
     const file: File = {
@@ -125,7 +120,6 @@ export default function App() {
       return null;
     }
   };
-
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
@@ -139,7 +133,6 @@ export default function App() {
       }
     }
   };
-
   const resetImage = () => {
     setCapturedImage(null);
     setIsModalVisible(false);
@@ -207,7 +200,7 @@ export default function App() {
         Wine_Values={WineValue}
         Dish_Values={DishValue}
         Null_Values={NullValue}
-        photoUri={capturedImage}
+        photoUri={capturedImage || ''}
       />
       <DishModal
         visible={DishVisible}
@@ -217,7 +210,7 @@ export default function App() {
         Wine_Values={WineValue}
         Dish_Values={DishValue}
         Null_Values={NullValue}
-        photoUri={capturedImage}
+        photoUri={capturedImage || ''}
       />
     </View >
   );
