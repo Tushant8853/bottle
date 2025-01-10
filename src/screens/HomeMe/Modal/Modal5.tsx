@@ -8,6 +8,7 @@ import uuid from 'react-native-uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocation } from '../Upload/Location';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
+import axios from 'axios';
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -23,6 +24,33 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
 
+    const getLocationNameFromGoogleMaps = async (latitude, longitude) => {
+        try {
+            const GOOGLE_MAPS_API_KEY = 'AIzaSyCmi08U5TNZAx_QLc2ASR7lkEJTT6Z9_Qs'; // Replace with your API key
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
+    
+            console.log('Fetching location name from URL:', geocodeUrl);
+    
+            // Make the API call
+            const response = await axios.get(geocodeUrl);
+            const data = response.data;
+    
+            // Check if the API response is valid
+            if (data.status === "OK" && data.results.length > 0) {
+                const locationName = data.results[0].formatted_address; // Extract formatted address
+                console.log('Location name:', locationName);
+                return locationName;
+            } else {
+                console.warn('Geocoding API returned unexpected status:', data.status);
+                return 'Unknown Location'; // Default fallback
+            }
+        } catch (error) {
+            console.error('Error fetching location name from Google Maps:', error.message);
+            return 'Unknown Location'; // Default fallback in case of an error
+        }
+    };
+    
+
     const handleXanderSave = async () => {
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -35,13 +63,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
+        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: location.locationName,
+                address: locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -101,13 +130,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
+        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: location.locationName,
+                address: locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -150,13 +180,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
+        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: location.locationName,
+                address: locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -199,13 +230,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
+        const locationName = await getLocationNameFromGoogleMaps(location.latitude, location.longitude);
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
-                address: location.locationName,
+                address: locationName,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
