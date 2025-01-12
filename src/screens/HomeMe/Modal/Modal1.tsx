@@ -1,5 +1,5 @@
 // CameraConfirmationModal.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
@@ -8,7 +8,6 @@ import uuid from 'react-native-uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocation } from '../Upload/Location';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
-import axios from 'axios';
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -23,10 +22,13 @@ interface Props {
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
+    // useEffect(() => {
+    //     checkforMemories();
+    // });
     const handleNoClick = () => {
         setInputModalVisible(true);
         onClose();
-    };    
+    };
     const handleXanderSave = async () => {
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -321,6 +323,184 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
         setDoneModalVisible(true);
     };
+    const handleSameSaveWine = async (Wine_Values: string, SameId: number) => {
+        console.log('Inside handleSameSaveWine');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_varietal: Wine_Values,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: SameId,
+            },
+        ]);
+
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: false,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSameSaveDish = async (Wine_Values: string, SameId: number) => {
+        console.log('Inside Same Dish');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSameHertelendySave = async (SameId: number) => {
+        console.log('Inside Same HertelendySave');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_brand: "Hertelendy",
+                eye_varietal: "Audere",
+                eye_vintage: 1997,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: SameId,
+                wine_id: 36,
+            },
+        ]);
+
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select(); // To get the inserted data or error
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSameXanderSave = async (SameId: number) => {
+        console.log('Inside Same handleSave');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_brand: "Xander",
+                eye_varietal: "Pinot Noir",
+                eye_vintage: 2020,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: SameId,
+                wine_id: 28,
+            },
+        ]);
+
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
+
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
+    const handleSameSaveNull = async (SameId: number) => {
+        console.log('Inside Same Null');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        const UID = await AsyncStorage.getItem("UID");
+        const { error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: false,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
+        onClose();
+        setDoneModalVisible(true);
+    };
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {
@@ -333,6 +513,194 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             return `Is this ${Dish_Values}?`;
         }
         return "No wine and dish found in this image";
+    };
+    const checkforMemories = async (Wine_Values: string | null, Dish_Values: string | null, Null_Values: string | null) => {
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoriesData, error } = await supabase
+            .from("bottleshock_memories")
+            .select("created_at , location_long , location_lat , id")
+            .eq("user_id", UID);
+        if (error) {
+            console.error("Error fetching memories:", error.message);
+            return;
+        }
+        const currentTime = new Date();
+        ////////////////////////////////////////////////////////////////
+        if (Wine_Values === "Xander Pinot Noir") {
+            console.log("Xander Pinot")
+            console.log('Inside Xander Pinot Noir');
+            // let condition=false
+            for (const memory of memoriesData) {
+                if (Wine_Values) {
+                    const location = await getLocation();
+                    const memorylocation_lat = memory.location_lat;
+                    const memorylocation_long = memory.location_long;
+                    const currentlocation_lat = location.latitude;
+                    const currentlocation_long = location.longitude;
+
+                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+                    const memoryTime = new Date(memory.created_at);
+                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+
+                    if (timeDifference < 3 && distance <= 100) {
+                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
+                        console.log("Inside the Distance and time");
+                        handleSameXanderSave(memory.id);
+                        break; // Break out of the loop when condition is satisfied
+                    } else {
+                        console.log(memory.id, "checking next list");
+                    }
+                }
+            }
+            // if (!condition) {
+            //     console.log("No memories found within 3 hours and 100 m distance");
+            //     handleXanderSave()
+            // }
+        }
+        else if (Wine_Values === "Hertelendy Audere") {
+            console.log("Hertelendy Audere")
+            // let condition = false;
+            for (const memory of memoriesData) {
+                if (Wine_Values) {
+                    const location = await getLocation();
+                    const memorylocation_lat = memory.location_lat;
+                    const memorylocation_long = memory.location_long;
+                    const currentlocation_lat = location.latitude;
+                    const currentlocation_long = location.longitude;
+
+                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+                    const memoryTime = new Date(memory.created_at);
+                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+
+                    if (timeDifference < 3 && distance <= 100) {
+                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
+                        console.log("Inside the Distance and time");
+                        handleSameHertelendySave(memory.id);
+                        break; // Break out of the loop when condition is satisfied
+                    } else {
+                        console.log(memory.id, "checking next list");
+                    }
+                }
+            }
+            // if (!condition) {
+            //     console.log("No memories found within 3 hours and 100 m distance");
+            //     handleHertelendySave();
+            // }
+        }
+        ////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////
+        else if (Dish_Values === null && Wine_Values != null) {
+            console.log("Wine")
+            // let condition = false;
+            for (const memory of memoriesData) {
+                if (Wine_Values) {
+                    const location = await getLocation();
+                    const memorylocation_lat = memory.location_lat;
+                    const memorylocation_long = memory.location_long;
+                    const currentlocation_lat = location.latitude;
+                    const currentlocation_long = location.longitude;
+
+                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+                    const memoryTime = new Date(memory.created_at);
+                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+
+                    if (timeDifference < 3 && distance <= 100) {
+                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
+                        console.log("Inside the Distance and time");
+                        handleSameSaveWine(Wine_Values, memory.id);
+                        break; // Break out of the loop when condition is satisfied
+                    } else {
+                        console.log(memory.id, "checking next list");
+                    }
+                }
+            }
+            // if (!condition) {
+            //     console.log("No memories found within 3 hours and 100 m distance");
+            //     handleSaveWine(Wine_Values);
+            // }
+        }
+        ////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////
+        else if (Wine_Values === null && Dish_Values != null) {
+            console.log("Dish")
+            // let condition = false;
+            for (const memory of memoriesData) {
+                if (Dish_Values) {
+                    const location = await getLocation();
+                    const memorylocation_lat = memory.location_lat;
+                    const memorylocation_long = memory.location_long;
+                    const currentlocation_lat = location.latitude;
+                    const currentlocation_long = location.longitude;
+
+                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+                    const memoryTime = new Date(memory.created_at);
+                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+
+                    if (timeDifference < 3 && distance <= 100) {
+                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
+                        console.log("Inside the Distance and time");
+                        handleSameSaveDish(Dish_Values, memory.id);
+                        break;
+                    } else {
+                        console.log(memory.id, "checking next list");
+                    }
+                }
+            }
+            // if (!condition) {
+            //     console.log("No memories found within 3 hours and 100 m distance");
+            //     handleSaveDish();
+            // }
+        }
+        ////////////////////
+        else if (Null_Values) {
+            console.log('Inside Else part ::::::::');
+            // let condition = false;
+            for (const memory of memoriesData) {
+                if (Null_Values) {
+                    const location = await getLocation();
+                    const memorylocation_lat = memory.location_lat;
+                    const memorylocation_long = memory.location_long;
+                    const currentlocation_lat = location.latitude;
+                    const currentlocation_long = location.longitude;
+
+                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+                    const memoryTime = new Date(memory.created_at);
+                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+
+                    if (timeDifference < 3 && distance <= 100) {
+                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
+                        console.log("Inside the Distance and time");
+                        handleSameSaveNull(memory.id);
+                        break;
+                    } else {
+                        console.log(memory.id, "checking next list");
+                    }
+                }
+            }
+            // if (!condition) {
+            //     console.log("No memories found within 3 hours and 100 m distance");
+            //     handleSaveNull();
+            // }
+        }
+    };
+    interface CalculateDistance {
+        (lat1: number, lon1: number, lat2: number, lon2: number): number;
+    }
+    const calculateDistance: CalculateDistance = (lat1, lon1, lat2, lon2) => {
+        const toRadians = (degree: number): number => (degree * Math.PI) / 180;
+
+        const R = 6371000;
+        const φ1 = toRadians(lat1);
+        const φ2 = toRadians(lat2);
+        const Δφ = toRadians(lat2 - lat1);
+        const Δλ = toRadians(lon2 - lon1);
+
+        const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // Distance in meters
     };
     return (
         <>
@@ -358,30 +726,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
-                                    if (Wine_Values === "Xander Pinot Noir") {
-                                        console.log("Xander Pinot")
-                                        console.log('Inside Xander Pinot Noir');
-                                        handleXanderSave();
-                                    }
-                                    else if (Wine_Values === "Hertelendy Audere") {
-                                        console.log("Hertelendy Audere")
-                                        console.log('Inside Hertelendy Audere');
-                                        handleHertelendySave();
-                                    }
-                                    else if (Dish_Values === null && Wine_Values !=null ) {
-                                        console.log("Wine")
-                                        if (Wine_Values) {
-                                            handleSaveWine(Wine_Values);
-                                        }
-                                    }
-                                    else if (Wine_Values === null && Dish_Values != null) {
-                                        console.log("Dish")
-                                        handleSaveDish();
-                                    }
-                                    else if ( Null_Values ) {
-                                        console.log('Inside Else part ::::::::');
-                                        handleSaveNull();
-                                    }
+                                    checkforMemories(Wine_Values, Dish_Values, Null_Values);
                                 }}
                             >
                                 <Text style={styles.iosButtonText}>Yes!</Text>

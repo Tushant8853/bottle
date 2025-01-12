@@ -22,12 +22,10 @@ const getLocationNameFromGoogleMaps = async (latitude: number, longitude: number
   try {
       const GOOGLE_MAPS_API_KEY = 'AIzaSyCmi08U5TNZAx_QLc2ASR7lkEJTT6Z9_Qs'; // Replace with your API key
       const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`;
-      console.log('Fetching location name from URL:', geocodeUrl);
       const response = await axios.get(geocodeUrl);
       const data = response.data;
       if (data.status === "OK" && data.results.length > 0) {
           const locationName = data.results[0].formatted_address; // Extract formatted address
-          console.log('Location name:', locationName);
           return locationName;
       } else {
           console.warn('Geocoding API returned unexpected status:', data.status);
