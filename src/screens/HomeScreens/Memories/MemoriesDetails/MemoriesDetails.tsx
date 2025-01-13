@@ -87,7 +87,7 @@ const MemoriesDetails: React.FC = () => {
     const { t } = useTranslation();
     const [from, setfrom] = useState<string | null>(null);
     const [savedImages, setSavedImages] = useState<string[]>([]);
-
+    
     
     const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
@@ -742,57 +742,73 @@ const MemoriesDetails: React.FC = () => {
             ))}
             {/* PICANDVIDEO */}
             {memories.map((memory, memoryIndex) => (
-                <View style={styles.picandvideoContainer} key={`memory-pics-${memory.id}`} >
-                    <View style={styles.picandvideoHeaderContainer}>
-                        <View style={styles.leftContent}>
-                            <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
-                            <Text style={styles.picandvideoHeadertext}> {t('picsandvideos')}</Text>
-                        </View>
-                        <View style={styles.rightContent}>
-                            <Pressable onPress={() => navigation.navigate("Thumbnail", { memoryId: memory.id })}>
-                                <AntDesign style={styles.picandvideoArrowIcons} name="arrowright" size={20} color="#522F60" />
-                            </Pressable>
-                        </View>
-                    </View>
+  <View style={styles.picandvideoContainer} key={`memory-pics-${memory.id}`}>
+    <View style={styles.picandvideoHeaderContainer}>
+      <View style={styles.leftContent}>
+        <FontAwesome style={styles.picandvideoIcons} name="image" size={16} color="#522F60" />
+        <Text style={styles.picandvideoHeadertext}> {t('picsandvideos')}</Text>
+      </View>
+      <View style={styles.rightContent}>
+        <Pressable onPress={() => navigation.navigate("Thumbnail", { memoryId: memory.id })}>
+          <AntDesign style={styles.picandvideoArrowIcons} name="arrowright" size={20} color="#522F60" />
+        </Pressable>
+      </View>
+    </View>
 
-                    {memory.thumbnails && memory.thumbnails.length > 0 && (
-                        <View style={styles.picandvideoMainContainer}>
-                            <ScrollView
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.picandvideo}
-                            >
-                                {memory.thumbnails.map((thumbnail, thumbnailIndex) => (
-                                    <View key={`thumbnail-${thumbnail.id}`} style={styles.imageContainer}>
-                                        <Pressable
-                                            onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
-                                            style={styles.picandvideoImage} // Ensure that image is still styled correctly
-                                        >
-                                             {FinalImage ? (
-                                              <Image source={{ uri: FinalImage }} style={styles.picandvideoImage} />
-                                          ) : thumbnail ? (
-                                            <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
-                                          ) : (
-                                         <Text>{t('nomemoriesavailable')}</Text>
-                                       )}
-                                        </Pressable>
-                                        <Pressable
-                                            onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)} // Clicking the circle still triggers the same function
-                                            style={styles.circle}
-                                        >
-                                            {thumbnail.is_thumbnail ? (
-                                                <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
-                                            ) : (
-                                                <Entypo name="circle" size={20} color="#FFFFFF" />
-                                            )}
-                                        </Pressable>
-                                    </View>
-                                ))}
-                            </ScrollView>
-                        </View>
-                    )}
-                </View>
-            ))}
+    {memory.thumbnails && memory.thumbnails.length > 0 && (
+      <View style={styles.picandvideoMainContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.picandvideo}
+        >
+          {memory.thumbnails.map((thumbnail, thumbnailIndex) => {
+           const filename = thumbnail.url ? thumbnail.url.split('/').pop() : 'No thumbnail available';
+               const localImage = savedImages.find((image) => image === filename);
+               console.log('localImage',localImage)
+           
+               // Dynamic prefix based on the platform
+               const PREFIX = Platform.OS === 'ios'
+                 ? FileSystem.documentDirectory
+                 : 'file:///data/user/0/host.exp.exponent/files/';
+             
+               const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
+            return (
+              <View key={`thumbnail-${thumbnail.id}`} style={styles.imageContainer}>
+                <Pressable
+                  onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+                  style={styles.picandvideoImage}
+                >
+                  {FinalImage ? (
+                    // Display the locally saved image using FileSystem
+                    <Image
+                    source={{ uri: FinalImage }}
+                      style={styles.picandvideoImage}
+                    />
+                  ) : (
+                    // Fallback to fetch the image from TwicPics
+                    <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                  )}
+                </Pressable>
+                <Pressable
+                  onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+                  style={styles.circle}
+                >
+                  {thumbnail.is_thumbnail ? (
+                    <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
+                  ) : (
+                    <Entypo name="circle" size={20} color="#FFFFFF" />
+                  )}
+                </Pressable>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+    )}
+  </View>
+))}
+
             {/* MAP */}
             {memories.map((memory, index) => (
                 <View style={styles.MapContainer} key={`memory-map-${memory.id}`}>

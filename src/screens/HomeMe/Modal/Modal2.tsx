@@ -6,6 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import uuid from 'react-native-uuid';
 import * as Location from 'expo-location';
+import { getLocation } from '../Upload/Location';
+
 
 interface Props {
     visible: boolean;
@@ -22,31 +24,8 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     const [error2, setError2] = useState(false);
     const [error3, setError3] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
-    const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
-    useEffect(() => {
-        fetchLocation();
-    }, []);
-    const fetchLocation = async () => {
-        try {
-            const coords = await getLocation();
-            setLocation(coords);
-        } catch (error: any) {
-            console.error(error.message || 'Something went wrong');
-        }
-    };
-    const getLocation = async () => {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            throw new Error('Permission to access location was denied');
-        }
-
-        const location = await Location.getCurrentPositionAsync({});
-        return {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-        };
-    };
+   
     const handleSave = async () => {
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -57,6 +36,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
 
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
+        const location = await getLocation();
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
         if (!isValid) {
             setError1(input1.trim() === '');
@@ -75,6 +55,8 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                 name: 'Untitled memory',
                 location_lat: location.latitude,
                 location_long: location.longitude,
+                address: location.locationName,
+                restaurant_id: location.restaurantId,
                 user_id: UID,
                 id: Memory_id,
                 is_public: true,
@@ -183,13 +165,26 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                                 <Text style={styles.iosButtonText}>Done</Text>
                             </Pressable>
                             <Pressable
-                                style={[styles.iosButton, styles.iosDefaultButton]}
-                                onPress={() => {
-                                    onClose();
-                                }}
-                            >
-                                <Text style={styles.iosButtonText2}>Do this later</Text>
-                            </Pressable>
+    style={[styles.iosButton, styles.iosDefaultButton]}
+    onPress={async () => {
+        // try {
+           
+        //     const pendingTask = {
+        //         photoUri,
+        //         input1,
+        //         input2,
+        //         input3,
+        //     };
+        //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
+        // } catch (error) {
+        //     console.error('Failed to save pending task:', error);
+        // }
+        onClose();
+    }}
+>
+    <Text style={styles.iosButtonText2}>Do this later</Text>
+</Pressable>
+
                             <Pressable
                                 style={[styles.iosButton, styles.iosCancelButton]}
                                 onPress={() => {
