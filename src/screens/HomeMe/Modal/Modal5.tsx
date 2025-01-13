@@ -21,6 +21,7 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
+    console.log("Photo URL :::::::::",photoUri)
     const [thankYouVisible, setThankYouVisible] = useState(false);
     
     const closeThankYouModal = () => {
@@ -28,6 +29,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
     };
     const handleSaveDish = async () => {
+        console.log("Photo URL :::::::::",photoUri)
         console.log('Inside Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -78,6 +80,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         setThankYouVisible(true);
     };
     const handleSaveNull = async () => {
+        console.log("Photo URL handleSaveNull :::::::::",photoUri)
         console.log('Inside Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -252,7 +255,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
         }
     };
-
     interface CalculateDistance {
         (lat1: number, lon1: number, lat2: number, lon2: number): number;
     }
