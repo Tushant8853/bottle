@@ -1,5 +1,5 @@
 // CameraConfirmationModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
@@ -20,11 +20,10 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
+
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
-    // useEffect(() => {
-    //     checkforMemories();
-    // });
+
     const handleNoClick = () => {
         setInputModalVisible(true);
         onClose();
@@ -164,106 +163,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
         setDoneModalVisible(true);
     };
-    const handleSaveDish = async () => {
-        console.log('Inside Dish');
-        const savedFilePath = await saveImageToLocalStorage(photoUri);
-        if (!savedFilePath) {
-            console.error('Error: savedFilePath is undefined');
-            return;
-        }
-        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-
-        const UID = await AsyncStorage.getItem("UID");
-        const Memory_id = uuid.v4();
-        const location = await getLocation();
-
-        const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
-            {
-                name: 'Untitled memory',
-                location_lat: location.latitude,
-                location_long: location.longitude,
-                address: location.locationName,
-                restaurant_id: location.restaurantId,
-                user_id: UID,
-                id: Memory_id,
-                is_public: true,
-                shared_with_friends: true
-
-            },
-        ])
-            .select();
-
-        if (bottleshock_memoriesError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
-        }
-
-        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: Memory_id,
-                content_type: 'PHOTO',
-                is_thumbnail: true,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select(); // To get the inserted data or error
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
-        }
-        onClose();
-        setDoneModalVisible(true);
-    };
-    const handleSaveNull = async () => {
-        console.log('Inside Null');
-        const savedFilePath = await saveImageToLocalStorage(photoUri);
-        if (!savedFilePath) {
-            console.error('Error: savedFilePath is undefined');
-            return;
-        }
-        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-
-        const UID = await AsyncStorage.getItem("UID");
-        const Memory_id = uuid.v4();
-        const location = await getLocation();
-
-        const { error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
-            {
-                name: 'Untitled memory',
-                location_lat: location.latitude,
-                location_long: location.longitude,
-                address: location.locationName,
-                restaurant_id: location.restaurantId,
-                user_id: UID,
-                id: Memory_id,
-                is_public: true,
-                shared_with_friends: true
-
-            },
-        ])
-            .select();
-
-        if (bottleshock_memoriesError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memoriesError);
-        }
-
-        const { error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: Memory_id,
-                content_type: 'PHOTO',
-                is_thumbnail: true,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select();
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
-        }
-        onClose();
-        setDoneModalVisible(true);
-    };
     const handleSaveWine = async (Wine_Values: string) => {
         console.log('Inside handleSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -368,32 +267,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
         setDoneModalVisible(true);
     };
-    const handleSameSaveDish = async (Wine_Values: string, SameId: number) => {
-        console.log('Inside Same Dish');
-        const savedFilePath = await saveImageToLocalStorage(photoUri);
-        if (!savedFilePath) {
-            console.error('Error: savedFilePath is undefined');
-            return;
-        }
-        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-        const UID = await AsyncStorage.getItem("UID");
-        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: SameId,
-                content_type: 'PHOTO',
-                is_thumbnail: true,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select();
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
-        }
-        onClose();
-        setDoneModalVisible(true);
-    };
     const handleSameHertelendySave = async (SameId: number) => {
         console.log('Inside Same HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -480,32 +353,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
         setDoneModalVisible(true);
     };
-    const handleSameSaveNull = async (SameId: number) => {
-        console.log('Inside Same Null');
-        const savedFilePath = await saveImageToLocalStorage(photoUri);
-        if (!savedFilePath) {
-            console.error('Error: savedFilePath is undefined');
-            return;
-        }
-        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-        const UID = await AsyncStorage.getItem("UID");
-        const { error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: SameId,
-                content_type: 'PHOTO',
-                is_thumbnail: false,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select();
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
-        }
-        onClose();
-        setDoneModalVisible(true);
-    };
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {
@@ -534,7 +381,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (Wine_Values === "Xander Pinot Noir") {
             console.log("Xander Pinot")
             console.log('Inside Xander Pinot Noir');
-            // let condition=false
+            let isHandled = false;
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -551,20 +398,21 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         console.log(memory.id, "This memory is within 3 hours and 100 m distance");
                         console.log("Inside the Distance and time");
                         handleSameXanderSave(memory.id);
-                        break; // Break out of the loop when condition is satisfied
+                        isHandled = true;
+                        break;
                     } else {
                         console.log(memory.id, "checking next list");
                     }
                 }
             }
-            // if (!condition) {
-            //     console.log("No memories found within 3 hours and 100 m distance");
-            //     handleXanderSave()
-            // }
+            if (!isHandled) {
+                console.log("No matching memory found, calling handleSaveWine.");
+                handleXanderSave();
+            }
         }
         else if (Wine_Values === "Hertelendy Audere") {
             console.log("Hertelendy Audere")
-            // let condition = false;
+            let isHandled = false;
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -581,22 +429,23 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         console.log(memory.id, "This memory is within 3 hours and 100 m distance");
                         console.log("Inside the Distance and time");
                         handleSameHertelendySave(memory.id);
-                        break; // Break out of the loop when condition is satisfied
+                        isHandled = true;
+                        break;
                     } else {
                         console.log(memory.id, "checking next list");
                     }
                 }
             }
-            // if (!condition) {
-            //     console.log("No memories found within 3 hours and 100 m distance");
-            //     handleHertelendySave();
-            // }
+            if (!isHandled) {
+                console.log("No matching memory found, calling handleSaveWine.");
+                handleHertelendySave();
+            }
         }
         ////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////
         else if (Dish_Values === null && Wine_Values != null) {
-            console.log("Wine")
-            // let condition = false;
+            console.log("Wine");
+            let isHandled = false; // Flag to check if handleSameSaveWine was called
+
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -613,79 +462,17 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         console.log(memory.id, "This memory is within 3 hours and 100 m distance");
                         console.log("Inside the Distance and time");
                         handleSameSaveWine(Wine_Values, memory.id);
-                        break; // Break out of the loop when condition is satisfied
-                    } else {
-                        console.log(memory.id, "checking next list");
-                    }
-                }
-            }
-            // if (!condition) {
-            //     console.log("No memories found within 3 hours and 100 m distance");
-            //     handleSaveWine(Wine_Values);
-            // }
-        }
-        ////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////
-        else if (Wine_Values === null && Dish_Values != null) {
-            console.log("Dish")
-            // let condition = false;
-            for (const memory of memoriesData) {
-                if (Dish_Values) {
-                    const location = await getLocation();
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
-
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
-
-                    if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
-                        handleSameSaveDish(Dish_Values, memory.id);
+                        isHandled = true; // Set flag to true if handled
                         break;
                     } else {
                         console.log(memory.id, "checking next list");
                     }
                 }
             }
-            // if (!condition) {
-            //     console.log("No memories found within 3 hours and 100 m distance");
-            //     handleSaveDish();
-            // }
-        }
-        ////////////////////
-        else if (Null_Values) {
-            console.log('Inside Else part ::::::::');
-            // let condition = false;
-            for (const memory of memoriesData) {
-                if (Null_Values) {
-                    const location = await getLocation();
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
-
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
-
-                    if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
-                        handleSameSaveNull(memory.id);
-                        break;
-                    } else {
-                        console.log(memory.id, "checking next list");
-                    }
-                }
+            if (!isHandled) {
+                console.log("No matching memory found, calling handleSaveWine.");
+                handleSaveWine(Wine_Values);
             }
-            // if (!condition) {
-            //     console.log("No memories found within 3 hours and 100 m distance");
-            //     handleSaveNull();
-            // }
         }
     };
     interface CalculateDistance {
@@ -757,7 +544,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                 </View>
             </Modal >
 
-            {/* The second modal */}
             <CameraInputModal
                 visible={isInputModalVisible}
                 onClose={() => setInputModalVisible(false)}
