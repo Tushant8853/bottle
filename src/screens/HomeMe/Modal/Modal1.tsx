@@ -1,6 +1,6 @@
 // CameraConfirmationModal.tsx
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View ,ActivityIndicator} from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import WineReviewModal from './Modal3';
@@ -20,15 +20,16 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
-
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleNoClick = () => {
         setInputModalVisible(true);
         onClose();
     };
     const handleXanderSave = async () => {
+        setLoading(true); 
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -92,10 +93,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false); 
         onClose();
         setDoneModalVisible(true);
     };
     const handleHertelendySave = async () => {
+        setLoading(true); 
         console.log('Inside HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -160,10 +163,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false); 
         onClose();
         setDoneModalVisible(true);
     };
     const handleSaveWine = async (Wine_Values: string) => {
+        setLoading(true); 
         console.log('Inside handleSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -224,10 +229,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false); 
         onClose();
         setDoneModalVisible(true);
     };
     const handleSameSaveWine = async (Wine_Values: string, SameId: number) => {
+        setLoading(true); 
         console.log('Inside handleSameSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -264,10 +271,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false); 
         onClose();
         setDoneModalVisible(true);
     };
     const handleSameHertelendySave = async (SameId: number) => {
+        setLoading(true); 
         console.log('Inside Same HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -307,10 +316,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false);
         onClose();
         setDoneModalVisible(true);
     };
     const handleSameXanderSave = async (SameId: number) => {
+        setLoading(true); 
         console.log('Inside Same handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -350,6 +361,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        setLoading(false); 
         onClose();
         setDoneModalVisible(true);
     };
@@ -494,6 +506,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
 
         return R * c; // Distance in meters
     };
+
     return (
         <>
             <Modal
@@ -543,7 +556,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     </View>
                 </View>
             </Modal >
-
+            {loading && (
+                <Modal transparent={true} animationType="fade" visible={loading}>
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                        <Text>Loading...</Text>
+                    </View>
+                </Modal>
+            )}
             <CameraInputModal
                 visible={isInputModalVisible}
                 onClose={() => setInputModalVisible(false)}
@@ -566,6 +586,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     iosModal: {
         backgroundColor: '#B3B3B3D1',
