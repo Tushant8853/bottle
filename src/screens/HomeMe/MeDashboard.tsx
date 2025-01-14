@@ -191,35 +191,26 @@ export default function App() {
         </CameraView>
       )
       }
-      {
-        isModalVisible && (
-          <CameraConfirmationModal
-            visible={isModalVisible}
-            onClose={() => setIsModalVisible(false)}
-            onRetake={resetImage}
-            onCancel={resetImage}
-            Wine_Values={WineValue}
-            Dish_Values={DishValue}
-            Null_Values={NullValue}
-            photoUri={capturedImage || ''}
-          />
-        )
-      }
-      {
-        DishVisible && (
-          <DishModal
-            visible={DishVisible}
-            onClose={() => setDishVisible(false)}
-            onRetake={resetImage}
-            onCancel={resetImage}
-            Wine_Values={WineValue}
-            Dish_Values={DishValue}
-            Null_Values={NullValue}
-            photoUri={capturedImage || ''}
-          />
-        )
-      }
-
+      <CameraConfirmationModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onRetake={resetImage}
+        onCancel={resetImage}
+        Wine_Values={WineValue}
+        Dish_Values={DishValue}
+        Null_Values={NullValue}
+        photoUri={capturedImage || ''}
+      />
+      <DishModal
+        visible={DishVisible}
+        onClose={() => setDishVisible(false)}
+        onRetake={resetImage}
+        onCancel={resetImage}
+        Wine_Values={WineValue}
+        Dish_Values={DishValue}
+        Null_Values={NullValue}
+        photoUri={capturedImage || ''}
+      />
     </View >
   );
 }

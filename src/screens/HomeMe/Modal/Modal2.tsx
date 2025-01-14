@@ -24,8 +24,19 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     const [error3, setError3] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
 
-   
+
     const handleSave = async () => {
+        const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
+        if (!isValid) {
+            setError1(input1.trim() === '');
+            setError2(input2.trim() === '');
+            setError3(input3.trim() === '');
+            return;
+        }
+        checkforMemories(input1, input2, input3)
+    };
+    const handleSaveWine = async (input1: string, input2: string, input3: string) => {
+        console.log('Inside handleSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
@@ -36,18 +47,6 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         const UID = await AsyncStorage.getItem("UID");
         const Memory_id = uuid.v4();
         const location = await getLocation();
-        const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
-        if (!isValid) {
-            setError1(input1.trim() === '');
-            setError2(input2.trim() === '');
-            setError3(input3.trim() === '');
-            return;
-        }
-
-        if (!location) {
-            console.error('Error: location is null');
-            return;
-        }
 
         const { data: bottleshock_memories, error: bottleshock_memoriesError } = await supabase.from('bottleshock_memories').insert([
             {
@@ -99,112 +98,202 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-
-
         onClose();
         setDoneModalVisible(true);
-
     };
+    const handleSameSaveWine = async (input1: string, input2: string, input3: string, SameId: number) => {
+        console.log('Inside handleSameSaveWine');
+        const savedFilePath = await saveImageToLocalStorage(photoUri);
+        if (!savedFilePath) {
+            console.error('Error: savedFilePath is undefined');
+            return;
+        }
+        const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
+            {
+                eye_brand: input1,
+                eye_varietal: input2,
+                eye_vintage: input3,
+                user_id: UID,
+                user_photo: fileName,
+                memory_id: SameId,
+            },
+        ]);
 
-    return (
-        <>
-            <Modal
-                transparent={true}
-                visible={visible}
-                animationType="fade"
-                onRequestClose={onClose}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.inputModal}>
-                        <View style={styles.inputModalTitleConatainer}>
-                            <Text style={styles.inputModalTitle}>Please tell us which wine this is</Text>
-                        </View>
-                        <TextInput
-                            style={[
-                                styles.input,
-                                error1 ? styles.inputError : null,
-                            ]}
-                            placeholder="Wine name"
-                            value={input1}
-                            onChangeText={(text) => {
-                                setInput1(text);
-                                if (error1) setError1(false);
-                            }}
-                        />
-                        <TextInput
-                            style={[
-                                styles.input,
-                                error2 ? styles.inputError : null,
-                            ]}
-                            placeholder="Winery name"
-                            value={input2}
-                            onChangeText={(text) => {
-                                setInput2(text);
-                                if (error2) setError2(false);
-                            }}
-                        />
-                        <TextInput
-                            style={[
-                                styles.input,
-                                error3 ? styles.inputError : null,
-                            ]}
-                            placeholder="Vintage (year)"
-                            value={input3}
-                            onChangeText={(text) => {
-                                setInput3(text);
-                                if (error3) setError3(false);
-                            }}
-                        />
+        if (memoryWinesError) {
+            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+            return;
+        }
 
-                        <View style={styles.iosButtonGroup}>
-                            <Pressable
-                                style={[styles.iosButton, styles.iosDefaultButton]}
-                                onPress={handleSave}
-                            >
-                                <Text style={styles.iosButtonText}>Done</Text>
-                            </Pressable>
-                            <Pressable
-    style={[styles.iosButton, styles.iosDefaultButton]}
-    onPress={async () => {
-        // try {
-           
-        //     const pendingTask = {
-        //         photoUri,
-        //         input1,
-        //         input2,
-        //         input3,
-        //     };
-        //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
-        // } catch (error) {
-        //     console.error('Failed to save pending task:', error);
-        // }
+        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
+            {
+                memory_id: SameId,
+                content_type: 'PHOTO',
+                is_thumbnail: true,
+                user_id: UID,
+                file: fileName,
+            },
+        ])
+            .select();
+
+        if (bottleshock_memory_galleryError) {
+            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+        }
         onClose();
-    }}
->
-    <Text style={styles.iosButtonText2}>Do this later</Text>
-</Pressable>
+        setDoneModalVisible(true);
+    };
+    const checkforMemories = async (input1: string, input2: string, input3: string) => {
+        const UID = await AsyncStorage.getItem("UID");
+        const { data: memoriesData, error } = await supabase
+            .from("bottleshock_memories")
+            .select("created_at , location_long , location_lat , id")
+            .eq("user_id", UID);
+        if (error) {
+            console.error("Error fetching memories:", error.message);
+            return;
+        }
+        const currentTime = new Date();
+        const location = await getLocation();
+        let isHandled = false;
+        for (const memory of memoriesData) {
+            const memorylocation_lat = memory.location_lat;
+            const memorylocation_long = memory.location_long;
+            const currentlocation_lat = location.latitude;
+            const currentlocation_long = location.longitude;
+            const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
+            const memoryTime = new Date(memory.created_at);
+            const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+            if (timeDifference < 3 && distance <= 100) {
+                handleSameSaveWine(input1, input2, input3 ,memory.id);
+                isHandled = true;
+                break;
+            } else {
+            }
+        }
+        if (!isHandled) {
+            handleSaveWine(input1, input2, input3);
+        }
+    }
+}
+interface CalculateDistance {
+    (lat1: number, lon1: number, lat2: number, lon2: number): number;
+}
+const calculateDistance: CalculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRadians = (degree: number): number => (degree * Math.PI) / 180;
 
-                            <Pressable
-                                style={[styles.iosButton, styles.iosCancelButton]}
-                                onPress={() => {
-                                    onClose();
-                                    onRetake();
-                                }}
-                            >
-                                <Text style={styles.iosCancelButtonText}>Cancel</Text>
-                            </Pressable>
-                        </View>
+    const R = 6371000;
+    const φ1 = toRadians(lat1);
+    const φ2 = toRadians(lat2);
+    const Δφ = toRadians(lat2 - lat1);
+    const Δλ = toRadians(lon2 - lon1);
+
+    const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+};
+return (
+    <>
+        <Modal
+            transparent={true}
+            visible={visible}
+            animationType="fade"
+            onRequestClose={onClose}
+        >
+            <View style={styles.modalContainer}>
+                <View style={styles.inputModal}>
+                    <View style={styles.inputModalTitleConatainer}>
+                        <Text style={styles.inputModalTitle}>Please tell us which wine this is</Text>
+                    </View>
+                    <TextInput
+                        style={[
+                            styles.input,
+                            error1 ? styles.inputError : null,
+                        ]}
+                        placeholder="Wine name"
+                        value={input1}
+                        onChangeText={(text) => {
+                            setInput1(text);
+                            if (error1) setError1(false);
+                        }}
+                    />
+                    <TextInput
+                        style={[
+                            styles.input,
+                            error2 ? styles.inputError : null,
+                        ]}
+                        placeholder="Winery name"
+                        value={input2}
+                        onChangeText={(text) => {
+                            setInput2(text);
+                            if (error2) setError2(false);
+                        }}
+                    />
+                    <TextInput
+                        style={[
+                            styles.input,
+                            error3 ? styles.inputError : null,
+                        ]}
+                        placeholder="Vintage (year)"
+                        value={input3}
+                        onChangeText={(text) => {
+                            setInput3(text);
+                            if (error3) setError3(false);
+                        }}
+                    />
+
+                    <View style={styles.iosButtonGroup}>
+                        <Pressable
+                            style={[styles.iosButton, styles.iosDefaultButton]}
+                            onPress={handleSave}
+                        >
+                            <Text style={styles.iosButtonText}>Done</Text>
+                        </Pressable>
+                        <Pressable
+                            style={[styles.iosButton, styles.iosDefaultButton]}
+                            onPress={async () => {
+                                // try {
+
+                                //     const pendingTask = {
+                                //         photoUri,
+                                //         input1,
+                                //         input2,
+                                //         input3,
+                                //     };
+                                //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
+                                // } catch (error) {
+                                //     console.error('Failed to save pending task:', error);
+                                // }
+                                onClose();
+                            }}
+                        >
+                            <Text style={styles.iosButtonText2}>Do this later</Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={[styles.iosButton, styles.iosCancelButton]}
+                            onPress={() => {
+                                onClose();
+                                onRetake();
+                            }}
+                        >
+                            <Text style={styles.iosCancelButtonText}>Cancel</Text>
+                        </Pressable>
                     </View>
                 </View>
-            </Modal>
+            </View>
+        </Modal>
 
-            <WineReviewModal
-                visible={doneModalVisible}
-                onClose={() => setDoneModalVisible(false)}
-                onRetake={onRetake}
-            />
-        </>
-    );
+        <WineReviewModal
+            visible={doneModalVisible}
+            onClose={() => setDoneModalVisible(false)}
+            onRetake={onRetake}
+        />
+    </>
+);
 };
 
 export default CameraInputModal;
