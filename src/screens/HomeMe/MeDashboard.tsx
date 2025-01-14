@@ -78,7 +78,6 @@ export default function App() {
         console.error("Error response body:", errorDetails);
       }
       const jsonResponse = await response.json();
-      console.log("Object recognition response:", jsonResponse);
       const wineLabels = jsonResponse?.data?.data?.wineName;
       const dishName = jsonResponse?.data?.data?.dishName;
       if (wineLabels && wineLabels !== "null") {
@@ -88,12 +87,12 @@ export default function App() {
           setWineValue("Pinot Noir");
           setLoading(false);
           setIsModalVisible(true);
-        } 
+        }
         if (wineLabels.includes(searchValues2)) {
           setWineValue("Hertelendy Audere");
           setLoading(false);
           setIsModalVisible(true);
-        } 
+        }
         else {
           setWineValue(wineLabels);
           setDishValue(null);
@@ -192,26 +191,35 @@ export default function App() {
         </CameraView>
       )
       }
-      <CameraConfirmationModal
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        onRetake={resetImage}
-        onCancel={resetImage}
-        Wine_Values={WineValue}
-        Dish_Values={DishValue}
-        Null_Values={NullValue}
-        photoUri={capturedImage || ''}
-      />
-      <DishModal
-        visible={DishVisible}
-        onClose={() => setDishVisible(false)}
-        onRetake={resetImage}
-        onCancel={resetImage}
-        Wine_Values={WineValue}
-        Dish_Values={DishValue}
-        Null_Values={NullValue}
-        photoUri={capturedImage || ''}
-      />
+      {
+        isModalVisible && (
+          <CameraConfirmationModal
+            visible={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+            onRetake={resetImage}
+            onCancel={resetImage}
+            Wine_Values={WineValue}
+            Dish_Values={DishValue}
+            Null_Values={NullValue}
+            photoUri={capturedImage || ''}
+          />
+        )
+      }
+      {
+        DishVisible && (
+          <DishModal
+            visible={DishVisible}
+            onClose={() => setDishVisible(false)}
+            onRetake={resetImage}
+            onCancel={resetImage}
+            Wine_Values={WineValue}
+            Dish_Values={DishValue}
+            Null_Values={NullValue}
+            photoUri={capturedImage || ''}
+          />
+        )
+      }
+
     </View >
   );
 }

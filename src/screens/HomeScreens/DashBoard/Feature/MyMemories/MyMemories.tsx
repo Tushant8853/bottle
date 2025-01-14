@@ -108,7 +108,6 @@ const MyMemories: React.FC = () => {
   const fetchSavedImages = async () => {
     try {
       const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
-      console.log(images);
       const fileNames = images.map((path: string) => path.split('/').pop());
       setSavedImages(fileNames);
 
@@ -167,10 +166,8 @@ const MyMemories: React.FC = () => {
 
 
   const renderItem = ({ item }: { item: Memory }) => {
-    console.log('::::::item:::::',item)
     const filename = item.thumbnail ? item.thumbnail.split('/').pop() : 'No thumbnail available';
     const localImage = savedImages.find((image) => image === filename);
-    console.log('localImage',localImage)
 
     // Dynamic prefix based on the platform
     const PREFIX = Platform.OS === 'ios'
@@ -178,7 +175,6 @@ const MyMemories: React.FC = () => {
       : 'file:///data/user/0/host.exp.exponent/files/';
   
     const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
-    console.log('::::::::::::FinalImage:::::::::::::::::::::::::::',FinalImage)
 
     return (
       <Pressable

@@ -40,7 +40,6 @@ const getLocationNameFromGoogleMaps = async (latitude: number, longitude: number
     if (data.status === 'OK' && data.results.length > 0) {
       return data.results[0].formatted_address; // Extract formatted address
     } else {
-      console.warn('Geocoding API returned unexpected status:', data.status);
       return 'Unknown Location';
     }
   } catch (error) {

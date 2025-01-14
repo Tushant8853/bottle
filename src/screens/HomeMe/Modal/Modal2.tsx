@@ -8,7 +8,6 @@ import uuid from 'react-native-uuid';
 import * as Location from 'expo-location';
 import { getLocation } from '../Upload/Location';
 
-
 interface Props {
     visible: boolean;
     onClose: () => void;

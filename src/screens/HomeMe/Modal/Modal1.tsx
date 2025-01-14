@@ -391,7 +391,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         const currentTime = new Date();
         ////////////////////////////////////////////////////////////////
         if (Wine_Values === "Xander Pinot Noir") {
-            console.log("Xander Pinot")
             console.log('Inside Xander Pinot Noir');
             let isHandled = false;
             for (const memory of memoriesData) {
@@ -438,18 +437,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
 
                     if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
                         handleSameHertelendySave(memory.id);
                         isHandled = true;
                         break;
                     } else {
-                        console.log(memory.id, "checking next list");
                     }
                 }
             }
             if (!isHandled) {
-                console.log("No matching memory found, calling handleSaveWine.");
                 handleHertelendySave();
             }
         }
@@ -471,18 +466,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
 
                     if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
                         handleSameSaveWine(Wine_Values, memory.id);
                         isHandled = true; // Set flag to true if handled
                         break;
                     } else {
-                        console.log(memory.id, "checking next list");
                     }
                 }
             }
             if (!isHandled) {
-                console.log("No matching memory found, calling handleSaveWine.");
                 handleSaveWine(Wine_Values);
             }
         }

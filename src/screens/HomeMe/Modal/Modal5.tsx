@@ -21,7 +21,6 @@ interface Props {
 }
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
-    console.log("Photo URL :::::::::",photoUri)
     const [thankYouVisible, setThankYouVisible] = useState(false);
     
     const closeThankYouModal = () => {
@@ -29,7 +28,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
     };
     const handleSaveDish = async () => {
-        console.log("Photo URL :::::::::",photoUri)
         console.log('Inside Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -80,7 +78,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         setThankYouVisible(true);
     };
     const handleSaveNull = async () => {
-        console.log("Photo URL handleSaveNull :::::::::",photoUri)
         console.log('Inside Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -209,18 +206,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
 
                     if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
                         handleSameSaveDish(memory.id);
                         isHandled = true;
                         break;
                     } else {
-                        console.log(memory.id, "checking next list");
                     }
                 }
             }
             if (!isHandled) {
-                console.log("No matching memory found, calling handleSaveWine.");
                 handleSaveDish();
             }
         }
@@ -240,17 +233,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
 
                     if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
                         handleSameSaveNull(memory.id);
+                        isHandled = true;
                         break;
                     } else {
-                        console.log(memory.id, "checking next list");
                     }
                 }
             }
             if (!isHandled) {
-                console.log("No matching memory found, calling handleSaveWine.");
                 handleSaveNull();
             }
         }
