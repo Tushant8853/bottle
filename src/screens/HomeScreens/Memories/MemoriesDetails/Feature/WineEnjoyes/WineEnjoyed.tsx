@@ -1,12 +1,14 @@
-import { View, Text, Image, Animated, TouchableOpacity } from "react-native";
-import React, { useEffect, useState, useRef } from "react";
+import { View, Text, Image, Animated, TouchableOpacity, Platform } from "react-native";
+import React, { useEffect, useState, useRef,useCallback } from "react";
 import styles from "./index.style";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../../../backend/supabase/supabaseClient";
 import { useTranslation } from "react-i18next";
 import Bannericon from "../../../../../../assets/svg/SvgCodeFile/bannericon";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp,useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from 'expo-file-system';
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 
 interface Wine {
@@ -128,6 +130,30 @@ const DiscoverWines: React.FC = () => {
   const { id, FinalImage }: { id: string; FinalImage?: string } = route.params || {};
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const [localImages, setlocalImages] = useState<string[]>([]);
+    
+    
+  useFocusEffect(
+     useCallback(() => {
+       fetchSavedImages();
+     }, [])
+   );
+
+   const fetchSavedImages = async () => {
+     try {
+       const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+       console.log(images);
+       const fileNames = images.map((path: string) => path.split('/').pop());
+       console.log('filenames:::::::',fileNames);
+       setlocalImages(fileNames);
+           console.log('savedImages:::::::',localImages);
+     
+ 
+     } catch (error) {
+       console.error("Error fetching saved images:", error);
+     }
+   };
 
   useEffect(() => {
     const fetchWines = async () => {
@@ -267,14 +293,27 @@ const DiscoverWines: React.FC = () => {
     <SkeletonLoader />
 ) : wines.length > 0 ? (
     wines.map((wine, index) => {
-        const isWineIdNull = !wine.wines_id; // Check if wine_id is null
+        const isWineIdNull = !wine.wines_id;
+                       const localImage = localImages.find((image) => image === wine.image);
+                       console.log('localImage',localImage)
+                   
+                       // Dynamic prefix based on the platform
+                       const PREFIX = Platform.OS === 'ios'
+                         ? FileSystem.documentDirectory
+                         : 'file:///data/user/0/host.exp.exponent/files/';
+                     
+                       const FinalImag = localImage ? `${PREFIX}${localImage}` : null; // Check if wine_id is null
 
         return isWineIdNull ? (
             // Non-clickable wine details for null wine_id
             <View key={index} style={styles.ListOfStoriesContainer}>
                 <View style={styles.Stories}>
                     <View style={styles.StoriesImgContainer1}>
-                        <Image source={{ uri: FinalImage }} style={styles.StoriesImage1} />
+                    {FinalImag ? (
+                        <Image source={{ uri: FinalImag }} style={styles.StoriesImage1} />
+                    ) : (
+                        <Image source={{ uri: imagePrefix + wine.image }} style={styles.StoriesImage} />
+                    )}
                     </View>
                     <View style={styles.StoriesText}>
                         <View style={styles.StoriesTitle}>

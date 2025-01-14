@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     View,
     Text,
@@ -21,7 +21,7 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg, installTwicPics } from '@twicpics/components/react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../navigationTypes";
 import ShareWithFriends from "./Feature/ShareWithFriends/ShareWithFriends";
 import { useTranslation } from 'react-i18next';
@@ -86,10 +86,34 @@ const MemoriesDetails: React.FC = () => {
     const [UID, setUID] = useState<string | null>(null);
     const { t } = useTranslation();
     const [from, setfrom] = useState<string | null>(null);
-    const [savedImages, setSavedImages] = useState<string[]>([]);
+  const [localImages, setlocalImages] = useState<string[]>([]);
     
     
-    const handleToggleDescription = (id: string) => {
+     useFocusEffect(
+        useCallback(() => {
+          fetchSavedImages();
+        }, [])
+      );
+
+      const fetchSavedImages = async () => {
+        try {
+          const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+          console.log(images);
+          const fileNames = images.map((path: string) => path.split('/').pop());
+          console.log('filenames:::::::',fileNames);
+          setlocalImages(fileNames);
+              console.log('savedImages:::::::',localImages);
+        
+    
+        } catch (error) {
+          console.error("Error fetching saved images:", error);
+        }
+      };
+    //   useEffect(() => {
+    //     console.log('Updated localImages:', localImages);
+    //   }, [localImages]);
+    
+      const handleToggleDescription = (id: string) => {
         setExpandedMemory(prev => (prev === id ? null : id));
     };
 
@@ -103,20 +127,7 @@ const MemoriesDetails: React.FC = () => {
             }
         };
         fetchUID();
-        fetchSavedImages();
     }, []);
-
-    const fetchSavedImages = async () => {
-        try {
-          const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
-          console.log('fetchSavedImages:::::::',images);
-          const fileNames = images.map((path: string) => path.split('/').pop());
-          setSavedImages(fileNames);
-    
-        } catch (error) {
-          console.error("Error fetching saved images:", error);
-        }
-      };
 
     useEffect(() => {
         if (UID) {
@@ -400,7 +411,7 @@ const MemoriesDetails: React.FC = () => {
                         memory.thumbnails = gallery
                             ? gallery.map(g => ({
                                 id: g.id,
-                                url: `${imagePrefix}${g.file}?twic=v1&resize=60x60`,
+                                url: `${imagePrefix}${g.file}`,
                                 is_thumbnail: g.is_thumbnail,
                             }))
                             : [];
@@ -655,11 +666,22 @@ const MemoriesDetails: React.FC = () => {
             {/* HEADER */}
             {memories.map((memory, index) => {
                  const thumbnailImage = memory.thumbnails?.find(thumbnail => thumbnail.is_thumbnail === true);
+                 const filename = thumbnailImage.url ? thumbnailImage.url.split('/').pop() : 'No thumbnail available';
+                 console.log('Updated filename:', filename);
+                     const localImage = localImages.find((image) => image === filename);
+                     console.log('localImage',localImage)
+                 
+                     // Dynamic prefix based on the platform
+                     const PREFIX = Platform.OS === 'ios'
+                       ? FileSystem.documentDirectory
+                       : 'file:///data/user/0/host.exp.exponent/files/';
+                   
+                     const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
                 return (
                     <View key={`memory-header-${memory.id}`} style={styles.imageContainer}>
-            {FinalImage ? (
-                       <Image source={{ uri: FinalImage }} style={styles.image} />
-                 ) : thumbnailImage ? (
+            { thumbnailImage ? FinalImage ? (
+                    <Image source={{ uri: FinalImage }} style={styles.image} />
+              ) : (
                 <TwicImg src={thumbnailImage.url} style={styles.image} />
                  ) : (
                      <Text>{t('nomemoriesavailable')}</Text>
@@ -764,7 +786,8 @@ const MemoriesDetails: React.FC = () => {
         >
           {memory.thumbnails.map((thumbnail, thumbnailIndex) => {
            const filename = thumbnail.url ? thumbnail.url.split('/').pop() : 'No thumbnail available';
-               const localImage = savedImages.find((image) => image === filename);
+           console.log('Updated filename:', filename);
+               const localImage = localImages.find((image) => image === filename);
                console.log('localImage',localImage)
            
                // Dynamic prefix based on the platform
@@ -787,7 +810,7 @@ const MemoriesDetails: React.FC = () => {
                     />
                   ) : (
                     // Fallback to fetch the image from TwicPics
-                    <TwicImg src={thumbnail.url} style={styles.picandvideoImage} />
+                    <TwicImg src={`${thumbnail.url}?twic=v1&resize=60x60`} style={styles.picandvideoImage} />
                   )}
                 </Pressable>
                 <Pressable
