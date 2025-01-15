@@ -130,7 +130,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             {
                 memory_id: SameId,
                 content_type: 'PHOTO',
-                is_thumbnail: true,
+                is_thumbnail: false,
                 user_id: UID,
                 file: fileName,
             },
@@ -175,7 +175,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             handleSaveWine(input1, input2, input3);
         }
     }
-}
+
 interface CalculateDistance {
     (lat1: number, lon1: number, lat2: number, lon2: number): number;
 }
@@ -254,7 +254,7 @@ return (
                         </Pressable>
                         <Pressable
                             style={[styles.iosButton, styles.iosDefaultButton]}
-                            onPress={async () => {
+                            onPress={ () => {
                                 // try {
 
                                 //     const pendingTask = {
@@ -268,6 +268,7 @@ return (
                                 //     console.error('Failed to save pending task:', error);
                                 // }
                                 onClose();
+                                setDoneModalVisible(true);
                             }}
                         >
                             <Text style={styles.iosButtonText2}>Do this later</Text>

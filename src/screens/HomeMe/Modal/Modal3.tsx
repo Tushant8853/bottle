@@ -32,7 +32,7 @@ const WineReviewModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <View style={styles.topButtonContainer}>
-                            <Pressable style={styles.topButton} onPress={onClose}>
+                            <Pressable style={styles.topButton} onPress={handleButtonPress}>
                                 <Text style={styles.topButtonText}>↑</Text>
                                 <Text style={styles.buttonText} numberOfLines={1}> Delicious!</Text>
                             </Pressable>
