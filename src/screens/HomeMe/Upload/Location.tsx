@@ -2,12 +2,16 @@ import * as Location from 'expo-location';
 import axios from 'axios';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 
+interface NearbyRestaurantResult {
+    Restaurants_id: string | null;
+}
+
 export const getLocation = async () => {
   try {
     // Request location permissions
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      throw new Error('Permission to access location was denied');
+    if (status !== "granted") {
+      throw new Error("Permission to access location was denied");
     }
 
     // Get current location
@@ -16,15 +20,14 @@ export const getLocation = async () => {
     });
     const { latitude, longitude } = location.coords;
 
-    // Fetch the location name from Google Maps
-    const locationName = await getLocationNameFromGoogleMaps(latitude, longitude);
-
-    // Check for nearby restaurants within a 100m radius
-    const restaurantId = await findNearbyRestaurant(latitude, longitude);
+    const [locationName, restaurantId] = await Promise.all([
+      getLocationNameFromGoogleMaps(latitude, longitude),
+      findNearbyRestaurant(latitude, longitude),
+    ]);
 
     return { latitude, longitude, locationName, restaurantId };
   } catch (error) {
-    console.error('Error fetching location:', error);
+    console.error("Error fetching location:", error);
     throw error;
   }
 };
@@ -50,52 +53,19 @@ const getLocationNameFromGoogleMaps = async (latitude: number, longitude: number
 
 // Function to find nearby restaurants within a 100m radius
 const findNearbyRestaurant = async (latitude: number, longitude: number) => {
-  try {
-    // Fetch all restaurants from the Supabase database
-    const { data: restaurants, error } = await supabase
-      .from('bottleshock_restaurants')
-      .select('Restaurants_id, location_lat, location_long');
+    try {
+        const { data: restaurants, error } = await supabase
+            .rpc('find_nearby_restaurants', {
+                lat: latitude,
+                lng: longitude,
+                radius: 100
+            })
+            .single<NearbyRestaurantResult>();
 
-    if (error) {
-      throw new Error(`Error fetching restaurants: ${error.message}`);
+        if (error) throw error;
+        return restaurants?.Restaurants_id || null;
+    } catch (error) {
+       // console.error('Error finding nearby restaurants:', error);
+        return null;
     }
-
-    // Define a function to calculate distance using the Haversine formula
-    const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-      const toRadians = (deg: number) => (deg * Math.PI) / 180;
-      const R = 6371e3; // Radius of Earth in meters
-
-      const dLat = toRadians(lat2 - lat1);
-      const dLon = toRadians(lon2 - lon1);
-
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; // Distance in meters
-    };
-
-    // Check each restaurant for proximity
-    for (const restaurant of restaurants) {
-      const distance = haversineDistance(
-        latitude,
-        longitude,
-        restaurant.location_lat,
-        restaurant.location_long
-      );
-
-      if (distance <= 100) {
-        // Return the restaurant ID if within 100m radius
-        return restaurant.Restaurants_id;
-      }
-    }
-
-    // If no restaurant is within the radius, return null
-    return null;
-  } catch (error) {
-    console.error('Error finding nearby restaurants:', error);
-    throw error;
-  }
 };

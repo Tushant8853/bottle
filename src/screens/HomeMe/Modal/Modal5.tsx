@@ -129,6 +129,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
+        
     };
     const handleSameSaveNull = async (SameId: number) => {
         setLoading(true);
@@ -199,9 +200,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.log("Dish")
             let isHandled = false;
             setLoading(true);
+            const location = await getLocation();
             for (const memory of memoriesData) {
                 if (Dish_Values) {
-                    const location = await getLocation();
                     const memorylocation_lat = memory.location_lat;
                     const memorylocation_long = memory.location_long;
                     const currentlocation_lat = location.latitude;
@@ -229,9 +230,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.log('Inside Else part');
             let isHandled = false;
             setLoading(true);
+            const location = await getLocation();
             for (const memory of memoriesData) {
                 if (Null_Values) {
-                    const location = await getLocation();
                     const memorylocation_lat = memory.location_lat;
                     const memorylocation_long = memory.location_long;
                     const currentlocation_lat = location.latitude;

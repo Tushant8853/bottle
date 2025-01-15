@@ -382,9 +382,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.log('Inside Xander Pinot Noir');
             let isHandled = false;
             setLoading(true);
+            const location = await getLocation();
             for (const memory of memoriesData) {
                 if (Wine_Values) {
-                    const location = await getLocation();
                     const memorylocation_lat = memory.location_lat;
                     const memorylocation_long = memory.location_long;
                     const currentlocation_lat = location.latitude;
@@ -416,9 +416,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.log("Hertelendy Audere")
             let isHandled = false;
             setLoading(true);
+            const location = await getLocation();
             for (const memory of memoriesData) {
                 if (Wine_Values) {
-                    const location = await getLocation();
                     const memorylocation_lat = memory.location_lat;
                     const memorylocation_long = memory.location_long;
                     const currentlocation_lat = location.latitude;
@@ -447,9 +447,9 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.log("Wine");
             let isHandled = false; // Flag to check if handleSameSaveWine was called
             setLoading(true);
+            const location = await getLocation();
             for (const memory of memoriesData) {
                 if (Wine_Values) {
-                    const location = await getLocation();
                     const memorylocation_lat = memory.location_lat;
                     const memorylocation_long = memory.location_long;
                     const currentlocation_lat = location.latitude;
