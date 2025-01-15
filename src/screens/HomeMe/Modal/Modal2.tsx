@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
 import WineReviewModal from './Modal3';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +23,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     const [error2, setError2] = useState(false);
     const [error3, setError3] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleSave = async () => {
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
@@ -36,6 +37,8 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     };
     const handleSaveWine = async (input1: string, input2: string, input3: string) => {
         console.log('Inside handleSaveWine');
+        onClose();
+        setDoneModalVisible(true);
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
@@ -97,11 +100,11 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleSameSaveWine = async (input1: string, input2: string, input3: string, SameId: number) => {
         console.log('Inside handleSameSaveWine');
+        onClose();
+        setDoneModalVisible(true);
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
@@ -139,8 +142,6 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setDoneModalVisible(true);
     };
     const checkforMemories = async (input1: string, input2: string, input3: string) => {
         const UID = await AsyncStorage.getItem("UID");
@@ -155,6 +156,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         const currentTime = new Date();
         const location = await getLocation();
         let isHandled = false;
+        setLoading(true);
         for (const memory of memoriesData) {
             const memorylocation_lat = memory.location_lat;
             const memorylocation_long = memory.location_long;
@@ -166,12 +168,14 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             if (timeDifference < 3 && distance <= 100) {
                 handleSameSaveWine(input1, input2, input3, memory.id);
                 isHandled = true;
+                setLoading(false);
                 break;
             } else {
             }
         }
         if (!isHandled) {
             handleSaveWine(input1, input2, input3);
+            setLoading(false);
         }
     }
     interface CalculateDistance {
@@ -244,25 +248,16 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                         <View style={styles.iosButtonGroup}>
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
-                                onPress={handleSave}
+                                onPress={ ()=> {
+                                    onClose();
+                                    handleSave();
+                                }}
                             >
                                 <Text style={styles.iosButtonText}>Done</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
-                                    // try {
-
-                                    //     const pendingTask = {
-                                    //         photoUri,
-                                    //         input1,
-                                    //         input2,
-                                    //         input3,
-                                    //     };
-                                    //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
-                                    // } catch (error) {
-                                    //     console.error('Failed to save pending task:', error);
-                                    // }
                                     onClose();
                                     setDoneModalVisible(true);
                                 }}
@@ -283,7 +278,14 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                     </View>
                 </View>
             </Modal>
-
+            {loading && (
+                <View style={styles.loaderOverlay}>
+                    <View style={styles.loaderBox}>
+                        <ActivityIndicator size="large" color="#fff" />
+                        <Text style={styles.loaderText}>Loading</Text>
+                    </View>
+                </View>
+            )}
             <WineReviewModal
                 visible={doneModalVisible}
                 onClose={() => setDoneModalVisible(false)}
@@ -370,4 +372,47 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#007AFF',
     },
+    loaderOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 100,
+      },
+      loaderBox: {
+        width: 150,
+        height: 150,
+        borderRadius: 15,
+        backgroundColor: '#B3B3B3D1',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+      },
+      loaderText: {
+        marginTop: 20,
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+      },
+      loaderCloseButton: {
+        borderTopWidth: 0.33,
+        borderColor: '#3C3C435C',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        width: 150,
+      },
+      loaderCancleText: {
+        fontSize: 12,
+        color: '#fff',
+        marginTop: 4
+      },
 });

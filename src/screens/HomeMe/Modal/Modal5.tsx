@@ -1,6 +1,6 @@
 // CameraConfirmationModal.tsx
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View,ActivityIndicator } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import ThankYouModal from './Modal4';
@@ -22,12 +22,16 @@ interface Props {
 
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
     const [thankYouVisible, setThankYouVisible] = useState(false);
-    
+    const [loading, setLoading] = useState(false);
+
     const closeThankYouModal = () => {
         setThankYouVisible(false);
         onClose();
     };
     const handleSaveDish = async () => {
+        setLoading(true);
+        onClose();
+        setThankYouVisible(true);
         console.log('Inside Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -74,10 +78,11 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setThankYouVisible(true);
     };
     const handleSaveNull = async () => {
+        setLoading(true);
+        onClose();
+        setThankYouVisible(true);
         console.log('Inside Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -124,10 +129,11 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setThankYouVisible(true);
     };
     const handleSameSaveNull = async (SameId: number) => {
+        setLoading(true);
+        onClose();
+        setThankYouVisible(true);
         console.log('Inside Same Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -150,10 +156,11 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setThankYouVisible(true);
     };
     const handleSameSaveDish = async (SameId: number) => {
+        setLoading(true);
+        onClose();
+        setThankYouVisible(true);
         console.log('Inside Same Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -176,8 +183,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        onClose();
-        setThankYouVisible(true);
     };
     const checkforMemories = async (Wine_Values: string | null, Dish_Values: string | null, Null_Values: string | null) => {
         const UID = await AsyncStorage.getItem("UID");
@@ -193,6 +198,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (Wine_Values === null && Dish_Values != null) {
             console.log("Dish")
             let isHandled = false;
+            setLoading(true);
             for (const memory of memoriesData) {
                 if (Dish_Values) {
                     const location = await getLocation();
@@ -208,6 +214,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     if (timeDifference < 3 && distance <= 100) {
                         handleSameSaveDish(memory.id);
                         isHandled = true;
+                        setLoading(false);
                         break;
                     } else {
                     }
@@ -215,11 +222,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
             if (!isHandled) {
                 handleSaveDish();
+                setLoading(false);
             }
         }
         else if (Null_Values) {
             console.log('Inside Else part');
             let isHandled = false;
+            setLoading(true);
             for (const memory of memoriesData) {
                 if (Null_Values) {
                     const location = await getLocation();
@@ -235,6 +244,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     if (timeDifference < 3 && distance <= 100) {
                         handleSameSaveNull(memory.id);
                         isHandled = true;
+                        setLoading(false);
                         break;
                     } else {
                     }
@@ -242,6 +252,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
             if (!isHandled) {
                 handleSaveNull();
+                setLoading(false);
             }
         }
     };
@@ -295,7 +306,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         <View style={styles.iosButtonGroup}>
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
-                                onPress={() => {checkforMemories(Wine_Values, Dish_Values, Null_Values);}}
+                                onPress={() => {
+                                    onClose();
+                                    checkforMemories(Wine_Values, Dish_Values, Null_Values);
+                                }}
                             >
                                 <Text style={styles.iosButtonText}>Ok</Text>
                             </Pressable>
@@ -303,7 +317,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     </View>
                 </View>
             </Modal >
-
+            {loading && (
+                <View style={styles.loaderOverlay}>
+                    <View style={styles.loaderBox}>
+                        <ActivityIndicator size="large" color="#fff" />
+                        <Text style={styles.loaderText}>Loading</Text>
+                    </View>
+                </View>
+            )}
             {/* The second modal */}
             <ThankYouModal
                 visible={thankYouVisible}
@@ -392,4 +413,47 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#007AFF',
     },
+    loaderOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 100,
+      },
+      loaderBox: {
+        width: 150,
+        height: 150,
+        borderRadius: 15,
+        backgroundColor: '#B3B3B3D1',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+      },
+      loaderText: {
+        marginTop: 20,
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+      },
+      loaderCloseButton: {
+        borderTopWidth: 0.33,
+        borderColor: '#3C3C435C',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        width: 150,
+      },
+      loaderCancleText: {
+        fontSize: 12,
+        color: '#fff',
+        marginTop: 4
+      },
 });
