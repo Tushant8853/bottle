@@ -173,7 +173,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             {
                 memory_id: SameId,
                 content_type: 'PHOTO',
-                is_thumbnail: true,
+                is_thumbnail: false,
                 user_id: UID,
                 file: fileName,
             },
