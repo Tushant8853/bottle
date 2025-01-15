@@ -33,6 +33,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             setError3(input3.trim() === '');
             return;
         }
+        setLoading(true);
         checkforMemories(input1, input2, input3)
     };
     const handleSaveWine = async (input1: string, input2: string, input3: string) => {
@@ -144,6 +145,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         }
     };
     const checkforMemories = async (input1: string, input2: string, input3: string) => {
+        setLoading(true);
         const UID = await AsyncStorage.getItem("UID");
         const { data: memoriesData, error } = await supabase
             .from("bottleshock_memories")
@@ -156,7 +158,6 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         const currentTime = new Date();
         const location = await getLocation();
         let isHandled = false;
-        setLoading(true);
         for (const memory of memoriesData) {
             const memorylocation_lat = memory.location_lat;
             const memorylocation_long = memory.location_long;
