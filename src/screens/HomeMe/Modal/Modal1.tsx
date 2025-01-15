@@ -1,6 +1,6 @@
 // CameraConfirmationModal.tsx
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View ,ActivityIndicator} from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import CameraInputModal from './Modal2';  // Import the new modal
 import { saveImageToLocalStorage } from '../Upload/Uplaod_Local';
 import WineReviewModal from './Modal3';
@@ -29,7 +29,8 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         onClose();
     };
     const handleXanderSave = async () => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -93,12 +94,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false); 
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleHertelendySave = async () => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -163,12 +162,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false); 
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleSaveWine = async (Wine_Values: string) => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside handleSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -229,12 +226,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false); 
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleSameSaveWine = async (Wine_Values: string, SameId: number) => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside handleSameSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -271,12 +266,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false); 
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleSameHertelendySave = async (SameId: number) => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside Same HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -316,12 +309,10 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false);
-        onClose();
-        setDoneModalVisible(true);
     };
     const handleSameXanderSave = async (SameId: number) => {
-        setLoading(true); 
+        onClose();
+        setDoneModalVisible(true);
         console.log('Inside Same handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
@@ -361,9 +352,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (bottleshock_memory_galleryError) {
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
-        setLoading(false); 
-        onClose();
-        setDoneModalVisible(true);
     };
     const getTitleText = () => {
         if (Wine_Values != null) {
@@ -393,6 +381,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         if (Wine_Values === "Xander Pinot Noir") {
             console.log('Inside Xander Pinot Noir');
             let isHandled = false;
+            setLoading(true);
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -410,6 +399,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                         console.log("Inside the Distance and time");
                         handleSameXanderSave(memory.id);
                         isHandled = true;
+                        setLoading(false);
                         break;
                     } else {
                         console.log(memory.id, "checking next list");
@@ -419,11 +409,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             if (!isHandled) {
                 console.log("No matching memory found, calling handleSaveWine.");
                 handleXanderSave();
+                setLoading(false);
             }
         }
         else if (Wine_Values === "Hertelendy Audere") {
             console.log("Hertelendy Audere")
             let isHandled = false;
+            setLoading(true);
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -439,6 +431,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     if (timeDifference < 3 && distance <= 100) {
                         handleSameHertelendySave(memory.id);
                         isHandled = true;
+                        setLoading(false);
                         break;
                     } else {
                     }
@@ -446,13 +439,14 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
             if (!isHandled) {
                 handleHertelendySave();
+                setLoading(false);
             }
         }
         ////////////////////////////////////////////////////////////////
         else if (Dish_Values === null && Wine_Values != null) {
             console.log("Wine");
             let isHandled = false; // Flag to check if handleSameSaveWine was called
-
+            setLoading(true);
             for (const memory of memoriesData) {
                 if (Wine_Values) {
                     const location = await getLocation();
@@ -468,6 +462,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                     if (timeDifference < 3 && distance <= 100) {
                         handleSameSaveWine(Wine_Values, memory.id);
                         isHandled = true; // Set flag to true if handled
+                        setLoading(false);
                         break;
                     } else {
                     }
@@ -475,6 +470,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             }
             if (!isHandled) {
                 handleSaveWine(Wine_Values);
+                setLoading(false);
             }
         }
     };
@@ -522,6 +518,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={() => {
+                                    onClose();
                                     checkforMemories(Wine_Values, Dish_Values, Null_Values);
                                 }}
                             >
@@ -548,12 +545,12 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                 </View>
             </Modal >
             {loading && (
-                <Modal transparent={true} animationType="fade" visible={loading}>
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                        <Text>Loading...</Text>
+                <View style={styles.loaderOverlay}>
+                    <View style={styles.loaderBox}>
+                        <ActivityIndicator size="large" color="#fff" />
+                        <Text style={styles.loaderText}>Loading</Text>
                     </View>
-                </Modal>
+                </View>
             )}
             <CameraInputModal
                 visible={isInputModalVisible}
@@ -654,4 +651,47 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#007AFF',
     },
+    loaderOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 100,
+      },
+      loaderBox: {
+        width: 150,
+        height: 150,
+        borderRadius: 15,
+        backgroundColor: '#B3B3B3D1',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+      },
+      loaderText: {
+        marginTop: 20,
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+      },
+      loaderCloseButton: {
+        borderTopWidth: 0.33,
+        borderColor: '#3C3C435C',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        width: 150,
+      },
+      loaderCancleText: {
+        fontSize: 12,
+        color: '#fff',
+        marginTop: 4
+      },
 });

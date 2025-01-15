@@ -24,7 +24,6 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
     const [error3, setError3] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
 
-
     const handleSave = async () => {
         const isValid = input1.trim() !== '' && input2.trim() !== '' && input3.trim() !== '';
         if (!isValid) {
@@ -165,7 +164,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             const memoryTime = new Date(memory.created_at);
             const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
             if (timeDifference < 3 && distance <= 100) {
-                handleSameSaveWine(input1, input2, input3 ,memory.id);
+                handleSameSaveWine(input1, input2, input3, memory.id);
                 isHandled = true;
                 break;
             } else {
@@ -175,126 +174,123 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             handleSaveWine(input1, input2, input3);
         }
     }
+    interface CalculateDistance {
+        (lat1: number, lon1: number, lat2: number, lon2: number): number;
+    }
+    const calculateDistance: CalculateDistance = (lat1, lon1, lat2, lon2) => {
+        const toRadians = (degree: number): number => (degree * Math.PI) / 180;
+        const R = 6371000;
+        const φ1 = toRadians(lat1);
+        const φ2 = toRadians(lat2);
+        const Δφ = toRadians(lat2 - lat1);
+        const Δλ = toRadians(lon2 - lon1);
+        const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-interface CalculateDistance {
-    (lat1: number, lon1: number, lat2: number, lon2: number): number;
-}
-const calculateDistance: CalculateDistance = (lat1, lon1, lat2, lon2) => {
-    const toRadians = (degree: number): number => (degree * Math.PI) / 180;
-
-    const R = 6371000;
-    const φ1 = toRadians(lat1);
-    const φ2 = toRadians(lat2);
-    const Δφ = toRadians(lat2 - lat1);
-    const Δλ = toRadians(lon2 - lon1);
-
-    const a =
-        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // Distance in meters
-};
-return (
-    <>
-        <Modal
-            transparent={true}
-            visible={visible}
-            animationType="fade"
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalContainer}>
-                <View style={styles.inputModal}>
-                    <View style={styles.inputModalTitleConatainer}>
-                        <Text style={styles.inputModalTitle}>Please tell us which wine this is</Text>
-                    </View>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            error1 ? styles.inputError : null,
-                        ]}
-                        placeholder="Wine name"
-                        value={input1}
-                        onChangeText={(text) => {
-                            setInput1(text);
-                            if (error1) setError1(false);
-                        }}
-                    />
-                    <TextInput
-                        style={[
-                            styles.input,
-                            error2 ? styles.inputError : null,
-                        ]}
-                        placeholder="Winery name"
-                        value={input2}
-                        onChangeText={(text) => {
-                            setInput2(text);
-                            if (error2) setError2(false);
-                        }}
-                    />
-                    <TextInput
-                        style={[
-                            styles.input,
-                            error3 ? styles.inputError : null,
-                        ]}
-                        placeholder="Vintage (year)"
-                        value={input3}
-                        onChangeText={(text) => {
-                            setInput3(text);
-                            if (error3) setError3(false);
-                        }}
-                    />
-
-                    <View style={styles.iosButtonGroup}>
-                        <Pressable
-                            style={[styles.iosButton, styles.iosDefaultButton]}
-                            onPress={handleSave}
-                        >
-                            <Text style={styles.iosButtonText}>Done</Text>
-                        </Pressable>
-                        <Pressable
-                            style={[styles.iosButton, styles.iosDefaultButton]}
-                            onPress={ () => {
-                                // try {
-
-                                //     const pendingTask = {
-                                //         photoUri,
-                                //         input1,
-                                //         input2,
-                                //         input3,
-                                //     };
-                                //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
-                                // } catch (error) {
-                                //     console.error('Failed to save pending task:', error);
-                                // }
-                                onClose();
-                                setDoneModalVisible(true);
+        return R * c;
+    };
+    return (
+        <>
+            <Modal
+                transparent={true}
+                visible={visible}
+                animationType="fade"
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.inputModal}>
+                        <View style={styles.inputModalTitleConatainer}>
+                            <Text style={styles.inputModalTitle}>Please tell us which wine this is</Text>
+                        </View>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                error1 ? styles.inputError : null,
+                            ]}
+                            placeholder="Wine name"
+                            value={input1}
+                            onChangeText={(text) => {
+                                setInput1(text);
+                                if (error1) setError1(false);
                             }}
-                        >
-                            <Text style={styles.iosButtonText2}>Do this later</Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={[styles.iosButton, styles.iosCancelButton]}
-                            onPress={() => {
-                                onClose();
-                                onRetake();
+                        />
+                        <TextInput
+                            style={[
+                                styles.input,
+                                error2 ? styles.inputError : null,
+                            ]}
+                            placeholder="Winery name"
+                            value={input2}
+                            onChangeText={(text) => {
+                                setInput2(text);
+                                if (error2) setError2(false);
                             }}
-                        >
-                            <Text style={styles.iosCancelButtonText}>Cancel</Text>
-                        </Pressable>
+                        />
+                        <TextInput
+                            style={[
+                                styles.input,
+                                error3 ? styles.inputError : null,
+                            ]}
+                            placeholder="Vintage (year)"
+                            value={input3}
+                            onChangeText={(text) => {
+                                setInput3(text);
+                                if (error3) setError3(false);
+                            }}
+                        />
+
+                        <View style={styles.iosButtonGroup}>
+                            <Pressable
+                                style={[styles.iosButton, styles.iosDefaultButton]}
+                                onPress={handleSave}
+                            >
+                                <Text style={styles.iosButtonText}>Done</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.iosButton, styles.iosDefaultButton]}
+                                onPress={() => {
+                                    // try {
+
+                                    //     const pendingTask = {
+                                    //         photoUri,
+                                    //         input1,
+                                    //         input2,
+                                    //         input3,
+                                    //     };
+                                    //     await AsyncStorage.setItem('PENDING_TASK', JSON.stringify(pendingTask));
+                                    // } catch (error) {
+                                    //     console.error('Failed to save pending task:', error);
+                                    // }
+                                    onClose();
+                                    setDoneModalVisible(true);
+                                }}
+                            >
+                                <Text style={styles.iosButtonText2}>Do this later</Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={[styles.iosButton, styles.iosCancelButton]}
+                                onPress={() => {
+                                    onClose();
+                                    onRetake();
+                                }}
+                            >
+                                <Text style={styles.iosCancelButtonText}>Cancel</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </Modal>
+            </Modal>
 
-        <WineReviewModal
-            visible={doneModalVisible}
-            onClose={() => setDoneModalVisible(false)}
-            onRetake={onRetake}
-        />
-    </>
-);
+            <WineReviewModal
+                visible={doneModalVisible}
+                onClose={() => setDoneModalVisible(false)}
+                onRetake={onRetake}
+            />
+        </>
+    );
 };
 
 export default CameraInputModal;
