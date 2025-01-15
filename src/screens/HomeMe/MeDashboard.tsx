@@ -83,12 +83,18 @@ export default function App() {
       if (wineLabels && wineLabels !== "null") {
         const searchValues = "Pinot Noir";
         const searchValues2 = "Audere";
+        const searchValues3 = "Audère";
         if (wineLabels.includes(searchValues)) {
           setWineValue("Pinot Noir");
           setLoading(false);
           setIsModalVisible(true);
         }
         if (wineLabels.includes(searchValues2)) {
+          setWineValue("Hertelendy Audere");
+          setLoading(false);
+          setIsModalVisible(true);
+        }
+        if (wineLabels.includes(searchValues3)) {
           setWineValue("Hertelendy Audere");
           setLoading(false);
           setIsModalVisible(true);
