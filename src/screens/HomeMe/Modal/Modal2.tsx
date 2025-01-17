@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     inputModal: {
-        backgroundColor: '#B3B3B3D1',
+        backgroundColor: '#f2f2f7ff',
         width: '80%',
         height: 316,
         borderRadius: 14,

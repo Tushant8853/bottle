@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         width: 170,
         top: -50,
-        borderWidth: 1,
     },
     topButton: {
         justifyContent: 'center',

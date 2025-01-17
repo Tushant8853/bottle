@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     iosModal: {
-        backgroundColor: '#B3B3B3D1',
+        backgroundColor: '#f2f2f7ff',
         width: '80%',
         height: 254,
         borderRadius: 14,
