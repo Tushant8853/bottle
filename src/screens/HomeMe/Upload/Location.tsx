@@ -14,10 +14,13 @@ export const getLocation = async () => {
       throw new Error("Permission to access location was denied");
     }
 
-    // Get current location
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.High,
-    });
+    // Get the last known location
+    const location = await Location.getLastKnownPositionAsync();
+
+    if (!location) {
+      throw new Error("No last known location found");
+    }
+
     const { latitude, longitude } = location.coords;
 
     const [locationName, restaurantId] = await Promise.all([
@@ -31,6 +34,7 @@ export const getLocation = async () => {
     throw error;
   }
 };
+
 
 // Function to fetch the location name using Google Maps API
 const getLocationNameFromGoogleMaps = async (latitude: number, longitude: number) => {

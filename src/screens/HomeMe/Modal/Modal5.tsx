@@ -31,6 +31,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const handleSaveDish = async () => {
         setLoading(true);
         onClose();
+        setLoading(false);
         setThankYouVisible(true);
         console.log('Inside Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -82,6 +83,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const handleSaveNull = async () => {
         setLoading(true);
         onClose();
+        setLoading(false);
         setThankYouVisible(true);
         console.log('Inside Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -134,6 +136,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const handleSameSaveNull = async (SameId: number) => {
         setLoading(true);
         onClose();
+        setLoading(false);
         setThankYouVisible(true);
         console.log('Inside Same Null');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -161,6 +164,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const handleSameSaveDish = async (SameId: number) => {
         setLoading(true);
         onClose();
+        setLoading(false);
         setThankYouVisible(true);
         console.log('Inside Same Dish');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -185,78 +189,77 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
             console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
         }
     };
-    const checkforMemories = async (Wine_Values: string | null, Dish_Values: string | null, Null_Values: string | null) => {
+const checkforMemories = async (
+    Wine_Values: string | null,
+    Dish_Values: string | null,
+    Null_Values: string | null
+) => {
+    try {
+        setLoading(true);
+
         const UID = await AsyncStorage.getItem("UID");
+
+        // Get location once
+        const location = await getLocation();
+        const currentTime = new Date();
+
+        // Fetch memories filtered by time (last 3 hours)
         const { data: memoriesData, error } = await supabase
             .from("bottleshock_memories")
-            .select("created_at , location_long , location_lat , id")
-            .eq("user_id", UID);
+            .select("created_at, location_long, location_lat, id")
+            .eq("user_id", UID)
+            .gte(
+                "created_at",
+                new Date(currentTime.getTime() - 3 * 60 * 60 * 1000).toISOString()
+            );
+
         if (error) {
             console.error("Error fetching memories:", error.message);
             return;
         }
-        const currentTime = new Date();
-        if (Wine_Values === null && Dish_Values != null) {
-            console.log("Dish")
-            let isHandled = false;
-            setLoading(true);
-            const location = await getLocation();
-            for (const memory of memoriesData) {
-                if (Dish_Values) {
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
 
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+        // Find nearby memory
+        const nearbyMemory = memoriesData.find((memory) => {
+            const distance = calculateDistance(
+                location.latitude,
+                location.longitude,
+                memory.location_lat,
+                memory.location_long
+            );
+            return distance <= 100;
+        });
 
-                    if (timeDifference < 3 && distance <= 100) {
-                        handleSameSaveDish(memory.id);
-                        isHandled = true;
-                        setLoading(false);
-                        break;
-                    } else {
-                    }
-                }
-            }
-            if (!isHandled) {
-                handleSaveDish();
+        // Process Dish Values
+        if (Dish_Values !== null && Wine_Values === null) {
+            console.log("Processing Dish...");
+            if (nearbyMemory) {
+                await handleSameSaveDish(nearbyMemory.id);
+                setLoading(false);
+            } else {
+                await handleSaveDish();
                 setLoading(false);
             }
         }
-        else if (Null_Values) {
-            console.log('Inside Else part');
-            let isHandled = false;
-            setLoading(true);
-            const location = await getLocation();
-            for (const memory of memoriesData) {
-                if (Null_Values) {
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
 
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
-
-                    if (timeDifference < 3 && distance <= 100) {
-                        handleSameSaveNull(memory.id);
-                        isHandled = true;
-                        setLoading(false);
-                        break;
-                    } else {
-                    }
-                }
-            }
-            if (!isHandled) {
-                handleSaveNull();
+        // Process Null Values
+        if (Null_Values !== null) {
+            console.log("Processing Null...");
+            if (nearbyMemory) {
+                await handleSameSaveNull(nearbyMemory.id);
+                setLoading(false);
+            } else {
+                await handleSaveNull();
                 setLoading(false);
             }
         }
-    };
+    } catch (error) {
+        console.error("Error in checkforMemories:", error);
+    } finally {
+        setLoading(false);
+    }
+};
+
+    
     interface CalculateDistance {
         (lat1: number, lon1: number, lat2: number, lon2: number): number;
     }

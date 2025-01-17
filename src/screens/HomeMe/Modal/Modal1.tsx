@@ -30,6 +30,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleXanderSave = async () => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -97,6 +98,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleHertelendySave = async () => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -165,6 +167,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleSaveWine = async (Wine_Values: string) => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside handleSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -229,6 +232,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleSameSaveWine = async (Wine_Values: string, SameId: number) => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside handleSameSaveWine');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -269,6 +273,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleSameHertelendySave = async (SameId: number) => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside Same HertelendySave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -312,6 +317,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     };
     const handleSameXanderSave = async (SameId: number) => {
         onClose();
+        setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside Same handleSave');
         const savedFilePath = await saveImageToLocalStorage(photoUri);
@@ -367,111 +373,67 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         return "No wine and dish found in this image";
     };
     const checkforMemories = async (Wine_Values: string | null, Dish_Values: string | null, Null_Values: string | null) => {
-        const UID = await AsyncStorage.getItem("UID");
-        const { data: memoriesData, error } = await supabase
-            .from("bottleshock_memories")
-            .select("created_at , location_long , location_lat , id")
-            .eq("user_id", UID);
-        if (error) {
-            console.error("Error fetching memories:", error.message);
-            return;
-        }
-        const currentTime = new Date();
-        ////////////////////////////////////////////////////////////////
-        if (Wine_Values === "Xander Pinot Noir") {
-            console.log('Inside Xander Pinot Noir');
-            let isHandled = false;
+        try {
             setLoading(true);
+            const UID = await AsyncStorage.getItem("UID");
+            
+            // Get location once
             const location = await getLocation();
-            for (const memory of memoriesData) {
-                if (Wine_Values) {
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
+            const currentTime = new Date();
+            
+            const { data: memoriesData, error } = await supabase
+                .from("bottleshock_memories")
+                .select("created_at, location_long, location_lat, id")
+                .eq("user_id", UID)
+                // Filter memories within last 3 hours
+                .gte('created_at', new Date(currentTime.getTime() - (3 * 60 * 60 * 1000)).toISOString());
 
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
+            if (error) {
+                console.error("Error fetching memories:", error.message);
+                return;
+            }
 
-                    if (timeDifference < 3 && distance <= 100) {
-                        console.log(memory.id, "This memory is within 3 hours and 100 m distance");
-                        console.log("Inside the Distance and time");
-                        handleSameXanderSave(memory.id);
-                        isHandled = true;
-                        setLoading(false);
-                        break;
-                    } else {
-                        console.log(memory.id, "checking next list");
-                    }
+            // Find nearby memory
+            const nearbyMemory = memoriesData.find(memory => {
+                const distance = calculateDistance(
+                    location.latitude,
+                    location.longitude,
+                    memory.location_lat,
+                    memory.location_long
+                );
+                return distance <= 100;
+            });
+
+            // Handle different wine types
+            if (Wine_Values === "Xander Pinot Noir") {
+                if (nearbyMemory) {
+                    await handleSameXanderSave(nearbyMemory.id);
+                    setLoading(false);
+                } else {
+                    await handleXanderSave();
+                    setLoading(false);
+                }
+            } else if (Wine_Values === "Hertelendy Audere") {
+                if (nearbyMemory) {
+                    await handleSameHertelendySave(nearbyMemory.id);
+                    setLoading(false);
+                } else {
+                    await handleHertelendySave();
+                    setLoading(false);
+                }
+            } else if (Dish_Values === null && Wine_Values != null) {
+                if (nearbyMemory) {
+                    await handleSameSaveWine(Wine_Values, nearbyMemory.id);
+                    setLoading(false);
+                } else {
+                    await handleSaveWine(Wine_Values);
+                    setLoading(false);
                 }
             }
-            if (!isHandled) {
-                console.log("No matching memory found, calling handleSaveWine.");
-                handleXanderSave();
-                setLoading(false);
-            }
-        }
-        else if (Wine_Values === "Hertelendy Audere") {
-            console.log("Hertelendy Audere")
-            let isHandled = false;
-            setLoading(true);
-            const location = await getLocation();
-            for (const memory of memoriesData) {
-                if (Wine_Values) {
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
-
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
-
-                    if (timeDifference < 3 && distance <= 100) {
-                        handleSameHertelendySave(memory.id);
-                        isHandled = true;
-                        setLoading(false);
-                        break;
-                    } else {
-                    }
-                }
-            }
-            if (!isHandled) {
-                handleHertelendySave();
-                setLoading(false);
-            }
-        }
-        ////////////////////////////////////////////////////////////////
-        else if (Dish_Values === null && Wine_Values != null) {
-            console.log("Wine");
-            let isHandled = false; // Flag to check if handleSameSaveWine was called
-            setLoading(true);
-            const location = await getLocation();
-            for (const memory of memoriesData) {
-                if (Wine_Values) {
-                    const memorylocation_lat = memory.location_lat;
-                    const memorylocation_long = memory.location_long;
-                    const currentlocation_lat = location.latitude;
-                    const currentlocation_long = location.longitude;
-
-                    const distance = calculateDistance(currentlocation_lat, currentlocation_long, memorylocation_lat, memorylocation_long);
-                    const memoryTime = new Date(memory.created_at);
-                    const timeDifference = (currentTime.getTime() - memoryTime.getTime()) / (1000 * 60 * 60);
-
-                    if (timeDifference < 3 && distance <= 100) {
-                        handleSameSaveWine(Wine_Values, memory.id);
-                        isHandled = true; // Set flag to true if handled
-                        setLoading(false);
-                        break;
-                    } else {
-                    }
-                }
-            }
-            if (!isHandled) {
-                handleSaveWine(Wine_Values);
-                setLoading(false);
-            }
+        } catch (error) {
+            console.error("Error in checkforMemories:", error);
+        } finally {
+            setLoading(false);
         }
     };
     interface CalculateDistance {
