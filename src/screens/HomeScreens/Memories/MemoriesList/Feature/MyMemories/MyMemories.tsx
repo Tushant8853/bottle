@@ -7,6 +7,7 @@ import {
   Pressable,
   FlatList,
   Animated,
+  Image
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -18,6 +19,8 @@ import { useNavigation, NavigationProp , useFocusEffect } from "@react-navigatio
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { useTranslation } from 'react-i18next';
 import { shareDeepLink } from "../../../../../../utils/shareUtils";
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 
 
 interface Memory {
@@ -112,12 +115,25 @@ const MyMemories: React.FC = () => {
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
   const { t } = useTranslation();
+  const [savedImages, setSavedImages] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       fetchMemories();
+      fetchSavedImages();
     }, [])
   );
+
+  const fetchSavedImages = async () => {
+    try {
+      const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+      const fileNames = images.map((path: string) => path.split('/').pop());
+      setSavedImages(fileNames);
+
+    } catch (error) {
+      console.error("Error fetching saved images:", error);
+    }
+  };
 
   const fetchMemories = async () => {
     try {
@@ -153,7 +169,7 @@ const MyMemories: React.FC = () => {
           }
 
           if (gallery && gallery.length > 0) {
-            memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
+            memory.thumbnail = `${imagePrefix}${gallery[0].file}`;
           }
 
           const { data: user, error: userError } = await supabase
@@ -382,19 +398,31 @@ const MyMemories: React.FC = () => {
       await shareDeepLink(title, message, route);
     };
   
-  const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number })=> (
-    <View key={memory.id} style={styles.container}>
-      <View style={styles.leftContent}>
-        <View style={styles.titleMainContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title} numberOfLines={1}>
-              {memory.name}
-            </Text>
-          </View>
-          <View style={styles.actionIcons}>
-          <TouchableOpacity 
+    
+    const renderMemoryItem = ({ item: memory, index }: { item: Memory; index: number }) => {
+      const filename = memory.thumbnail ? memory.thumbnail.split('/').pop() : 'No thumbnail available';
+      const localImage = savedImages.find((image) => image === filename);
+    
+      // Dynamic prefix based on the platform
+      const PREFIX = Platform.OS === 'ios'
+        ? FileSystem.documentDirectory
+        : 'file:///data/user/0/host.exp.exponent/files/';
+    
+      const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
+    
+      return (
+        <View key={memory.id} style={styles.container}>
+          <View style={styles.leftContent}>
+            <View style={styles.titleMainContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title} numberOfLines={1}>
+                  {memory.name}
+                </Text>
+              </View>
+              <View style={styles.actionIcons}>
+                <TouchableOpacity
                   onPress={() => handleSavePress(index)}
-                  accessibilityLabel={`Link to ${memory.name}`} 
+                  accessibilityLabel={`Link to ${memory.name}`}
                   accessibilityRole="button"
                 >
                   <Feather
@@ -404,65 +432,69 @@ const MyMemories: React.FC = () => {
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => handleFavoritePress(index)}
-                  accessibilityLabel={`Favorite ${memory.name}`} 
+                  accessibilityLabel={`Favorite ${memory.name}`}
                   accessibilityRole="button"
                 >
                   <FontAwesome
                     name={favoriteStatus[index] ? "heart" : "heart-o"}
                     size={16}
-                    color='gray'
+                    color="gray"
                     style={styles.Icons}
                   />
                 </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleShare({ item: memory })}>
-              <Ionicons
-                style={styles.Icons}
-                name="share-outline"
-                size={16}
-                color="grey"
-              />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleShare({ item: memory })}>
+                  <Ionicons
+                    style={styles.Icons}
+                    name="share-outline"
+                    size={16}
+                    color="grey"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.titleSecondMainContainer}>
+              <View style={styles.usernameContainer}>
+                <Text style={styles.username} numberOfLines={1}>
+                  @{memory.handle}
+                </Text>
+                <Ionicons
+                  style={styles.usernameIcon}
+                  name="checkmark-circle"
+                  size={13}
+                  color="grey"
+                />
+              </View>
+              {renderStars(memory.star_ratings)}
+            </View>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.StoriesDescription} numberOfLines={2}>
+                {memory.description}
+              </Text>
+            </View>
+          </View>
+    
+          <View style={styles.rightContent}>
+            <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id, FinalImage, from: "MyMemories" })}>
+              {FinalImage ? (
+                <Image source={{ uri: FinalImage }} style={styles.image} />
+              ) : memory.thumbnail ? (
+                <TwicImg
+                  src={`${memory.thumbnail}?twic=v1&resize=60x60`}
+                  style={styles.image}
+                  ratio="1/1"
+                  mode="cover"
+                />
+              ) : (
+                <View style={styles.placeholderImage} />
+              )}
+            </Pressable>
           </View>
         </View>
-        <View style={styles.titleSecondMainContainer}>
-          <View style={styles.usernameContainer}>
-            <Text style={styles.username} numberOfLines={1}>
-              @{memory.handle}
-            </Text>
-            <Ionicons
-              style={styles.usernameIcon}
-              name="checkmark-circle"
-              size={13}
-              color="grey"
-            />
-          </View>
-          {renderStars(memory.star_ratings)}
-        </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.StoriesDescription} numberOfLines={2}>
-            {memory.description}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.rightContent}>
-        <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id , from: "MyMemories" })}>
-          {memory.thumbnail ? (
-            <TwicImg
-              src={memory.thumbnail}
-              style={styles.image}
-              ratio="1/1"
-              mode="cover"
-            />
-          ) : (
-            <View style={styles.placeholderImage} />
-          )}
-        </Pressable>
-      </View>
-    </View>
-  );
+      );
+    };
+    
 
   if (isLoading) {
     return (

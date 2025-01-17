@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -22,10 +22,13 @@ import { supabase } from "../../../../../backend/supabase/supabaseClient";
 import { TwicImg } from "@twicpics/components/react-native";
 import DiscoverWines from "./Feature/WineEnjoyed";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from 'react-i18next';
 import { shareDeepLink } from "../../../../utils/shareUtils";
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
 
 
 const { width } = Dimensions.get("window");
@@ -160,6 +163,29 @@ const RestaurantsDetails = () => {
   const imagePrefix = "https://bottleshock.twic.pics/file/";
   const [expandedwinery, setExpandedRestaurant] = useState<string | null>(null);
   const { t } = useTranslation();
+  const [localImages, setlocalImages] = useState<string[]>([]);
+    
+    
+  useFocusEffect(
+     useCallback(() => {
+       fetchSavedImages();
+     }, [])
+   );
+
+   const fetchSavedImages = async () => {
+     try {
+       const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+       console.log(images);
+       const fileNames = images.map((path: string) => path.split('/').pop());
+       console.log('filenames:::::::',fileNames);
+       setlocalImages(fileNames);
+           console.log('savedImages:::::::',localImages);
+     
+ 
+     } catch (error) {
+       console.error("Error fetching saved images:", error);
+     }
+   };
 
   const handleToggleDescription = (id: string) => {
     setExpandedRestaurant((prev) => (prev === id ? null : id));
@@ -436,16 +462,36 @@ const RestaurantsDetails = () => {
             contentContainerStyle={styles.memories}
           >
             {memoriesData.length > 0 ? (
-              memoriesData.map((memory) => (
+              memoriesData.map((memory) => {
+                  const filename =memory.file ?memory.file.split('/').pop() : 'No thumbnail available';
+                           console.log('Updated filename:', filename);
+                               const localImage = localImages.find((image) => image === filename);
+                               console.log('localImage',localImage)
+                           
+                               // Dynamic prefix based on the platform
+                               const PREFIX = Platform.OS === 'ios'
+                                 ? FileSystem.documentDirectory
+                                 : 'file:///data/user/0/host.exp.exponent/files/';
+                             
+                               const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
+                return(
                 <Pressable
                   key={memory.id}
                   onPress={() =>
                     navigation.navigate("MemoriesDetails", { id: memory.id })
                   }
                 >
+                  {FinalImage ? (
+                    // Display the locally saved image using FileSystem
+                    <Image
+                    source={{ uri: FinalImage }}
+                      style={styles.memoriesImage}
+                    />
+                  ) : (
                   <TwicImg src={memory.file} style={styles.memoriesImage} />
+                )}
                 </Pressable>
-              ))
+               ) })
             ) : (
               <View style={styles.memoriesHeadertex}>
                 <Text style={styles.memoriesHeaderte}>

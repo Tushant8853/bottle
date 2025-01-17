@@ -288,7 +288,7 @@ const checkforMemories = async (
             }
         }
         if (Dish_Values != null) {
-            return `${Dish_Values} identified ?`;
+            return `${Dish_Values} identified`;
         }
         return "No food/wine identified";
     };

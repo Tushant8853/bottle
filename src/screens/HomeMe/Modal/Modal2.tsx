@@ -34,6 +34,7 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
             return;
         }
         setLoading(true);
+        onClose();
         checkforMemories(input1, input2, input3)
     };
     const handleSaveWine = async (input1: string, input2: string, input3: string) => {
@@ -170,6 +171,9 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                 handleSameSaveWine(input1, input2, input3, memory.id);
                 isHandled = true;
                 setLoading(false);
+                setInput1('');
+                setInput2('');
+                setInput3('');
                 break;
             } else {
             }
@@ -177,6 +181,9 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
         if (!isHandled) {
             handleSaveWine(input1, input2, input3);
             setLoading(false);
+            setInput1('');
+            setInput2('');
+            setInput3('');
         }
     }
     interface CalculateDistance {
@@ -250,7 +257,6 @@ const CameraInputModal: React.FC<Props> = ({ visible, onClose, onRetake, photoUr
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={ ()=> {
-                                    onClose();
                                     handleSave();
                                 }}
                             >

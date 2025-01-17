@@ -7,6 +7,7 @@ import {
   Pressable,
   FlatList,
   Animated,
+  Image
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -17,6 +18,9 @@ import { TwicImg, installTwicPics } from "@twicpics/components/react-native";
 import { useNavigation, NavigationProp,useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
 import { shareDeepLink } from "../../../../../../utils/shareUtils";
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+
 
 interface Memory {
   id: string;
@@ -109,12 +113,25 @@ const PublicMemories: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [savedStatus, setSavedStatus] = useState<boolean[]>([]);
   const [favoriteStatus, setFavoriteStatus] = useState<boolean[]>([]);
+    const [savedImages, setSavedImages] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       fetchMemories();
+      fetchSavedImages();
     }, [])
   );
+
+  const fetchSavedImages = async () => {
+    try {
+      const images = JSON.parse(await AsyncStorage.getItem('savedImages') || '[]');
+      const fileNames = images.map((path: string) => path.split('/').pop());
+      setSavedImages(fileNames);
+
+    } catch (error) {
+      console.error("Error fetching saved images:", error);
+    }
+  };
 
   const fetchMemories = async () => {
     try {
@@ -145,7 +162,7 @@ const PublicMemories: React.FC = () => {
             return memory;
           }
           if (gallery && gallery.length > 0) {
-            memory.thumbnail = `${imagePrefix}${gallery[0].file}?twic=v1&resize=60x60`;
+            memory.thumbnail = `${imagePrefix}${gallery[0].file}`;
           }
           const { data: user, error: userError } = await supabase
             .from("bottleshock_users")
@@ -370,7 +387,18 @@ const PublicMemories: React.FC = () => {
         await shareDeepLink(title, message, route);
       };
 
-  const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => (
+  const renderItem = ({ item: memory, index }: { item: Memory; index: number }) => {
+     const filename = memory.thumbnail ? memory.thumbnail.split('/').pop() : 'No thumbnail available';
+          const localImage = savedImages.find((image) => image === filename);
+        
+          // Dynamic prefix based on the platform
+          const PREFIX = Platform.OS === 'ios'
+            ? FileSystem.documentDirectory
+            : 'file:///data/user/0/host.exp.exponent/files/';
+        
+          const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
+        
+          return (
     <View key={memory.id} style={styles.container}>
       <View style={styles.leftContent}>
         <View style={styles.titleMainContainer}>
@@ -437,20 +465,23 @@ const PublicMemories: React.FC = () => {
 
       <View style={styles.rightContent}>
         <Pressable onPress={() => navigation.navigate("MemoriesDetails", { id: memory.id, from: "OtherMemories" })}>
-          {memory.thumbnail ? (
-            <TwicImg
-              src={memory.thumbnail}
-              style={styles.image}
-              ratio="1/1"
-              mode="cover"
-            />
-          ) : (
-            <View style={styles.placeholderImage} />
-          )}
+          {FinalImage ? (
+                         <Image source={{ uri: FinalImage }} style={styles.image} />
+                       ) : memory.thumbnail ? (
+                         <TwicImg
+                           src={`${memory.thumbnail}?twic=v1&resize=60x60`}
+                           style={styles.image}
+                           ratio="1/1"
+                           mode="cover"
+                         />
+                       ) : (
+                         <View style={styles.placeholderImage} />
+                       )}
         </Pressable>
       </View>
     </View>
-  );
+      );
+  };
 
   if (isLoading) {
     return (
