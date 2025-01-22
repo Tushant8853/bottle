@@ -798,8 +798,9 @@ const MemoriesDetails: React.FC = () => {
                const FinalImage = localImage ? `${PREFIX}${localImage}` : null;
             return (
               <View key={`thumbnail-${thumbnail.id}`} style={styles.imageContainer}>
+                  {memory.user_id === UID ? (
                 <Pressable
-                  onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+                 onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
                   style={styles.picandvideoImage}
                 >
                   {FinalImage ? (
@@ -813,16 +814,32 @@ const MemoriesDetails: React.FC = () => {
                     <TwicImg src={`${thumbnail.url}?twic=v1&resize=60x60`} style={styles.picandvideoImage} />
                   )}
                 </Pressable>
-                <Pressable
-                  onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
-                  style={styles.circle}
-                >
-                  {thumbnail.is_thumbnail ? (
-                    <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
-                  ) : (
-                    <Entypo name="circle" size={20} color="#FFFFFF" />
-                  )}
-                </Pressable>
+                  ) : (  <Pressable
+                     style={styles.picandvideoImage}
+                   >
+                     {FinalImage ? (
+                       // Display the locally saved image using FileSystem
+                       <Image
+                       source={{ uri: FinalImage }}
+                         style={styles.picandvideoImage}
+                       />
+                     ) : (
+                       // Fallback to fetch the image from TwicPics
+                       <TwicImg src={`${thumbnail.url}?twic=v1&resize=60x60`} style={styles.picandvideoImage} />
+                     )}
+                   </Pressable>)}
+                {memory.user_id === UID && (
+  <Pressable
+    onPress={() => handleThumbnailClick(memoryIndex, thumbnailIndex)}
+    style={styles.circle}
+  >
+    {thumbnail.is_thumbnail ? (
+      <MaterialIcons name="check-circle" size={20} color="#FFFFFF" />
+    ) : (
+      <Entypo name="circle" size={20} color="#FFFFFF" />
+    )}
+  </Pressable>
+)}
               </View>
             );
           })}

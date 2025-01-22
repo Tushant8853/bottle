@@ -42,4 +42,5 @@ export type RootStackParamList = {
     SignUpScreen: undefined;
     LoginScreen: undefined;
     TabNavigation: undefined;
+    PendingTasksScreen: { tasks:  any[]; };
 };

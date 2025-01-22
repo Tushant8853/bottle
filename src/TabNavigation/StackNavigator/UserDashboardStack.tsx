@@ -19,7 +19,7 @@ import WineListVintage from '../../screens/HomeScreens/DiscoverWinePages/Feature
 import WineDetails from '../../screens/HomeScreens/DiscoverWinePages/Feature/WineDetail/WineDetails';
 import EditMyMemories from '../../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMyMemories';
 import EditMemoryField from '../../screens/HomeScreens/Memories/MemoriesDetails/Feature/EditMyMemories/EditMemoryField';
-
+import PendingTasksScreen from '../../screens/HomeScreens/PendingTasks/PendingTasksScreen';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useTranslation } from 'react-i18next';
 const Stack = createNativeStackNavigator();
@@ -336,6 +336,13 @@ const UserDashboardStack: React.FC = () => {
         name="EditMemoryField"
         component={EditMemoryField}
         options={{ headerShown: false }}
+    />
+     <Stack.Screen
+        name="PendingTasksScreen"
+        component={PendingTasksScreen}
+        options={{
+            headerShown: false
+        }}
     />
 </Stack.Navigator>
   );
