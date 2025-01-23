@@ -276,89 +276,153 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
         setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside Same HertelendySave');
+    
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
             return;
         }
         const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
+    
         const UID = await AsyncStorage.getItem("UID");
-        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
-            {
-                eye_brand: "Hertelendy",
-                eye_varietal: "Audere",
-                eye_vintage: 1997,
-                user_id: UID,
-                user_photo: fileName,
-                memory_id: SameId,
-                wine_id: 36,
-            },
-        ]);
-
-        if (memoryWinesError) {
-            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
-            return;
-        }
-
-        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: SameId,
-                content_type: 'PHOTO',
-                is_thumbnail: false,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select(); // To get the inserted data or error
-
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+    
+        try {
+            // Check if a record already exists in bottleshock_memory_wines
+            const { data: existingMemory, error: checkError } = await supabase
+                .from('bottleshock_memory_wines')
+                .select('*')
+                .eq('memory_id', SameId)
+                .eq('wine_id', 36)
+                .single(); // .single() will return null if no record is found
+    
+            if (checkError) {
+                console.error('Error checking existing memory:', checkError);
+                return;
+            }
+    
+            // Insert into bottleshock_memory_wines only if it does not exist
+            if (!existingMemory) {
+                const { data: memoryWinesData, error: memoryWinesError } = await supabase
+                    .from('bottleshock_memory_wines')
+                    .insert([
+                        {
+                            eye_brand: "Hertelendy",
+                            eye_varietal: "Audere",
+                            eye_vintage: 1997,
+                            user_id: UID,
+                            user_photo: fileName,
+                            memory_id: SameId,
+                            wine_id: 36,
+                        },
+                    ]);
+    
+                if (memoryWinesError) {
+                    console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+                    return;
+                }
+            } else {
+                console.log('Record already exists in bottleshock_memory_wines. Skipping insertion.');
+            }
+    
+            // Always insert into bottleshock_memory_gallery
+            const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase
+                .from('bottleshock_memory_gallery')
+                .insert([
+                    {
+                        memory_id: SameId,
+                        content_type: 'PHOTO',
+                        is_thumbnail: false,
+                        user_id: UID,
+                        file: fileName,
+                    },
+                ])
+                .select();
+    
+            if (bottleshock_memory_galleryError) {
+                console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+            }
+    
+        } catch (error) {
+            console.error('An unexpected error occurred:', error);
         }
     };
+    
     const handleSameXanderSave = async (SameId: number) => {
         onClose();
         setLoading(false);
         setDoneModalVisible(true);
         console.log('Inside Same handleSave');
+    
         const savedFilePath = await saveImageToLocalStorage(photoUri);
         if (!savedFilePath) {
             console.error('Error: savedFilePath is undefined');
             return;
         }
         const fileName = savedFilePath.substring(savedFilePath.lastIndexOf('/') + 1);
-
+    
         const UID = await AsyncStorage.getItem("UID");
-        const { data: memoryWinesData, error: memoryWinesError } = await supabase.from('bottleshock_memory_wines').insert([
-            {
-                eye_brand: "Xander",
-                eye_varietal: "Pinot Noir",
-                eye_vintage: 2020,
-                user_id: UID,
-                user_photo: fileName,
-                memory_id: SameId,
-                wine_id: 28,
-            },
-        ]);
-
-        if (memoryWinesError) {
-            console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
-            return;
-        }
-
-        const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase.from('bottleshock_memory_gallery').insert([
-            {
-                memory_id: SameId,
-                content_type: 'PHOTO',
-                is_thumbnail: false,
-                user_id: UID,
-                file: fileName,
-            },
-        ])
-            .select();
-        if (bottleshock_memory_galleryError) {
-            console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+    
+        try {
+            // Check if a record already exists in bottleshock_memory_wines
+            const { data: existingMemory, error: checkError } = await supabase
+                .from('bottleshock_memory_wines')
+                .select('*')
+                .eq('memory_id', SameId)
+                .eq('wine_id', 28)
+                .single(); // .single() will return null if no record is found
+    
+            if (checkError) {
+                console.error('Error checking existing memory:', checkError);
+                return;
+            }
+    
+            // Insert into bottleshock_memory_wines only if it does not exist
+            if (!existingMemory) {
+                const { data: memoryWinesData, error: memoryWinesError } = await supabase
+                    .from('bottleshock_memory_wines')
+                    .insert([
+                        {
+                            eye_brand: "Xander",
+                            eye_varietal: "Pinot Noir",
+                            eye_vintage: 2020,
+                            user_id: UID,
+                            user_photo: fileName,
+                            memory_id: SameId,
+                            wine_id: 28,
+                        },
+                    ]);
+    
+                if (memoryWinesError) {
+                    console.error('Error saving data to bottleshock_memory_wines:', memoryWinesError);
+                    return;
+                }
+            } else {
+                console.log('Record already exists in bottleshock_memory_wines. Skipping insertion.');
+            }
+    
+            // Always insert into bottleshock_memory_gallery
+            const { data: bottleshock_memory_gallery, error: bottleshock_memory_galleryError } = await supabase
+                .from('bottleshock_memory_gallery')
+                .insert([
+                    {
+                        memory_id: SameId,
+                        content_type: 'PHOTO',
+                        is_thumbnail: false,
+                        user_id: UID,
+                        file: fileName,
+                    },
+                ])
+                .select();
+    
+            if (bottleshock_memory_galleryError) {
+                console.error('Error saving data to bottleshock_memory_gallery:', bottleshock_memory_galleryError);
+            }
+    
+        } catch (error) {
+            console.error('An unexpected error occurred:', error);
         }
     };
+    
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {

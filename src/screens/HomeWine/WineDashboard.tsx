@@ -220,7 +220,7 @@ const WineDashboard = () => {
           </View>
         </View>
       </ScrollView>
-      <Text style={styles.versiontext}>Version: 1.0.80</Text>
+      <Text style={styles.versiontext}>Version: 1.0.84</Text>
       <View style={styles.bottom}></View>
 
 

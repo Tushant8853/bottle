@@ -101,6 +101,8 @@ input1: string, input2: string, input3: string, memoryId: string | undefined, fi
 
         if (memoryError) {
           console.error("Error updating memory:", memoryError);
+          const updatedTasks = pendingTasks.filter((t) => t !== pendingTasks[0]);
+           await AsyncStorage.setItem("PENDING_TASKS", JSON.stringify(updatedTasks));
           return;
         }
       } else {
