@@ -10,8 +10,9 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 import { supabase } from '../../../../../../../backend/supabase/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../../../../TabNavigation/navigationTypes";
+import { RootStackParamList } from "../../../../../../../navigationTypes";
 import styles from './index.style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Wine {
   likes: number;
   tags: string;
@@ -83,85 +84,103 @@ const ShareWithFriends: React.FC = () => {
       ? t('SharedwithFriends')
       : t('notshared');
 
-        const handleDelete = () => {
-          Alert.alert(
-            t('Are You Sure'),
-            '',
-            [
-              {
-                text: t('No'),
-                onPress: () => console.log('Delete canceled'),
-                style: 'cancel',
-              },
-              {
-                text: t('Yes'),
-                onPress: async () => {
-                  try {
-                    // Step 1: Delete from bottleshock_memory_wines
-                    const { error: deleteMemoryWinesError } = await supabase
-                      .from('bottleshock_memory_wines')
-                      .delete()
-                      .eq('memory_id', id);
-        
-                    if (deleteMemoryWinesError) {
-                      console.error('Error deleting from memory wines:', deleteMemoryWinesError.message);
-                      return;
-                    }
-        
-                    // Step 2: Delete from bottleshock_fav_memories
-                    const { error: deleteFavMemoryError } = await supabase
-                      .from('bottleshock_fav_memories')
-                      .delete()
-                      .eq('memory_id', id);
-        
-                    if (deleteFavMemoryError) {
-                      console.error('Error deleting from fav memories:', deleteFavMemoryError.message);
-                      return;
-                    }
-        
-                    // Step 3: Delete from bottleshock_memory_gallery
-                    const { error: deleteGalleryError } = await supabase
-                      .from('bottleshock_memory_gallery')
-                      .delete()
-                      .eq('memory_id', id);
-        
-                    if (deleteGalleryError) {
-                      console.error('Error deleting from memory gallery:', deleteGalleryError.message);
-                      return;
-                    }
-        
-                    // Step 4: Delete from bottleshock_saved_memories
-                    const { error: deleteSavedMemoriesError } = await supabase
-                      .from('bottleshock_saved_memories')
-                      .delete()
-                      .eq('memory_id', id);
-        
-                    if (deleteSavedMemoriesError) {
-                      console.error('Error deleting from saved memories:', deleteSavedMemoriesError.message);
-                      return;
-                    }
-        
-                    // Step 5: Delete the memory from bottleshock_memories
-                    const { error: deleteMemoryError } = await supabase
-                      .from('bottleshock_memories')
-                      .delete()
-                      .eq('id', id);
-        
-                    if (deleteMemoryError) {
-                      console.error('Error deleting memory:', deleteMemoryError.message);
-                    } else {
-                      console.log('Memory deleted successfully');
-                      navigation.goBack(); // Navigate back after deleting the memory
-                    }
-                  } catch (error) {
-                    console.error('Error in delete operation:', error);
+
+      const handleDelete = () => {
+        Alert.alert(
+          t('Are You Sure'),
+          '',
+          [
+            {
+              text: t('No'),
+              onPress: () => console.log('Delete canceled'),
+              style: 'cancel',
+            },
+            {
+              text: t('Yes'),
+              onPress: async () => {
+                try {
+                  // Step 1: Delete from bottleshock_memory_wines
+                  const { error: deleteMemoryWinesError } = await supabase
+                    .from('bottleshock_memory_wines')
+                    .delete()
+                    .eq('memory_id', id);
+      
+                  if (deleteMemoryWinesError) {
+                    console.error('Error deleting from memory wines:', deleteMemoryWinesError.message);
+                    return;
                   }
-                },
+      
+                  // Step 2: Delete from bottleshock_fav_memories
+                  const { error: deleteFavMemoryError } = await supabase
+                    .from('bottleshock_fav_memories')
+                    .delete()
+                    .eq('memory_id', id);
+      
+                  if (deleteFavMemoryError) {
+                    console.error('Error deleting from fav memories:', deleteFavMemoryError.message);
+                    return;
+                  }
+      
+                  // Step 3: Delete from bottleshock_memory_gallery
+                  const { error: deleteGalleryError } = await supabase
+                    .from('bottleshock_memory_gallery')
+                    .delete()
+                    .eq('memory_id', id);
+      
+                  if (deleteGalleryError) {
+                    console.error('Error deleting from memory gallery:', deleteGalleryError.message);
+                    return;
+                  }
+      
+                  // Step 4: Delete from bottleshock_saved_memories
+                  const { error: deleteSavedMemoriesError } = await supabase
+                    .from('bottleshock_saved_memories')
+                    .delete()
+                    .eq('memory_id', id);
+      
+                  if (deleteSavedMemoriesError) {
+                    console.error('Error deleting from saved memories:', deleteSavedMemoriesError.message);
+                    return;
+                  }
+      
+                  // Step 5: Delete the memory from bottleshock_memories
+                  const { error: deleteMemoryError } = await supabase
+                    .from('bottleshock_memories')
+                    .delete()
+                    .eq('id', id);
+      
+                  if (deleteMemoryError) {
+                    console.error('Error deleting memory:', deleteMemoryError.message);
+                    return;
+                  }
+      
+                  console.log('Memory deleted successfully');
+      
+                  // Step 6: Remove the task from AsyncStorage
+                  const pendingTasksJson = await AsyncStorage.getItem('PENDING_TASKS');
+                  if (pendingTasksJson) {
+                    const pendingTasks = JSON.parse(pendingTasksJson);
+      
+                    // Filter out the task with the matching memoryId
+                    const updatedTasks = pendingTasks.filter((task: any) => task.memoryId !== id);
+      
+                    // Save the updated tasks back to AsyncStorage
+                    await AsyncStorage.setItem('PENDING_TASKS', JSON.stringify(updatedTasks));
+                    console.log('Pending task removed from AsyncStorage');
+                  }
+      
+                  // Navigate back after deleting the memory
+                  navigation.goBack();
+                } catch (error) {
+                  console.error('Error in delete operation:', error);
+                }
               },
-            ],
-            { cancelable: false }
-          );
-        };
+            },
+          ],
+          { cancelable: false }
+        );
+      };
+      
         
 
 
