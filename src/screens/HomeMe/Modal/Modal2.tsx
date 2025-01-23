@@ -59,7 +59,7 @@ const CameraInputModal: React.FC<Props> = ({
   ) => {
     try {
       setLoading(true);
-
+      onClose();
       const UID = await AsyncStorage.getItem("UID");
       const location = await getLocation();
       const { data: memoriesData, error } = await supabase
