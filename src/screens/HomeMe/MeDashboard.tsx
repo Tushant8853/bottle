@@ -24,6 +24,7 @@ export default function App() {
   const [NullValue, setNullValue] = useState<string | null>(null);
   const cameraRef = useRef(null);
       const { t } = useTranslation();
+      const abortController = useRef<AbortController | null>(null);
 
 
   if (!permission) {
@@ -53,6 +54,15 @@ export default function App() {
     };
   }
   const callObjectRecognitionAPI = async (imageUri: string): Promise<ObjectRecognitionResponse | null> => {
+    
+  if (abortController.current) {
+    abortController.current.abort(); // Cancel any ongoing API request.
+  }
+
+  abortController.current = new AbortController();
+  const signal = abortController.current.signal;
+
+    
     const formData = new FormData();
     const file: File = {
       uri: imageUri,
@@ -74,6 +84,7 @@ export default function App() {
             "Content-Type": "multipart/form-data",
           },
           body: formData,
+          signal,
         }
       );
       if (!response.ok) {
@@ -144,6 +155,16 @@ export default function App() {
   const resetImage = () => {
     setCapturedImage(null);
     setIsModalVisible(false);
+    setDishVisible(false);
+    setLoading(false);
+    setWineValue(null);
+    setDishValue(null);
+    setNullValue(null);
+  
+    if (abortController.current) {
+      abortController.current.abort(); // Cancel any ongoing API request.
+      abortController.current = null;
+    }
   };
 
   return (
