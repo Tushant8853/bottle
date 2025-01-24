@@ -87,16 +87,16 @@ const ShareWithFriends: React.FC = () => {
 
       const handleDelete = () => {
         Alert.alert(
-          t('Are You Sure'),
+          t('areYouSure'),
           '',
           [
             {
-              text: t('No'),
+              text: t('no'),
               onPress: () => console.log('Delete canceled'),
               style: 'cancel',
             },
             {
-              text: t('Yes'),
+              text: t('yes'),
               onPress: async () => {
                 try {
                   // Step 1: Delete from bottleshock_memory_wines

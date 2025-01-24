@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes"
+import { useTranslation } from 'react-i18next';
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -11,6 +12,8 @@ interface Props {
 
 const ThankYouModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+      const { t } = useTranslation();
+
     const handleOkPress = () => {
         onClose();
         onRetake();
@@ -29,7 +32,7 @@ const ThankYouModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                     <View style={styles.MessageContainer}>
-                        <Text style={styles.message}>Thank you for your input!</Text>
+                        <Text style={styles.message}>{t('thankYouForInput')}</Text>
                     </View>
 
                     <View style={styles.ButtonContainer}>

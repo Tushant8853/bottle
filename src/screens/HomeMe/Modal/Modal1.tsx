@@ -8,6 +8,8 @@ import uuid from 'react-native-uuid';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocation } from '../Upload/Location';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
+import { useTranslation } from 'react-i18next';
+
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -23,6 +25,8 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const [isInputModalVisible, setInputModalVisible] = useState(false);
     const [doneModalVisible, setDoneModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
+    
 
     const handleNoClick = () => {
         setInputModalVisible(true);
@@ -373,7 +377,6 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     
             if (checkError) {
                 console.error('Error checking existing memory:', checkError);
-                return;
             }
     
             // Insert into bottleshock_memory_wines only if it does not exist
@@ -426,15 +429,15 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {
-                return "Is this Xander Pinot Noir?";
+                return t('isThisXanderPinotNoir');
             } else {
-                return `Is this ${Wine_Values}?`;
+                return `${t('isThis')} ${Wine_Values} ? `;
             }
         }
         if (Dish_Values != null) {
-            return `Is this ${Dish_Values}?`;
+            return `${t('isThis')} ${Dish_Values}?`;
         }
-        return "No wine and dish found in this image";
+        return t('noFoodWineIdentified');
     };
     const checkforMemories = async (Wine_Values: string | null, Dish_Values: string | null, Null_Values: string | null) => {
         try {
@@ -536,7 +539,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                             </View>
                             <View style={styles.iosModalMessageContainer}>
                                 <Text style={styles.iosModalMessage}>
-                                    If not correct please tell us which one this is
+                                {t('IfNotCorrectPleaseTellUsWhichOneThisIs')}
                                 </Text>
                             </View>
                         </View>
@@ -548,13 +551,13 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                     checkforMemories(Wine_Values, Dish_Values, Null_Values);
                                 }}
                             >
-                                <Text style={styles.iosButtonText}>Yes!</Text>
+                                <Text style={styles.iosButtonText}>{t('yes')}</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.iosButton, styles.iosDefaultButton]}
                                 onPress={handleNoClick}
                             >
-                                <Text style={styles.iosButtonText2}>No</Text>
+                                <Text style={styles.iosButtonText2}>{t('no')}</Text>
                             </Pressable>
                             <Pressable
                                 style={[styles.iosButton, styles.iosCancelButton]}
@@ -564,7 +567,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                                     onRetake();
                                 }}
                             >
-                                <Text style={styles.iosCancelButtonText}>Cancel</Text>
+                                <Text style={styles.iosCancelButtonText}>{t('cancel')}</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -574,7 +577,7 @@ const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, 
                 <View style={styles.loaderOverlay}>
                     <View style={styles.loaderBox}>
                         <ActivityIndicator size="large" color="#fff" />
-                        <Text style={styles.loaderText}>Loading</Text>
+                        <Text style={styles.loaderText}>{t('loading')}</Text>
                     </View>
                 </View>
             )}

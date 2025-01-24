@@ -31,12 +31,12 @@ const TabNavigation: React.FC = () => {
           setPendingTasks(parsedTasks);
           if (parsedTasks.length > 0) {
             Alert.alert(
-              'Pending Tasks',
-              `You have ${parsedTasks.length} pending task(s) to complete. Would you like to continue?`,
+              t('pendingTasks'),
+              `${t('youHavePhotos')} ${parsedTasks.length} ${t('photosInMemories')}`,
               [
-                { text: 'Do it later', style: 'cancel' },
+                { text: t('doThisLater'), style: 'cancel' },
                 {
-                  text: 'Open now',
+                  text: t('yes'),
                   onPress: () => handlePendingTasks(parsedTasks),
                 },
               ]

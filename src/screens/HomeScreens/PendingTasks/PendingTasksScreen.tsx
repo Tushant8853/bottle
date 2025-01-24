@@ -19,6 +19,7 @@ import { useRoute, RouteProp, NavigationProp, useNavigation } from '@react-navig
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 import { RootStackParamList } from "../../../TabNavigation/navigationTypes";
+import { useTranslation } from "react-i18next";
 
 
 type PendingTasksScreenRouteParams = {
@@ -47,6 +48,8 @@ const route = useRoute<RouteProp<RouteParams, 'PendingTasksScreen'>>();
 const passedTasks = route.params?.tasks || [];
 const [pendingTasks, setPendingTasks] = useState(passedTasks);
  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+   const { t } = useTranslation();
+
  
 
 
@@ -214,13 +217,13 @@ input1: string, input2: string, input3: string, memoryId: string | undefined, fi
               style={[styles.iosButton, styles.iosDefaultButton]}
               onPress={() => handleSaveTask(input1, input2, input3, pendingTasks[0].memoryId , pendingTasks[0].fileName)} // Handle the task to be saved
             >
-              <Text style={styles.iosButtonText}>Done</Text>
+              <Text style={styles.iosButtonText}>{t('done')}</Text>
             </Pressable>
             <Pressable
               style={[styles.iosButton, styles.iosCancelButton]}
               onPress={() => navigation.goBack()}
             >
-              <Text style={styles.iosCancelButtonText}>Cancel</Text>
+              <Text style={styles.iosCancelButtonText}>{t('cancel')}</Text>
             </Pressable>
           </View>
         </View>

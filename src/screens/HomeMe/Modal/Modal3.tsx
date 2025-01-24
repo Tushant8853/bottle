@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import ThankYouModal from './Modal4';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     visible: boolean;
@@ -10,6 +11,8 @@ interface Props {
 
 const WineReviewModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
     const [thankYouVisible, setThankYouVisible] = useState(false);
+      const { t } = useTranslation();
+
 
     const handleButtonPress = () => {
         setThankYouVisible(true);
@@ -34,23 +37,23 @@ const WineReviewModal: React.FC<Props> = ({ visible, onClose, onRetake }) => {
                         <View style={styles.topButtonContainer}>
                             <Pressable style={styles.topButton} onPress={handleButtonPress}>
                                 <Text style={styles.topButtonText}>↑</Text>
-                                <Text style={styles.buttonText} numberOfLines={1}> Delicious!</Text>
+                                <Text style={styles.buttonText} numberOfLines={1}> {t('delicious')}</Text>
                             </Pressable>
                         </View>
-                        <Text style={styles.title}>Wine Review</Text>
+                        <Text style={styles.title}>{t('wineReview')}</Text>
                         <View style={styles.ReviewbottomContainer}>
                             <Pressable style={styles.Reviewbottom} onPress={handleButtonPress}>
-                                <Text style={styles.ReviewbuttonText} numberOfLines={1}>← Review later</Text>
+                                <Text style={styles.ReviewbuttonText} numberOfLines={1}>← {t('reviewLater')}</Text>
                             </Pressable>
                         </View>
                         <View style={styles.RecordbottomContainer}>
                             <Pressable style={styles.Recordbottom} onPress={handleButtonPress}>
-                                <Text style={styles.RecordbuttonText} numberOfLines={1}>Record detailed notes →</Text>
+                                <Text style={styles.RecordbuttonText} numberOfLines={1}>{t('recordDetailedNotes')} →</Text>
                             </Pressable>
                         </View>
                         <View style={styles.DontLikeButtonContainer}>
                             <Pressable style={styles.DontLikeButtonbottom} onPress={handleButtonPress}>
-                                <Text style={styles.DontLikebuttonText} numberOfLines={1}>Don’t Like</Text>
+                                <Text style={styles.DontLikebuttonText} numberOfLines={1}>{t('dontLike')}</Text>
                                 <Text style={styles.topButtonText}>↓</Text>
                             </Pressable>
                         </View>

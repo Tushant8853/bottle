@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from "../../TabNavigation/navigationTypes";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import DishModal from './Modal/Modal5';
+import { useTranslation } from 'react-i18next';
 
 export default function App() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -22,6 +23,8 @@ export default function App() {
   const [DishValue, setDishValue] = useState<string | null>(null);
   const [NullValue, setNullValue] = useState<string | null>(null);
   const cameraRef = useRef(null);
+      const { t } = useTranslation();
+
 
   if (!permission) {
     return <View />;
@@ -152,9 +155,9 @@ export default function App() {
             <View style={styles.loaderOverlay}>
               <View style={styles.loaderBox}>
                 <ActivityIndicator size="large" color="#fff" />
-                <Text style={styles.loaderText}>Loading</Text>
+                <Text style={styles.loaderText}>{t('loading')}</Text>
                 <Pressable style={styles.loaderCloseButton} onPress={resetImage}>
-                  <Text style={styles.loaderCancleText}>Cancel</Text>
+                  <Text style={styles.loaderCancleText}>{t('cancel')}</Text>
                 </Pressable>
               </View>
             </View>

@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocation } from '../Upload/Location';
 import { supabase } from "../../../../backend/supabase/supabaseClient";
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -23,6 +24,8 @@ interface Props {
 const CameraConfirmationModal: React.FC<Props> = ({ visible, onClose, onRetake, onCancel, Wine_Values, Dish_Values, Null_Values, photoUri }) => {
     const [thankYouVisible, setThankYouVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+      const { t } = useTranslation();
+
 
     const closeThankYouModal = () => {
         setThankYouVisible(false);
@@ -282,15 +285,15 @@ const checkforMemories = async (
     const getTitleText = () => {
         if (Wine_Values != null) {
             if (Wine_Values === "Pinot Noir") {
-                return "Is this Xander Pinot Noir?";
+                return t('isThisXanderPinotNoir');
             } else {
-                return `Is this ${Wine_Values}?`;
+                return `${t('isThis')} ${Wine_Values} ? `;
             }
         }
         if (Dish_Values != null) {
-            return `${Dish_Values} identified`;
+            return `${Dish_Values} ${t('identified')}`;
         }
-        return "No food/wine identified";
+        return t('noFoodWineIdentified');
     };
     return (
         <>
@@ -325,7 +328,7 @@ const checkforMemories = async (
                 <View style={styles.loaderOverlay}>
                     <View style={styles.loaderBox}>
                         <ActivityIndicator size="large" color="#fff" />
-                        <Text style={styles.loaderText}>Loading</Text>
+                        <Text style={styles.loaderText}>{t('loading')}</Text>
                     </View>
                 </View>
             )}

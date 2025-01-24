@@ -15,6 +15,7 @@ import { saveImageToLocalStorage } from "../Upload/Uplaod_Local";
 import uuid from "react-native-uuid";
 import * as Location from "expo-location";
 import { getLocation } from "../Upload/Location";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   visible: boolean;
@@ -37,6 +38,8 @@ const CameraInputModal: React.FC<Props> = ({
   const [error3, setError3] = useState(false);
   const [doneModalVisible, setDoneModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
+
 
   const handleSave = async () => {
     const isValid =
@@ -469,7 +472,7 @@ const CameraInputModal: React.FC<Props> = ({
           <View style={styles.inputModal}>
             <View style={styles.inputModalTitleConatainer}>
               <Text style={styles.inputModalTitle}>
-                Please tell us which wine this is
+              {t('pleaseTellUsWhichWine')}
               </Text>
             </View>
             <TextInput
@@ -507,7 +510,7 @@ const CameraInputModal: React.FC<Props> = ({
                   handleSave();
                 }}
               >
-                <Text style={styles.iosButtonText}>Done</Text>
+                <Text style={styles.iosButtonText}>{t('done')}</Text>
               </Pressable>
               <Pressable
                 style={[styles.iosButton, styles.iosDefaultButton]}
@@ -517,7 +520,7 @@ const CameraInputModal: React.FC<Props> = ({
                   setDoneModalVisible(true);
                 }}
               >
-                <Text style={styles.iosButtonText2}>Do this later</Text>
+                <Text style={styles.iosButtonText2}>{t('doThisLater')}</Text>
               </Pressable>
 
               <Pressable
@@ -527,7 +530,7 @@ const CameraInputModal: React.FC<Props> = ({
                   onRetake();
                 }}
               >
-                <Text style={styles.iosCancelButtonText}>Cancel</Text>
+                <Text style={styles.iosCancelButtonText}>{t('cancel')}</Text>
               </Pressable>
             </View>
           </View>
@@ -537,7 +540,7 @@ const CameraInputModal: React.FC<Props> = ({
         <View style={styles.loaderOverlay}>
           <View style={styles.loaderBox}>
             <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loaderText}>Loading</Text>
+            <Text style={styles.loaderText}>{t('loading')}</Text>
           </View>
         </View>
       )}
